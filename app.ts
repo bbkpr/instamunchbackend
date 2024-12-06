@@ -1,8 +1,21 @@
 import 'dotenv/config';
 import { ErrorRequestHandler } from 'express-serve-static-core';
+import { readFileSync } from 'fs';
+import { resolvers } from './graphql/resolvers';
 
+const typeDefs = readFileSync('./schema.graphql', { encoding: 'utf-8' });
 var createError = require('http-errors');
+
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import express, { Express } from 'express';
+import http from 'http';
+
+interface MyContext {
+  token?: String;
+}
+
 const hbs = require('hbs');
 let cors = require('cors');
 
@@ -14,6 +27,16 @@ var indexRouter = require('./routes');
 var usersRouter = require('./routes/users');
 
 var app = express();
+
+// Set up Apollo GraphQL
+const httpServer = http.createServer(app);
+const apolloServer = new ApolloServer<MyContext>({
+  typeDefs,
+  resolvers,
+  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
+});
+
+
 app.use(cors());
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -43,5 +66,18 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 } as ErrorRequestHandler);
+
+apolloServer.start().then(() => {
+  app.use('/graphql',
+    cors(),
+    express.json(),
+    expressMiddleware(apolloServer, {
+      context: async ({ req }) => ({ token: req.headers.token })
+    })
+  );
+  new Promise<void>(resolve => httpServer.listen({ port: 4002 }, resolve)).then(() => {
+    console.log(`Apollo GraphQL Server ready at http://localhost:4002/graphql`);
+  });
+});
 
 module.exports = app;

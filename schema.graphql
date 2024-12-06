@@ -1,0 +1,14 @@
+type MachineItem {
+  name: String
+  machine: Machine
+}
+
+type Machine {
+  name: String
+  items: [MachineItem]
+}
+
+type Query {
+  machines: [Machine]
+  machineItems: [MachineItem]
+}

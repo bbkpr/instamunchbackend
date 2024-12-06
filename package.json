@@ -6,11 +6,13 @@
     "start": "nodemon --verbose --ext ts,jade,json --exec ts-node --ignore '*.test.ts' bin/www.ts"
   },
   "dependencies": {
+    "@apollo/server": "~4.11.2",
     "cookie-parser": "~1.4.7",
     "cors": "~2.8.5",
     "debug": "~4.3.7",
     "dotenv": "~16.4.7",
     "express": "~4.21.1",
+    "graphql": "~16.9.0",
     "hbs": "~4.2.0",
     "http-errors": "~2.0.0",
     "morgan": "~1.9.1"
