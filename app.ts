@@ -1,7 +1,11 @@
-import {ErrorRequestHandler} from "express-serve-static-core";
+import 'dotenv/config';
+import { ErrorRequestHandler } from 'express-serve-static-core';
 
 var createError = require('http-errors');
-import express, {Express} from 'express';
+import express, { Express } from 'express';
+const hbs = require('hbs');
+let cors = require('cors');
+
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -10,10 +14,10 @@ var indexRouter = require('./routes');
 var usersRouter = require('./routes/users');
 
 var app = express();
-
+app.use(cors());
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'hbs');
 
 app.use(logger('dev'));
 app.use(express.json());

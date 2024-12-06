@@ -7,7 +7,7 @@ import {Express} from "express";
  */
 
 var app = require('../app');
-var debug = require('debug')('express-crisis:server');
+var debug = require('debug')('instamunchbackend:server');
 var http = require('http');
 
 /**
