@@ -1,14 +1,37 @@
+interface MutationResponse {
+  code: String!
+  success: Boolean!
+  message: String!
+}
+
 type MachineItem {
+  id: ID!
   name: String
   machine: Machine
 }
 
 type Machine {
+  id: ID!
   name: String
   items: [MachineItem]
 }
 
+#
+# Query
+#
+
 type Query {
   machines: [Machine]
+  machineItems: [MachineItem]
+}
+
+#
+# Mutation
+#
+
+type UpdateMachineItemsMutationResponse implements MutationResponse {
+  code: String!
+  success: Boolean!
+  message: String!
   machineItems: [MachineItem]
 }
