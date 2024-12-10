@@ -1,5 +1,7 @@
+const debug = require('debug')('instamunchbackend:resolvers');
 import { Machine, MachineItem, Resolvers } from '../generated/graphql';
 import { InstaMunchContext } from './context';
+import { createMachine } from '../dal/machine.dal';
 
 export const resolvers: Resolvers<InstaMunchContext> = {
   Query: {
@@ -14,4 +16,10 @@ export const resolvers: Resolvers<InstaMunchContext> = {
       return [{ id: '1', name: 'Item 1' }];
     }
   },
+  Mutation: {
+    async createMachine(parent, args, context, info) {
+      const newMachine = await createMachine({ name: args.machine?.name });
+      return newMachine!;
+    }
+  }
 };

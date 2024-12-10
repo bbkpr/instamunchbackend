@@ -14,34 +14,40 @@ datasource db {
 }
 
 model Item {
-  id               Int        @id @default(autoincrement())
+  id               String        @id @default(uuid())
   name             String?
   basePrice        Float?
   expirationPeriod String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime
   machineItems     MachineItem[]
 }
 
 model MachineItem {
-  id        Int  @id @default(autoincrement())
+  id        String  @id @default(uuid())
   name      String?
   machine   Machine @relation(fields: [machineId], references: [id])
-  machineId Int
+  machineId String
   item      Item    @relation(fields: [itemId], references: [id])
-  itemId    Int
+  itemId    String
 }
 
 model MachineLocation {
-  id              Int  @id @default(autoincrement())
+  id              String   @id @default(uuid())
   name            String
   address1        String
   address2        String?
   city            String
   stateOrProvince String
   country         String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
 }
 
 model Machine {
-  id    Int        @id @default(autoincrement())
-  name  String?
-  items MachineItem[]
+  id        String        @id @default(uuid())
+  name      String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime
+  items     MachineItem[]
 }
