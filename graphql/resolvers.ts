@@ -1,16 +1,17 @@
-import pg from 'pg';
+import { Machine, MachineItem, Resolvers } from '../generated/graphql';
+import { InstaMunchContext } from './context';
 
-const { Client } = pg;
-const client = new Client();
-await client.connect();
-
-export const resolvers = {
+export const resolvers: Resolvers<InstaMunchContext> = {
   Query: {
-    machines() {
-      return [{ name: 'Machine 1', items: [{ name: 'Item 1' }] }, { name: 'Machine 2', items: [{ name: 'Item 2A' }] }];
+    machines(): Machine[] {
+      return [{ id: '1', name: 'Machine 1', items: [{ id: '1', name: 'Item 1' }] }, {
+        id: '2',
+        name: 'Machine 2',
+        items: [{ id: '2', name: 'Item 2A' }]
+      }];
     },
-    machineItems() {
-      return [[{ name: 'Item 2A', machines: [{ name: 'Machine 2' }] }]];
+    machineItems(): MachineItem[] {
+      return [{ id: '1', name: 'Item 1' }];
     }
-  }
+  },
 };

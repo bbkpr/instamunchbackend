@@ -9,10 +9,7 @@ var createError = require('http-errors');
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import express from 'express';
-
-interface MyContext {
-  token?: String;
-}
+import { InstaMunchContext } from './graphql/context';
 
 const hbs = require('hbs');
 let cors = require('cors');
@@ -26,11 +23,8 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
-interface MyContext {
-  token?: String;
-}
 // Set up Apollo GraphQL
-const apolloServer = new ApolloServer<MyContext>({
+const apolloServer = new ApolloServer<InstaMunchContext>({
   typeDefs,
   resolvers,
 });
