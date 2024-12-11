@@ -6,6 +6,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -15,24 +16,29 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
-export type CreateItem = {
+export type CreateItemInput = {
   basePrice?: InputMaybe<Scalars['Float']['input']>;
   expirationPeriod?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
 };
 
-export type CreateMachineInput = {
-  machineLocation?: InputMaybe<CreateMachineLocationInput>;
-  name?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type CreateMachineLocationInput = {
+export type CreateLocationInput = {
   address1: Scalars['String']['input'];
   address2?: InputMaybe<Scalars['String']['input']>;
   city: Scalars['String']['input'];
   country: Scalars['String']['input'];
-  name: Scalars['String']['input'];
   stateOrProvince: Scalars['String']['input'];
+};
+
+export type CreateMachineInput = {
+  locationId?: InputMaybe<Scalars['ID']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateMachineLocationInput = {
+  locationId: Scalars['ID']['input'];
+  machineId: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type Item = {
@@ -43,6 +49,19 @@ export type Item = {
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;
+};
+
+export type Location = {
+  __typename?: 'Location';
+  address1: Scalars['String']['output'];
+  address2?: Maybe<Scalars['String']['output']>;
+  city: Scalars['String']['output'];
+  country: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  machineLocation?: Maybe<MachineLocation>;
+  stateOrProvince: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
 };
 
 export type Machine = {
@@ -62,27 +81,102 @@ export type MachineItem = {
   name?: Maybe<Scalars['String']['output']>;
 };
 
+export type MachineItemInput = {
+  itemId: Scalars['ID']['input'];
+  machineId: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type MachineLocation = {
   __typename?: 'MachineLocation';
   address1: Scalars['String']['output'];
   address2?: Maybe<Scalars['String']['output']>;
   city: Scalars['String']['output'];
   country: Scalars['String']['output'];
-  createdAt?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  location: Location;
+  machine: Machine;
   name: Scalars['String']['output'];
   stateOrProvince: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['String']['output'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createMachine?: Maybe<Machine>;
+  addMachineItem: MachineItem;
+  assignMachineLocation: MachineLocation;
+  createLocation: Location;
+  createMachine: Machine;
+  deleteLocation: Scalars['Boolean']['output'];
+  deleteMachine: Scalars['Boolean']['output'];
+  removeMachineItem: Scalars['Boolean']['output'];
+  removeMachineLocation: Scalars['Boolean']['output'];
+  updateLocation: Location;
+  updateMachine: Machine;
+  updateMachineItems: UpdateMachineItemsMutationResponse;
+  updateMachineLocation: MachineLocation;
+};
+
+
+export type MutationAddMachineItemArgs = {
+  input: MachineItemInput;
+};
+
+
+export type MutationAssignMachineLocationArgs = {
+  input: CreateMachineLocationInput;
+};
+
+
+export type MutationCreateLocationArgs = {
+  input: CreateLocationInput;
 };
 
 
 export type MutationCreateMachineArgs = {
-  machine?: InputMaybe<CreateMachineInput>;
+  input: CreateMachineInput;
+};
+
+
+export type MutationDeleteLocationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteMachineArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveMachineItemArgs = {
+  itemId: Scalars['ID']['input'];
+  machineId: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveMachineLocationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateLocationArgs = {
+  input: UpdateLocationInput;
+};
+
+
+export type MutationUpdateMachineArgs = {
+  input: UpdateMachineInput;
+};
+
+
+export type MutationUpdateMachineItemsArgs = {
+  input: UpdateMachineItemsInput;
+};
+
+
+export type MutationUpdateMachineLocationArgs = {
+  input: UpdateMachineLocationInput;
 };
 
 export type MutationResponse = {
@@ -97,12 +191,46 @@ export type Query = {
   machines?: Maybe<Array<Maybe<Machine>>>;
 };
 
+export type UpdateItemInput = {
+  basePrice?: InputMaybe<Scalars['Float']['input']>;
+  expirationPeriod?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateLocationInput = {
+  address1?: InputMaybe<Scalars['String']['input']>;
+  address2?: InputMaybe<Scalars['String']['input']>;
+  city?: InputMaybe<Scalars['String']['input']>;
+  country?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  stateOrProvince?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateMachineInput = {
+  id: Scalars['ID']['input'];
+  locationId?: InputMaybe<Scalars['ID']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateMachineItemsInput = {
+  itemIds: Array<Scalars['ID']['input']>;
+  machineId: Scalars['ID']['input'];
+};
+
 export type UpdateMachineItemsMutationResponse = MutationResponse & {
   __typename?: 'UpdateMachineItemsMutationResponse';
   code: Scalars['String']['output'];
   machineItems?: Maybe<Array<Maybe<MachineItem>>>;
   message: Scalars['String']['output'];
   success: Scalars['Boolean']['output'];
+};
+
+export type UpdateMachineLocationInput = {
+  id: Scalars['ID']['input'];
+  locationId?: InputMaybe<Scalars['ID']['input']>;
+  machineId?: InputMaybe<Scalars['ID']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -181,39 +309,55 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  CreateItem: CreateItem;
+  CreateItemInput: CreateItemInput;
+  CreateLocationInput: CreateLocationInput;
   CreateMachineInput: CreateMachineInput;
   CreateMachineLocationInput: CreateMachineLocationInput;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Item: ResolverTypeWrapper<Item>;
+  Location: ResolverTypeWrapper<Location>;
   Machine: ResolverTypeWrapper<Machine>;
   MachineItem: ResolverTypeWrapper<MachineItem>;
+  MachineItemInput: MachineItemInput;
   MachineLocation: ResolverTypeWrapper<MachineLocation>;
   Mutation: ResolverTypeWrapper<{}>;
   MutationResponse: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['MutationResponse']>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  UpdateItemInput: UpdateItemInput;
+  UpdateLocationInput: UpdateLocationInput;
+  UpdateMachineInput: UpdateMachineInput;
+  UpdateMachineItemsInput: UpdateMachineItemsInput;
   UpdateMachineItemsMutationResponse: ResolverTypeWrapper<UpdateMachineItemsMutationResponse>;
+  UpdateMachineLocationInput: UpdateMachineLocationInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
-  CreateItem: CreateItem;
+  CreateItemInput: CreateItemInput;
+  CreateLocationInput: CreateLocationInput;
   CreateMachineInput: CreateMachineInput;
   CreateMachineLocationInput: CreateMachineLocationInput;
   Float: Scalars['Float']['output'];
   ID: Scalars['ID']['output'];
   Item: Item;
+  Location: Location;
   Machine: Machine;
   MachineItem: MachineItem;
+  MachineItemInput: MachineItemInput;
   MachineLocation: MachineLocation;
   Mutation: {};
   MutationResponse: ResolversInterfaceTypes<ResolversParentTypes>['MutationResponse'];
   Query: {};
   String: Scalars['String']['output'];
+  UpdateItemInput: UpdateItemInput;
+  UpdateLocationInput: UpdateLocationInput;
+  UpdateMachineInput: UpdateMachineInput;
+  UpdateMachineItemsInput: UpdateMachineItemsInput;
   UpdateMachineItemsMutationResponse: UpdateMachineItemsMutationResponse;
+  UpdateMachineLocationInput: UpdateMachineLocationInput;
 };
 
 export type ItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['Item'] = ResolversParentTypes['Item']> = {
@@ -223,6 +367,19 @@ export type ItemResolvers<ContextType = any, ParentType extends ResolversParentT
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type LocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
+  address1?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  address2?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  city?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  country?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  machineLocation?: Resolver<Maybe<ResolversTypes['MachineLocation']>, ParentType, ContextType>;
+  stateOrProvince?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -248,16 +405,29 @@ export type MachineLocationResolvers<ContextType = any, ParentType extends Resol
   address2?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   city?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   country?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  location?: Resolver<ResolversTypes['Location'], ParentType, ContextType>;
+  machine?: Resolver<ResolversTypes['Machine'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   stateOrProvince?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  createMachine?: Resolver<Maybe<ResolversTypes['Machine']>, ParentType, ContextType, Partial<MutationCreateMachineArgs>>;
+  addMachineItem?: Resolver<ResolversTypes['MachineItem'], ParentType, ContextType, RequireFields<MutationAddMachineItemArgs, 'input'>>;
+  assignMachineLocation?: Resolver<ResolversTypes['MachineLocation'], ParentType, ContextType, RequireFields<MutationAssignMachineLocationArgs, 'input'>>;
+  createLocation?: Resolver<ResolversTypes['Location'], ParentType, ContextType, RequireFields<MutationCreateLocationArgs, 'input'>>;
+  createMachine?: Resolver<ResolversTypes['Machine'], ParentType, ContextType, RequireFields<MutationCreateMachineArgs, 'input'>>;
+  deleteLocation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteLocationArgs, 'id'>>;
+  deleteMachine?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteMachineArgs, 'id'>>;
+  removeMachineItem?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveMachineItemArgs, 'itemId' | 'machineId'>>;
+  removeMachineLocation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveMachineLocationArgs, 'id'>>;
+  updateLocation?: Resolver<ResolversTypes['Location'], ParentType, ContextType, RequireFields<MutationUpdateLocationArgs, 'input'>>;
+  updateMachine?: Resolver<ResolversTypes['Machine'], ParentType, ContextType, RequireFields<MutationUpdateMachineArgs, 'input'>>;
+  updateMachineItems?: Resolver<ResolversTypes['UpdateMachineItemsMutationResponse'], ParentType, ContextType, RequireFields<MutationUpdateMachineItemsArgs, 'input'>>;
+  updateMachineLocation?: Resolver<ResolversTypes['MachineLocation'], ParentType, ContextType, RequireFields<MutationUpdateMachineLocationArgs, 'input'>>;
 };
 
 export type MutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['MutationResponse'] = ResolversParentTypes['MutationResponse']> = {
@@ -282,6 +452,7 @@ export type UpdateMachineItemsMutationResponseResolvers<ContextType = any, Paren
 
 export type Resolvers<ContextType = any> = {
   Item?: ItemResolvers<ContextType>;
+  Location?: LocationResolvers<ContextType>;
   Machine?: MachineResolvers<ContextType>;
   MachineItem?: MachineItemResolvers<ContextType>;
   MachineLocation?: MachineLocationResolvers<ContextType>;

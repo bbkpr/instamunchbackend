@@ -22,18 +22,6 @@ type MachineItem {
     item: Item
 }
 
-type MachineLocation {
-    id: ID!
-    name: String!
-    address1: String!
-    address2: String
-    city: String!
-    stateOrProvince: String!
-    country: String!
-    createdAt: String
-    updatedAt: String
-}
-
 type Machine {
     id: ID!
     name: String
@@ -55,8 +43,52 @@ type Query {
 # Mutation
 #
 
-input CreateMachineLocationInput {
+input CreateMachineInput {
+    name: String
+    locationId: ID
+}
+
+input UpdateMachineInput {
+    id: ID!
+    name: String
+    locationId: ID
+}
+
+input CreateItemInput {
     name: String!
+    basePrice: Float
+    expirationPeriod: String
+}
+
+input UpdateItemInput {
+    id: ID!
+    name: String
+    basePrice: Float
+    expirationPeriod: String
+}
+
+type Location {
+    id: ID!
+    address1: String!
+    address2: String
+    city: String!
+    stateOrProvince: String!
+    country: String!
+    createdAt: String!
+    updatedAt: String!
+    machineLocation: MachineLocation
+}
+
+type MachineLocation {
+    id: ID!
+    name: String!
+    machine: Machine!
+    location: Location!
+    createdAt: String!
+    updatedAt: String!
+}
+
+input CreateLocationInput {
     address1: String!
     address2: String
     city: String!
@@ -64,21 +96,60 @@ input CreateMachineLocationInput {
     country: String!
 }
 
-input CreateMachineInput {
-    name: String
-    machineLocation: CreateMachineLocationInput
+input CreateMachineLocationInput {
+  name: String!
+  machineId: ID!
+  locationId: ID!
 }
 
-input CreateItem {
+input UpdateMachineLocationInput {
+  id: ID!
+  name: String
+  machineId: ID
+  locationId: ID
+}
+
+input UpdateLocationInput {
+  id: ID!
+  address1: String
+  address2: String
+  city: String
+  stateOrProvince: String
+  country: String
+}
+
+input MachineItemInput {
+    machineId: ID!
+    itemId: ID!
     name: String
-    # A default price if no other price policies are set
-    basePrice: Float
-    # How long, on average, until the expiration of this item when newly purchased.
-    expirationPeriod: String
+}
+
+# Batch operations
+input UpdateMachineItemsInput {
+    machineId: ID!
+    itemIds: [ID!]!
 }
 
 type Mutation {
-    createMachine(machine: CreateMachineInput): Machine
+    # Machine operations
+    createMachine(input: CreateMachineInput!): Machine!
+    updateMachine(input: UpdateMachineInput!): Machine!
+    deleteMachine(id: ID!): Boolean!
+
+    # Location operations
+    createLocation(input: CreateLocationInput!): Location!
+    updateLocation(input: UpdateLocationInput!): Location!
+    deleteLocation(id: ID!): Boolean!
+
+    # MachineLocation (join) operations
+    assignMachineLocation(input: CreateMachineLocationInput!): MachineLocation!
+    updateMachineLocation(input: UpdateMachineLocationInput!): MachineLocation!
+    removeMachineLocation(id: ID!): Boolean!
+
+    # MachineItem operations
+    addMachineItem(input: MachineItemInput!): MachineItem!
+    updateMachineItems(input: UpdateMachineItemsInput!): UpdateMachineItemsMutationResponse!
+    removeMachineItem(machineId: ID!, itemId: ID!): Boolean!
 }
 
 type UpdateMachineItemsMutationResponse implements MutationResponse {

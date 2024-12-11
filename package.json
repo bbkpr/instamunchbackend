@@ -6,7 +6,7 @@
     "codegen": "graphql-codegen --config codegen.ts",
     "prisma:migrate": "prisma migrate dev",
     "prisma:pushschema": "prisma db push",
-    "start": "npm run codegen && nodemon --verbose --ext ts,hbs,json --exec ts-node --ignore '*.test.ts' --ignore db-data --ignore pgadmin-data --ignore node_modules --ignore schema.prisma bin/www.ts"
+    "start": "npm run codegen && nodemon --verbose --ext ts,hbs,json --exec ts-node --ignore '*.test.ts' --ignore db-data --ignore pgadmin-data --ignore node_modules --ignore schema.prisma --ignore prisma bin/www.ts"
   },
   "dependencies": {
     "@apollo/server": "~4.11.2",
@@ -17,6 +17,7 @@
     "dotenv": "~16.4.7",
     "express": "~4.21.1",
     "graphql": "~16.9.0",
+    "gql.tada": "~1.8.10",
     "hbs": "~4.2.0",
     "http-errors": "~2.0.0",
     "morgan": "~1.9.1",
