@@ -10,14 +10,18 @@ const debug = require('debug')('instamunchbackend:resolvers');
 import { Machine, MachineItem, Resolvers } from '../generated/graphql';
 import { InstaMunchContext } from './context';
 import {
-  addMachineItem, assignMachineLocation,
-  createItem, createLocation,
-  createMachine, createMachineLocation, deleteItem, deleteLocation,
-  deleteMachine, deleteMachineLocation,
+  addMachineItem,
+  assignMachineLocation,
+  createItem,
+  createLocation,
+  createMachine,
+  deleteItem, deleteLocation,
+  deleteMachine,
   getMachineItems,
-  getMachines, removeMachineItem, removeMachineLocation, updateItem, updateLocation,
-  updateMachine, updateMachineItems,
-  updateMachineLocation
+  getMachines, removeMachineItem,
+  removeMachineLocation,
+  updateItem, updateLocation,
+  updateMachine, updateMachineItems, updateMachineLocation
 } from '../dal/machine.dal';
 
 export const resolvers: Resolvers<InstaMunchContext> = {
