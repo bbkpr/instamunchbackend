@@ -6,7 +6,7 @@ interface MutationResponse {
 
 type Item {
     id: ID!
-    name: String
+    name: String!
     # A default price if no other price policies are set
     basePrice: Float
     # How long, on average, until the expiration of this item when newly purchased.
@@ -27,7 +27,7 @@ type MachineItem {
 
 type Machine {
     id: ID!
-    name: String
+    name: String!
     machineItems: [MachineItem]
     createdAt: String
     updatedAt: String
@@ -47,7 +47,7 @@ type Location {
 
 type MachineLocation {
     id: ID!
-    name: String!
+    name: String
     machineId: ID!
     machine: Machine!
     locationId: ID!
@@ -61,8 +61,10 @@ type MachineLocation {
 #
 
 type Query {
-    machines: [Machine]
-    machineItems: [MachineItem]
+    getItems: [Item]
+    getLocations: [Location]
+    getMachines: [Machine]
+    getMachineItems: [MachineItem]
 }
 
 #

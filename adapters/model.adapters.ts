@@ -12,7 +12,6 @@ import {
   Location,
   MachineLocation
 } from '../generated/graphql';
-import { DefaultArgs, GetResult } from '@prisma/client/runtime/library';
 
 // Relationship types
 type PrismaMachineWithRelations = PrismaMachine & {
@@ -34,11 +33,13 @@ type PrismaMachineLocationWithRelations = PrismaMachineLocation & {
   location: PrismaLocation;
 };
 
+export type ItemWithDates = Omit<Item, 'createdAt' | 'updatedAt'> & { createdAt: Date, updatedAt: Date};
+
 // Adapters
 export const adaptLocation = (prismaLocation: PrismaLocation): Location => ({
   id: prismaLocation.id,
   address1: prismaLocation.address1,
-  address2: prismaLocation.address2 ?? undefined,
+  address2: prismaLocation.address2 ?? null,
   city: prismaLocation.city,
   stateOrProvince: prismaLocation.stateOrProvince,
   country: prismaLocation.country,
@@ -60,10 +61,10 @@ export const adaptMachineLocation = (
 // Updated to include machineLocation
 export const adaptMachine = (prismaMachine: PrismaMachineWithRelations): Machine => ({
   id: prismaMachine.id,
-  name: prismaMachine.name ?? undefined,
+  name: prismaMachine.name!,
   machineItems: prismaMachine.machineItems.map(item => ({
     id: item.id,
-    name: item.name ?? undefined,
+    name: item.name,
     itemId: item.itemId,
     item: adaptItem(item.item),
     machineId: prismaMachine.id
@@ -75,20 +76,29 @@ export const adaptMachine = (prismaMachine: PrismaMachineWithRelations): Machine
 // Existing Item and MachineItem adapters remain unchanged
 export const adaptItem = (prismaItem: PrismaItem): Item => ({
   id: prismaItem.id,
-  name: prismaItem.name ?? undefined,
-  basePrice: prismaItem.basePrice ?? undefined,
-  expirationPeriod: prismaItem.expirationPeriod ?? undefined,
+  name: prismaItem.name!,
+  basePrice: prismaItem.basePrice ?? null,
+  expirationPeriod: prismaItem.expirationPeriod ?? null,
   createdAt: prismaItem.createdAt.toISOString(),
   updatedAt: prismaItem.updatedAt.toISOString(),
 });
 
+export const adaptItemWithDates = (prismaItem: PrismaItem): ItemWithDates => ({
+  id: prismaItem.id,
+  name: prismaItem.name!,
+  basePrice: prismaItem.basePrice ?? null,
+  expirationPeriod: prismaItem.expirationPeriod ?? null,
+  createdAt: prismaItem.createdAt,
+  updatedAt: prismaItem.updatedAt,
+});
+
 export const adaptMachineItem = (prismaMachineItem: PrismaMachineItemWithRelations): MachineItem => ({
   id: prismaMachineItem.id,
-  name: prismaMachineItem.name ?? undefined,
+  name: prismaMachineItem.name ?? null,
   machineId: prismaMachineItem.machineId,
   machine: {
     id: prismaMachineItem.machine.id,
-    name: prismaMachineItem.machine.name ?? undefined,
+    name: prismaMachineItem.machine.name!,
     createdAt: prismaMachineItem.machine.createdAt.toISOString(),
     updatedAt: prismaMachineItem.machine.updatedAt.toISOString(),
   },

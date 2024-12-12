@@ -128,7 +128,7 @@ export type Item = {
   expirationPeriod?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   machineItems?: Maybe<Array<Maybe<MachineItem>>>;
-  name?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['String']['output']>;
 };
 
@@ -150,7 +150,7 @@ export type Machine = {
   createdAt?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   machineItems?: Maybe<Array<Maybe<MachineItem>>>;
-  name?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['String']['output']>;
 };
 
@@ -172,7 +172,7 @@ export type MachineLocation = {
   locationId: Scalars['ID']['output'];
   machine: Machine;
   machineId: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['String']['output'];
 };
 
@@ -278,8 +278,10 @@ export type MutationResponse = {
 
 export type Query = {
   __typename?: 'Query';
-  machineItems?: Maybe<Array<Maybe<MachineItem>>>;
-  machines?: Maybe<Array<Maybe<Machine>>>;
+  getItems?: Maybe<Array<Maybe<Item>>>;
+  getLocations?: Maybe<Array<Maybe<Location>>>;
+  getMachineItems?: Maybe<Array<Maybe<MachineItem>>>;
+  getMachines?: Maybe<Array<Maybe<Machine>>>;
 };
 
 export type UpdateItemInput = {
@@ -591,7 +593,7 @@ export type ItemResolvers<ContextType = any, ParentType extends ResolversParentT
   expirationPeriod?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   machineItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineItem']>>>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -613,7 +615,7 @@ export type MachineResolvers<ContextType = any, ParentType extends ResolversPare
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   machineItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineItem']>>>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -635,7 +637,7 @@ export type MachineLocationResolvers<ContextType = any, ParentType extends Resol
   locationId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   machine?: Resolver<ResolversTypes['Machine'], ParentType, ContextType>;
   machineId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -666,8 +668,10 @@ export type MutationResponseResolvers<ContextType = any, ParentType extends Reso
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  machineItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineItem']>>>, ParentType, ContextType>;
-  machines?: Resolver<Maybe<Array<Maybe<ResolversTypes['Machine']>>>, ParentType, ContextType>;
+  getItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['Item']>>>, ParentType, ContextType>;
+  getLocations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Location']>>>, ParentType, ContextType>;
+  getMachineItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineItem']>>>, ParentType, ContextType>;
+  getMachines?: Resolver<Maybe<Array<Maybe<ResolversTypes['Machine']>>>, ParentType, ContextType>;
 };
 
 export type UpdateItemMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateItemMutationResponse'] = ResolversParentTypes['UpdateItemMutationResponse']> = {

@@ -52,6 +52,24 @@ export const getMachineItems = async () => {
     throw e;
   }
 };
+
+export const getMachineLocations = async () => {
+  try {
+    const machineLocations = await prisma.machineLocation.findMany({
+      include: {
+        machine: true,
+        location: true
+      }
+    });
+    await prisma.$disconnect();
+    return machineLocations;
+  } catch (e: any) {
+    console.error(`Error fetching MachineItems - ${e.name}: ${e.message}`);
+    await prisma.$disconnect();
+    throw e;
+  }
+};
+
 export const createMachine = async (input: CreateMachineInput) => {
   return prisma.machine.create({
     data: {
@@ -109,6 +127,18 @@ export const deleteMachine = async (id: string) => {
 };
 
 // Item operations
+export const getItems = async () => {
+  try {
+    const items = await prisma.item.findMany();
+    await prisma.$disconnect();
+    return items;
+  } catch (e: any) {
+    console.error(`Error fetching Machines - ${e.name}: ${e.message}`);
+    await prisma.$disconnect();
+    throw e;
+  }
+};
+
 export const createItem = async (input: CreateItemInput) => {
   return prisma.item.create({
     data: {
