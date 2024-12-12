@@ -1,9 +1,9 @@
 const debug = require('debug')('instamunchbackend:dal');
 import {
-  CreateItemInput,
-  CreateMachineInput,
-  CreateMachineLocationInput, MachineItemInput,
-  UpdateItemInput,
+  CreateItemInput, CreateLocationInput,
+  CreateMachineInput, CreateMachineItemInput,
+  CreateMachineLocationInput,
+  UpdateItemInput, UpdateLocationInput,
   UpdateMachineInput, UpdateMachineLocationInput
 } from '../generated/graphql';
 import { PrismaClient } from '@prisma/client';
@@ -15,9 +15,14 @@ export const getMachines = async () => {
   try {
     const machines = await prisma.machine.findMany({
       include: {
-        items: {
+        machineItems: {
           include: {
             item: true
+          }
+        },
+        machineLocations: {
+          include: {
+            location: true
           }
         }
       }
@@ -55,9 +60,14 @@ export const createMachine = async (input: CreateMachineInput) => {
       updatedAt: new Date()
     },
     include: {
-      items: {
+      machineItems: {
         include: {
           item: true
+        }
+      },
+      machineLocations: {
+        include: {
+          location: true
         }
       }
     }
@@ -72,9 +82,14 @@ export const updateMachine = async (input: UpdateMachineInput) => {
       updatedAt: new Date()
     },
     include: {
-      items: {
+      machineItems: {
         include: {
           item: true
+        }
+      },
+      machineLocations: {
+        include: {
+          location: true
         }
       }
     }
@@ -172,7 +187,7 @@ export const deleteLocation = async (id: string) => {
 };
 
 // MachineLocation operations
-export const assignMachineLocation = async (input: CreateMachineLocationInput) => {
+export const createMachineLocation = async (input: CreateMachineLocationInput) => {
   return prisma.machineLocation.create({
     data: {
       name: input.name,
@@ -207,7 +222,7 @@ export const updateMachineLocation = async (input: UpdateMachineLocationInput) =
   });
 };
 
-export const removeMachineLocation = async (id: string) => {
+export const deleteMachineLocation = async (id: string) => {
   await prisma.machineLocation.delete({
     where: { id }
   });
@@ -215,7 +230,7 @@ export const removeMachineLocation = async (id: string) => {
 };
 
 // MachineItem operations
-export const addMachineItem = async (input: MachineItemInput) => {
+export const createMachineItem = async (input: CreateMachineItemInput) => {
   return prisma.machineItem.create({
     data: {
       machineId: input.machineId,
@@ -284,11 +299,10 @@ export const updateMachineItems = async (machineId: string, itemIds: string[]) =
   }
 };
 
-export const removeMachineItem = async (machineId: string, itemId: string) => {
+export const deleteMachineItem = async (id: string) => {
   await prisma.machineItem.deleteMany({
     where: {
-      machineId,
-      itemId
+      id
     }
   });
   return true;

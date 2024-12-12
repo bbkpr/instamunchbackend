@@ -7,19 +7,19 @@ import {
 } from '../adapters/model.adapters';
 
 const debug = require('debug')('instamunchbackend:resolvers');
-import { Machine, MachineItem, Resolvers } from '../generated/graphql';
+import { CreateItemInput, Machine, MachineItem, Resolvers, UpdateItemInput } from '../generated/graphql';
 import { InstaMunchContext } from './context';
 import {
-  addMachineItem,
-  assignMachineLocation,
+  createMachineItem,
+  createMachineLocation,
   createItem,
   createLocation,
   createMachine,
   deleteItem, deleteLocation,
   deleteMachine,
   getMachineItems,
-  getMachines, removeMachineItem,
-  removeMachineLocation,
+  getMachines, deleteMachineItem,
+  deleteMachineLocation,
   updateItem, updateLocation,
   updateMachine, updateMachineItems, updateMachineLocation
 } from '../dal/machine.dal';
@@ -49,70 +49,79 @@ export const resolvers: Resolvers<InstaMunchContext> = {
     // Machine operations
     async createMachine(_, { input }, context) {
       const machine = await createMachine(input);
-      return adaptMachine(machine);
+      return { code: 'CREATED', success: true, message: `Machine created: ${machine.id}`, machine: adaptMachine(machine) };
     },
 
     async updateMachine(_, { input }, context) {
       const machine = await updateMachine(input);
-      return adaptMachine(machine);
+      return { code: 'UPDATED', success: true, message: `Machine updated: ${machine.id}`, machine: adaptMachine(machine) };
     },
 
     async deleteMachine(_, { id }, context) {
-      return deleteMachine(id);
+      await deleteMachine(id);
+      return { code: 'DELETED', success: true, message: `Machine deleted: ${id}` };
     },
 
     // Item operations
-    async createItem(_, { input }, context) {
+    async createItem(_: any, { input }: { input: CreateItemInput }, context: InstaMunchContext) {
       const item = await createItem(input);
-      return adaptItem(item);
+      return { code: 'CREATED', success: true, message: `Item created: ${item.id}`, item: adaptItem(item) };
     },
 
-    async updateItem(_: any, { input }: any, context: any) {
+    async updateItem(_: any, { input }: { input: UpdateItemInput }, context: InstaMunchContext) {
       const item = await updateItem(input);
-      return adaptItem(item);
+      return { code: 'UPDATED', success: true, message: `Item updated: ${item.id}`, item: adaptItem(item) };
     },
 
-    async deleteItem(_, { id }, context) {
-      return deleteItem(id);
+    async deleteItem(_, { id }: { id: string }, context: InstaMunchContext) {
+      await deleteItem(id);
+      return { code: 'DELETED', success: true, message: `Item deleted: ${id}` };
     },
 
     // Location operations
-    async createLocation(_, { input }, context) {
+    async createLocation(_, { input }, context: InstaMunchContext) {
       const location = await createLocation(input);
-      return adaptLocation(location);
+      return { code: 'CREATED', success: true, message: `Location created: ${location.id}`, location: adaptLocation(location) };
     },
 
-    async updateLocation(_, { input }, context) {
+    async updateLocation(_, { input }, context: InstaMunchContext) {
       const location = await updateLocation(input);
-      return adaptLocation(location);
+      return { code: 'UPDATED', success: true, message: `Location updated: ${location.id}`, location: adaptLocation(location) };
     },
 
-    async deleteLocation(_, { id }, context) {
-      return deleteLocation(id);
+    async deleteLocation(_, { id }, context: InstaMunchContext) {
+      await deleteLocation(id);
+      return { code: 'DELETED', success: true, message: `Location deleted: ${id}` };
     },
 
     // MachineLocation operations
-    async assignMachineLocation(_, { input }, context) {
-      const machineLocation = await assignMachineLocation(input);
-      return adaptMachineLocation(machineLocation);
+    async createMachineLocation(_, { input }, context: InstaMunchContext) {
+      const machineLocation = await createMachineLocation(input);
+      return { code: 'CREATED', success: true, message: `MachineLocation created: ${machineLocation.id}`, machineLocation: adaptMachineLocation(machineLocation) };
     },
 
-    async updateMachineLocation(_, { input }, context) {
+    async updateMachineLocation(_, { input }, context: InstaMunchContext) {
       const machineLocation = await updateMachineLocation(input);
-      return adaptMachineLocation(machineLocation);
+      return { code: 'UPDATED', success: true, message: `MachineLocation updated: ${machineLocation.id}`, machineLocation: adaptMachineLocation(machineLocation) };
     },
 
-    async removeMachineLocation(_, { id }, context) {
-      return removeMachineLocation(id);
+    async deleteMachineLocation(_, { id }, context: InstaMunchContext) {
+      await deleteMachineLocation(id);
+      return { code: 'DELETED', success: true, message: `MachineLocation deleted: ${id}` };
     },
 
     // MachineItem operations
-    async addMachineItem(_, { input }, context) {
-      const machineItem = await addMachineItem(input);
-      return adaptMachineItem(machineItem);
+    async createMachineItem(_, { input }, context: InstaMunchContext) {
+      const machineItem = await createMachineItem(input);
+      return { code: 'CREATED', success: true, message: `MachineItem created: ${machineItem.id}`, machineItem: adaptMachineItem(machineItem) };
     },
 
-    async updateMachineItems(_, { input }, context) {
+    async deleteMachineItem(_, { id }, context: InstaMunchContext) {
+      await deleteMachineItem(id);
+      return { code: 'DELETED', success: true, message: `MachineItem deleted: ${id} ` };
+    },
+
+    async updateMachineItems(_, { input }, context: InstaMunchContext) {
       try {
         const items = await updateMachineItems(input.machineId, input.itemIds);
         return {
@@ -131,8 +140,6 @@ export const resolvers: Resolvers<InstaMunchContext> = {
       }
     },
 
-    async removeMachineItem(_, { machineId, itemId }, context) {
-      return removeMachineItem(machineId, itemId);
-    }
+
   }
 };

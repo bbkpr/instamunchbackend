@@ -33,33 +33,33 @@ model MachineItem {
 }
 
 model Location {
-  id              String            @id @default(uuid())
-  address1        String
-  address2        String?
-  city            String
-  stateOrProvince String
-  country         String
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  machineLocation MachineLocation?
+  id               String            @id @default(uuid())
+  address1         String
+  address2         String?
+  city             String
+  stateOrProvince  String
+  country          String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  machineLocations MachineLocation[]
 }
 
 model MachineLocation {
-  id          String    @id @default(uuid())
-  name        String
-  machine     Machine   @relation(fields: [machineId], references: [id])
-  machineId   String    @unique
-  location    Location  @relation(fields: [locationId], references: [id])
-  locationId  String    @unique
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id         String   @id @default(uuid())
+  name       String
+  machine    Machine  @relation(fields: [machineId], references: [id])
+  machineId  String   @unique
+  location   Location @relation(fields: [locationId], references: [id])
+  locationId String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Machine {
-  id             String          @id @default(uuid())
-  name           String?
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  items          MachineItem[]
-  machineLocation MachineLocation?
+  id               String            @id @default(uuid())
+  name             String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  machineItems     MachineItem[]
+  machineLocations MachineLocation[]
 }
