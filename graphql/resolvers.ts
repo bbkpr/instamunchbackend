@@ -1,5 +1,5 @@
 import {
-  adaptItem, adaptItemWithDates,
+  adaptItemWithDateTimestamps, adaptItemWithStringTimestamps, adaptItemWithTimestamps,
   adaptLocation,
   adaptMachine,
   adaptMachineItem,
@@ -24,19 +24,27 @@ import {
   updateMachine, updateMachineItems, updateMachineLocation, getItems
 } from '../dal/machine.dal';
 import { Item } from '@prisma/client';
+import { timestampToISOString, WithStringTimeStamps, WithTimeStamps } from '../util/typeguards';
 
 export const resolvers: Resolvers<InstaMunchContext> = {
   Query: {
-    // async getItems(_, { }, context): Promise<Item[]> {
-    //   try {
-    //     const items = await getItems();
-    //     return items.map(adaptItem);
-    //   } catch (error) {
-    //     debug('Error in machines query:', error);
-    //     throw error;
-    //   }
-    // },
-    async getMachines(_, { }, context): Promise<Machine[]> {
+    async getItems(_, { }, context) {
+      try {
+        const items = await getItems();
+        return items.map(item => ({
+          id: item.id,
+          name: item.name,
+          createdAt: item.createdAt.toISOString(),
+          updatedAt: item.updatedAt.toISOString(),
+          basePrice: item.basePrice,
+          expirationPeriod: item.expirationPeriod
+        }))
+      } catch (error) {
+        debug('Error in machines query:', error);
+        throw error;
+      }
+    },
+    async getMachines(_, { }, context) {
       try {
         const machines = await getMachines();
         return machines.map(adaptMachine);
@@ -85,12 +93,12 @@ export const resolvers: Resolvers<InstaMunchContext> = {
     // Item operations
     async createItem(_: any, { input }: { input: CreateItemInput }, context: InstaMunchContext) {
       const item = await createItem(input);
-      return { code: 'CREATED', success: true, message: `Item created: ${item.id}`, item: adaptItem(item) };
+      return { code: 'CREATED', success: true, message: `Item created: ${item.id}`, item: adaptItemWithStringTimestamps(item) };
     },
 
     async updateItem(_: any, { input }: { input: UpdateItemInput }, context: InstaMunchContext) {
       const item = await updateItem(input);
-      return { code: 'UPDATED', success: true, message: `Item updated: ${item.id}`, item: adaptItem(item) };
+      return { code: 'UPDATED', success: true, message: `Item updated: ${item.id}`, item: adaptItemWithStringTimestamps(item) };
     },
 
     async deleteItem(_, { id }: { id: string }, context: InstaMunchContext) {

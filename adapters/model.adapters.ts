@@ -10,30 +10,37 @@ import {
   MachineItem,
   Item,
   Location,
-  MachineLocation
+  MachineLocation, Maybe
 } from '../generated/graphql';
+import {
+  DateTimeStamps,
+  StringTimeStamps,
+  timestampToISOString, WithDateTimeStamps,
+  WithStringTimeStamps,
+  WithTimeStamps
+} from '../util/typeguards';
 
 // Relationship types
-type PrismaMachineWithRelations = PrismaMachine & {
+type PrismaMachineWithRelations = WithTimeStamps<PrismaMachine> & {
   machineItems: (PrismaMachineItem & {
-    item: PrismaItem
+    item: WithTimeStamps<PrismaItem>
   })[];
   machineLocation?: PrismaMachineLocation & {
-    location: PrismaLocation
+    location: WithTimeStamps<PrismaLocation>
   };
 };
 
 type PrismaMachineItemWithRelations = PrismaMachineItem & {
   machine: PrismaMachine;
-  item: PrismaItem;
+  item: WithTimeStamps<PrismaItem>;
 };
 
 type PrismaMachineLocationWithRelations = PrismaMachineLocation & {
-  machine: PrismaMachine;
-  location: PrismaLocation;
+  machine: WithTimeStamps<PrismaMachine>;
+  location: WithTimeStamps<PrismaLocation>;
 };
 
-export type ItemWithDates = Omit<Item, 'createdAt' | 'updatedAt'> & { createdAt: Date, updatedAt: Date};
+export type ItemWithDates = Omit<Item, 'createdAt' | 'updatedAt'> & { createdAt: Date, updatedAt: Date };
 
 // Adapters
 export const adaptLocation = (prismaLocation: PrismaLocation): Location => ({
@@ -58,50 +65,81 @@ export const adaptMachineLocation = (
   updatedAt: prismaMachineLocation.updatedAt.toISOString()
 });
 
-// Updated to include machineLocation
 export const adaptMachine = (prismaMachine: PrismaMachineWithRelations): Machine => ({
   id: prismaMachine.id,
   name: prismaMachine.name!,
-  machineItems: prismaMachine.machineItems.map(item => ({
-    id: item.id,
-    name: item.name,
-    itemId: item.itemId,
-    item: adaptItem(item.item),
+  machineItems: prismaMachine.machineItems.map(machineItem => ({
+    id: machineItem.id,
+    name: machineItem.name,
+    itemId: machineItem.itemId,
+    item: {
+      id: machineItem.item.id,
+      name: machineItem.item.name!,
+      basePrice: machineItem.item.basePrice || 3,
+      expirationPeriod: machineItem.item.expirationPeriod || '90',
+      createdAt: timestampToISOString(machineItem.item.createdAt),
+      updatedAt: timestampToISOString(machineItem.item.updatedAt)
+    },
     machineId: prismaMachine.id
   })),
-  createdAt: prismaMachine.createdAt.toISOString(),
-  updatedAt: prismaMachine.updatedAt.toISOString()
+  createdAt: timestampToISOString(prismaMachine.createdAt),
+  updatedAt: timestampToISOString(prismaMachine.updatedAt)
 });
 
-// Existing Item and MachineItem adapters remain unchanged
-export const adaptItem = (prismaItem: PrismaItem): Item => ({
+export const adaptItemWithTimestamps = (prismaItem: WithTimeStamps<PrismaItem>): WithTimeStamps<Item> => ({
   id: prismaItem.id,
   name: prismaItem.name!,
-  basePrice: prismaItem.basePrice ?? null,
-  expirationPeriod: prismaItem.expirationPeriod ?? null,
-  createdAt: prismaItem.createdAt.toISOString(),
-  updatedAt: prismaItem.updatedAt.toISOString(),
+  basePrice: prismaItem.basePrice,
+  expirationPeriod: prismaItem.expirationPeriod || '90',
+  createdAt: timestampToISOString(prismaItem.createdAt),
+  updatedAt: timestampToISOString(prismaItem.updatedAt)
 });
 
-export const adaptItemWithDates = (prismaItem: PrismaItem): ItemWithDates => ({
+export const adaptItemWithStringTimestamps = (prismaItem: WithTimeStamps<PrismaItem>): WithStringTimeStamps<Item> => ({
   id: prismaItem.id,
   name: prismaItem.name!,
-  basePrice: prismaItem.basePrice ?? null,
-  expirationPeriod: prismaItem.expirationPeriod ?? null,
-  createdAt: prismaItem.createdAt,
-  updatedAt: prismaItem.updatedAt,
+  basePrice: prismaItem.basePrice,
+  expirationPeriod: prismaItem.expirationPeriod || '90',
+  createdAt: timestampToISOString(prismaItem.createdAt),
+  updatedAt: timestampToISOString(prismaItem.updatedAt)
+});
+
+export const adaptItemWithDateTimestamps = (prismaItem: WithTimeStamps<PrismaItem>): WithDateTimeStamps<Item> => ({
+  id: prismaItem.id,
+  name: prismaItem.name!,
+  basePrice: prismaItem.basePrice,
+  expirationPeriod: prismaItem.expirationPeriod || '90',
+  createdAt: new Date(prismaItem.createdAt),
+  updatedAt: new Date(prismaItem.updatedAt)
 });
 
 export const adaptMachineItem = (prismaMachineItem: PrismaMachineItemWithRelations): MachineItem => ({
   id: prismaMachineItem.id,
-  name: prismaMachineItem.name ?? null,
+  name: prismaMachineItem.name,
   machineId: prismaMachineItem.machineId,
   machine: {
     id: prismaMachineItem.machine.id,
     name: prismaMachineItem.machine.name!,
     createdAt: prismaMachineItem.machine.createdAt.toISOString(),
-    updatedAt: prismaMachineItem.machine.updatedAt.toISOString(),
+    updatedAt: prismaMachineItem.machine.updatedAt.toISOString()
   },
   itemId: prismaMachineItem.itemId,
-  item: adaptItem(prismaMachineItem.item)
+  item: {
+    id: prismaMachineItem.item.id,
+    name: prismaMachineItem.item.name!,
+    basePrice: prismaMachineItem.item.basePrice ?? 3,
+    expirationPeriod: prismaMachineItem.item.expirationPeriod || '90',
+    createdAt: timestampToISOString(prismaMachineItem.item.createdAt),
+    updatedAt: timestampToISOString(prismaMachineItem.item.updatedAt)
+  }
 });
+
+export const adaptTimeStamps = <T extends DateTimeStamps | StringTimeStamps>(
+  model: T
+): WithTimeStamps<T> => {
+  return {
+    ...model,
+    createdAt: model.createdAt instanceof Date ? model.createdAt : new Date(model.createdAt),
+    updatedAt: model.updatedAt instanceof Date ? model.updatedAt : new Date(model.updatedAt)
+  };
+};

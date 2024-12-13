@@ -73,7 +73,7 @@ export const getMachineLocations = async () => {
 export const createMachine = async (input: CreateMachineInput) => {
   return prisma.machine.create({
     data: {
-      name: input.name ?? null,
+      name: input.name!,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -143,8 +143,8 @@ export const createItem = async (input: CreateItemInput) => {
   return prisma.item.create({
     data: {
       name: input.name,
-      basePrice: input.basePrice ?? null,
-      expirationPeriod: input.expirationPeriod ?? null,
+      basePrice: input.basePrice!,
+      expirationPeriod: input.expirationPeriod!,
       createdAt: new Date(),
       updatedAt: new Date()
     }

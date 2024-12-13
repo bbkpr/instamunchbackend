@@ -15,9 +15,9 @@ datasource db {
 
 model Item {
   id               String        @id @default(uuid())
-  name             String?
-  basePrice        Float?
-  expirationPeriod String?
+  name             String
+  basePrice        Float
+  expirationPeriod String
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @default(now())
   machineItems     MachineItem[]
@@ -57,7 +57,7 @@ model MachineLocation {
 
 model Machine {
   id               String            @id @default(uuid())
-  name             String?
+  name             String
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   machineItems     MachineItem[]
