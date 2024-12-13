@@ -1,3 +1,5 @@
+import { prisma } from '../prisma/prismaClient';
+
 const debug = require('debug')('instamunchbackend:dal');
 import {
   CreateItemInput, CreateLocationInput,
@@ -6,9 +8,6 @@ import {
   UpdateItemInput, UpdateLocationInput,
   UpdateMachineInput, UpdateMachineLocationInput
 } from '../generated/graphql';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
 
 // Machine operations
 export const getMachines = async () => {
@@ -129,7 +128,15 @@ export const deleteMachine = async (id: string) => {
 // Item operations
 export const getItems = async () => {
   try {
-    const items = await prisma.item.findMany();
+    const items = await prisma.item.findMany({
+      include: {
+        machineItems: {
+          include: {
+            machine: true
+          }
+        }
+      }
+    });
     await prisma.$disconnect();
     return items;
   } catch (e: any) {
@@ -218,11 +225,11 @@ export const deleteLocation = async (id: string) => {
 
 // MachineLocation operations
 export const createMachineLocation = async (input: CreateMachineLocationInput) => {
-  return prisma.machineLocation.create({
+  const result = await prisma.machineLocation.create({
     data: {
       name: input.name,
-      machine: { connect: { id: input.machineId } },
-      location: { connect: { id: input.locationId } },
+      machineId: input.machineId,
+      locationId: input.locationId,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -231,6 +238,8 @@ export const createMachineLocation = async (input: CreateMachineLocationInput) =
       location: true
     }
   });
+
+  return result;
 };
 
 export const updateMachineLocation = async (input: UpdateMachineLocationInput) => {

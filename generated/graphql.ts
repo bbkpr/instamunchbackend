@@ -18,7 +18,7 @@ export type Scalars = {
 
 export type CreateItemInput = {
   basePrice?: InputMaybe<Scalars['Float']['input']>;
-  expirationPeriod?: InputMaybe<Scalars['String']['input']>;
+  expirationPeriod?: InputMaybe<Scalars['Int']['input']>;
   name: Scalars['String']['input'];
 };
 
@@ -125,7 +125,7 @@ export type Item = {
   __typename?: 'Item';
   basePrice?: Maybe<Scalars['Float']['output']>;
   createdAt?: Maybe<Scalars['String']['output']>;
-  expirationPeriod?: Maybe<Scalars['String']['output']>;
+  expirationPeriod?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   machineItems?: Maybe<Array<Maybe<MachineItem>>>;
   name: Scalars['String']['output'];
@@ -150,6 +150,7 @@ export type Machine = {
   createdAt?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   machineItems?: Maybe<Array<Maybe<MachineItem>>>;
+  machineLocations?: Maybe<Array<Maybe<MachineLocation>>>;
   name: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['String']['output']>;
 };
@@ -168,9 +169,9 @@ export type MachineLocation = {
   __typename?: 'MachineLocation';
   createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  location: Location;
+  location?: Maybe<Location>;
   locationId: Scalars['ID']['output'];
-  machine: Machine;
+  machine?: Maybe<Machine>;
   machineId: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['String']['output'];
@@ -286,7 +287,7 @@ export type Query = {
 
 export type UpdateItemInput = {
   basePrice?: InputMaybe<Scalars['Float']['input']>;
-  expirationPeriod?: InputMaybe<Scalars['String']['input']>;
+  expirationPeriod?: InputMaybe<Scalars['Int']['input']>;
   id: Scalars['ID']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
 };
@@ -450,6 +451,7 @@ export type ResolversTypes = {
   DeleteMachineMutationResponse: ResolverTypeWrapper<DeleteMachineMutationResponse>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Item: ResolverTypeWrapper<Item>;
   Location: ResolverTypeWrapper<Location>;
   Machine: ResolverTypeWrapper<Machine>;
@@ -491,6 +493,7 @@ export type ResolversParentTypes = {
   DeleteMachineMutationResponse: DeleteMachineMutationResponse;
   Float: Scalars['Float']['output'];
   ID: Scalars['ID']['output'];
+  Int: Scalars['Int']['output'];
   Item: Item;
   Location: Location;
   Machine: Machine;
@@ -590,7 +593,7 @@ export type DeleteMachineMutationResponseResolvers<ContextType = any, ParentType
 export type ItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['Item'] = ResolversParentTypes['Item']> = {
   basePrice?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  expirationPeriod?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  expirationPeriod?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   machineItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineItem']>>>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -615,6 +618,7 @@ export type MachineResolvers<ContextType = any, ParentType extends ResolversPare
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   machineItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineItem']>>>, ParentType, ContextType>;
+  machineLocations?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineLocation']>>>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -633,9 +637,9 @@ export type MachineItemResolvers<ContextType = any, ParentType extends Resolvers
 export type MachineLocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['MachineLocation'] = ResolversParentTypes['MachineLocation']> = {
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  location?: Resolver<ResolversTypes['Location'], ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
   locationId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  machine?: Resolver<ResolversTypes['Machine'], ParentType, ContextType>;
+  machine?: Resolver<Maybe<ResolversTypes['Machine']>, ParentType, ContextType>;
   machineId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

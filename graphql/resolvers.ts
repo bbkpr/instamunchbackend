@@ -1,5 +1,5 @@
 import {
-  adaptItemWithDateTimestamps, adaptItemWithStringTimestamps, adaptItemWithTimestamps,
+  adaptItemWithStringTimestamps,
   adaptLocation,
   adaptMachine,
   adaptMachineItem,

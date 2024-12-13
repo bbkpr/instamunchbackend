@@ -1,34 +1,35 @@
+# Base interface for all mutation responses providing consistent error handling
 interface MutationResponse {
-    code: String!
-    success: Boolean!
-    message: String!
+    code: String!       # HTTP-style response code
+    success: Boolean!   # Operation success indicator
+    message: String!    # Human-readable status message
 }
+
 
 type Item {
     id: ID!
     name: String!
-    # A default price if no other price policies are set
-    basePrice: Float
-    # How long, on average, until the expiration of this item when newly purchased.
-    expirationPeriod: String
+    basePrice: Float        # Default price if no specific pricing policy exists
+    expirationPeriod: Int # Expected shelf life, in days, of newly purchased items
     createdAt: String
     updatedAt: String
-    machineItems: [MachineItem]
+    machineItems: [MachineItem] # Many-to-many relationship with machines
 }
 
 type MachineItem {
     id: ID!
-    name: String
+    name: String           # Optional override for item name in specific machine
     machineId: ID!
-    machine: Machine
+    machine: Machine       # Back-reference to containing machine
     itemId: ID!
-    item: Item
+    item: Item            # Reference to the base item
 }
 
 type Machine {
     id: ID!
     name: String!
-    machineItems: [MachineItem]
+    machineItems: [MachineItem] # Items currently in this machine
+    machineLocations: [MachineLocation]
     createdAt: String
     updatedAt: String
 }
@@ -47,18 +48,14 @@ type Location {
 
 type MachineLocation {
     id: ID!
-    name: String
+    name: String          # Optional display name for this machine-location pairing
     machineId: ID!
-    machine: Machine!
+    machine: Machine     # The machine at this location
     locationId: ID!
-    location: Location!
+    location: Location   # Where this machine is located
     createdAt: String!
     updatedAt: String!
 }
-
-#
-# Query
-#
 
 type Query {
     getItems: [Item]
@@ -83,14 +80,14 @@ input UpdateMachineInput {
 input CreateItemInput {
     name: String!
     basePrice: Float
-    expirationPeriod: String
+    expirationPeriod: Int
 }
 
 input UpdateItemInput {
     id: ID!
     name: String
     basePrice: Float
-    expirationPeriod: String
+    expirationPeriod: Int
 }
 
 input CreateLocationInput {

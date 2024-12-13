@@ -17,7 +17,7 @@ model Item {
   id               String        @id @default(uuid())
   name             String
   basePrice        Float
-  expirationPeriod String
+  expirationPeriod Int
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @default(now())
   machineItems     MachineItem[]
@@ -48,9 +48,9 @@ model MachineLocation {
   id         String   @id @default(uuid())
   name       String
   machine    Machine  @relation(fields: [machineId], references: [id])
-  machineId  String   @unique
+  machineId  String
   location   Location @relation(fields: [locationId], references: [id])
-  locationId String   @unique
+  locationId String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
