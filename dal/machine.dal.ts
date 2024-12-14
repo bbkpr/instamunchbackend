@@ -35,6 +35,25 @@ export const getMachines = async () => {
   }
 };
 
+// Get all Machines stocking an Item
+export const getMachinesByItem = async (itemId: string) => {
+  return prisma.machineItem.findMany({
+    where: { itemId },
+    include: {
+      machine: {
+        include: {
+          machineLocations: {
+            include: {
+              location: true
+            }
+          }
+        }
+      },
+      item: true
+    }
+  });
+};
+
 export const getMachineItems = async () => {
   try {
     const machineItems = await prisma.machineItem.findMany({
@@ -146,6 +165,17 @@ export const getItems = async () => {
   }
 };
 
+// Get all Items in a specific Machine
+export const getItemsByMachine = async (machineId: string) => {
+  return prisma.machineItem.findMany({
+    where: { machineId },
+    include: {
+      item: true,
+      machine: true
+    }
+  });
+};
+
 export const createItem = async (input: CreateItemInput) => {
   return prisma.item.create({
     data: {
@@ -170,6 +200,10 @@ export const updateItem = async (input: UpdateItemInput) => {
   });
 };
 
+/**
+ *
+ * @param id
+ */
 export const deleteItem = async (id: string) => {
   await prisma.machineItem.deleteMany({
     where: { itemId: id }
@@ -183,6 +217,34 @@ export const deleteItem = async (id: string) => {
 };
 
 // Location operations
+export const getLocations = async () => {
+  try {
+    const locations = await prisma.location.findMany({
+      include: {
+        machineLocations: {
+          include: {
+            machine: {
+              include: {
+                machineItems: {
+                  include: {
+                    item: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+    await prisma.$disconnect();
+    return locations;
+  } catch (e: any) {
+    console.error(`Error fetching Locations - ${e.name}: ${e.message}`);
+    await prisma.$disconnect();
+    throw e;
+  }
+};
+
 export const createLocation = async (input: CreateLocationInput) => {
   return prisma.location.create({
     data: {
@@ -242,6 +304,31 @@ export const createMachineLocation = async (input: CreateMachineLocationInput) =
   return result;
 };
 
+// Get all Locations with a Machine of a specific name
+export const getLocationsByMachineName = async (machineName: string) => {
+  return prisma.location.findMany({
+    where: {
+      machineLocations: {
+        some: {
+          machine: {
+            name: {
+              contains: machineName,
+              mode: 'insensitive'
+            }
+          }
+        }
+      }
+    },
+    include: {
+      machineLocations: {
+        include: {
+          machine: true
+        }
+      }
+    }
+  });
+};
+
 export const updateMachineLocation = async (input: UpdateMachineLocationInput) => {
   const updateData: any = {
     updatedAt: new Date()
@@ -269,12 +356,72 @@ export const deleteMachineLocation = async (id: string) => {
 };
 
 // MachineItem operations
+// Get all Machines at a Location
+export const getMachinesByLocation = async (locationId: string) => {
+  return prisma.machine.findMany({
+    where: {
+      machineLocations: {
+        some: {
+          locationId
+        }
+      }
+    },
+    include: {
+      machineItems: {
+        include: {
+          item: true
+        }
+      },
+      machineLocations: {
+        include: {
+          location: true
+        }
+      }
+    }
+  });
+};
+
+// Get all Locations stocking an Item
+export const getLocationsByItem = async (itemId: string) => {
+  return prisma.location.findMany({
+    where: {
+      machineLocations: {
+        some: {
+          machine: {
+            machineItems: {
+              some: {
+                itemId
+              }
+            }
+          }
+        }
+      }
+    },
+    include: {
+      machineLocations: {
+        include: {
+          machine: {
+            include: {
+              machineItems: {
+                include: {
+                  item: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+};
+
 export const createMachineItem = async (input: CreateMachineItemInput) => {
   return prisma.machineItem.create({
     data: {
       machineId: input.machineId,
       itemId: input.itemId,
-      name: input.name ?? null
+      name: input.name ?? null,
+      quantity: input.quantity
     },
     include: {
       machine: true,

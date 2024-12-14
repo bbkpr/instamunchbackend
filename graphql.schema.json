@@ -397,6 +397,22 @@
             "defaultValue": null,
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "quantity",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "interfaces": null,
@@ -1080,7 +1096,7 @@
         "fields": [
           {
             "name": "basePrice",
-            "description": null,
+            "description": "Default price if no specific pricing policy exists",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -1104,7 +1120,7 @@
           },
           {
             "name": "expirationPeriod",
-            "description": null,
+            "description": "Expected shelf life, in days, of newly purchased items",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -1148,7 +1164,7 @@
           },
           {
             "name": "name",
-            "description": null,
+            "description": "Name of the item",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1512,12 +1528,28 @@
           },
           {
             "name": "name",
-            "description": null,
+            "description": "Optional override for item name in specific machine",
             "args": [],
             "type": {
               "kind": "SCALAR",
               "name": "String",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "quantity",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -1624,7 +1656,7 @@
           },
           {
             "name": "name",
-            "description": null,
+            "description": "Optional display name for this machine-location pairing",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -2171,7 +2203,7 @@
         "fields": [
           {
             "name": "code",
-            "description": null,
+            "description": "HTTP-style response code",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2187,7 +2219,7 @@
           },
           {
             "name": "message",
-            "description": null,
+            "description": "Human-readable status message",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2203,7 +2235,7 @@
           },
           {
             "name": "success",
-            "description": null,
+            "description": "Operation success indicator",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2307,7 +2339,7 @@
         "fields": [
           {
             "name": "getItems",
-            "description": null,
+            "description": "Get all Items, from everywhere",
             "args": [],
             "type": {
               "kind": "LIST",
@@ -2322,8 +2354,49 @@
             "deprecationReason": null
           },
           {
+            "name": "getItemsByMachine",
+            "description": "Get Items in a specific Machine",
+            "args": [
+              {
+                "name": "machineId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "MachineItem",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "getLocations",
-            "description": null,
+            "description": "Get all Locations, from everywhere",
             "args": [],
             "type": {
               "kind": "LIST",
@@ -2338,8 +2411,90 @@
             "deprecationReason": null
           },
           {
+            "name": "getLocationsByItem",
+            "description": "Get Locations stocking a specific Item",
+            "args": [
+              {
+                "name": "itemId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "Location",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "getLocationsByMachineName",
+            "description": "Get Locations with a Machine matching a name (case insensitive)",
+            "args": [
+              {
+                "name": "machineName",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "Location",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "getMachineItems",
-            "description": null,
+            "description": "Get all MachineItems, from everywhere",
             "args": [],
             "type": {
               "kind": "LIST",
@@ -2355,7 +2510,7 @@
           },
           {
             "name": "getMachines",
-            "description": null,
+            "description": "Get all Machines, from everywhere",
             "args": [],
             "type": {
               "kind": "LIST",
@@ -2364,6 +2519,88 @@
                 "kind": "OBJECT",
                 "name": "Machine",
                 "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "getMachinesByItem",
+            "description": "Get all Machines stocking a specific Item",
+            "args": [
+              {
+                "name": "itemId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "MachineItem",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "getMachinesByLocation",
+            "description": "Get Machines at a specific Location",
+            "args": [
+              {
+                "name": "locationId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "Machine",
+                    "ofType": null
+                  }
+                }
               }
             },
             "isDeprecated": false,

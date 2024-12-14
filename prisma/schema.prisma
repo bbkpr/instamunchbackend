@@ -19,13 +19,14 @@ model Item {
   basePrice        Float
   expirationPeriod Int
   createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
   machineItems     MachineItem[]
 }
 
 model MachineItem {
   id        String  @id @default(uuid())
   name      String?
+  quantity  Int     @default(0)
   machine   Machine @relation(fields: [machineId], references: [id])
   machineId String
   item      Item    @relation(fields: [itemId], references: [id])

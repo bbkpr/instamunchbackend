@@ -1,28 +1,35 @@
 # Base interface for all mutation responses providing consistent error handling
 interface MutationResponse {
-    code: String!       # HTTP-style response code
-    success: Boolean!   # Operation success indicator
-    message: String!    # Human-readable status message
+    "HTTP-style response code"
+    code: String!
+    "Operation success indicator"
+    success: Boolean!
+    "Human-readable status message"
+    message: String!
 }
-
 
 type Item {
     id: ID!
+    "Name of the item"
     name: String!
-    basePrice: Float        # Default price if no specific pricing policy exists
-    expirationPeriod: Int # Expected shelf life, in days, of newly purchased items
+    "Default price if no specific pricing policy exists"
+    basePrice: Float
+    "Expected shelf life, in days, of newly purchased items"
+    expirationPeriod: Int
     createdAt: String
     updatedAt: String
-    machineItems: [MachineItem] # Many-to-many relationship with machines
+    machineItems: [MachineItem]
 }
 
 type MachineItem {
     id: ID!
-    name: String           # Optional override for item name in specific machine
+    "Optional override for item name in specific machine"
+    name: String
+    quantity: Int!
     machineId: ID!
-    machine: Machine       # Back-reference to containing machine
+    machine: Machine
     itemId: ID!
-    item: Item            # Reference to the base item
+    item: Item
 }
 
 type Machine {
@@ -48,19 +55,34 @@ type Location {
 
 type MachineLocation {
     id: ID!
-    name: String          # Optional display name for this machine-location pairing
+    "Optional display name for this machine-location pairing"
+    name: String
     machineId: ID!
-    machine: Machine     # The machine at this location
+    machine: Machine
     locationId: ID!
-    location: Location   # Where this machine is located
+    location: Location
     createdAt: String!
     updatedAt: String!
 }
 
 type Query {
+    "Get all Items, from everywhere"
     getItems: [Item]
+    "Get Items in a specific Machine"
+    getItemsByMachine(machineId: ID!): [MachineItem!]
+    "Get all Locations, from everywhere"
     getLocations: [Location]
+    "Get Locations stocking a specific Item"
+    getLocationsByItem(itemId: ID!): [Location!]
+    "Get Locations with a Machine matching a name (case insensitive)"
+    getLocationsByMachineName(machineName: String!): [Location!]!
+    "Get all Machines, from everywhere"
     getMachines: [Machine]
+    "Get all Machines stocking a specific Item"
+    getMachinesByItem(itemId: ID!): [MachineItem!]
+    "Get Machines at a specific Location"
+    getMachinesByLocation(locationId: ID!): [Machine!]
+    "Get all MachineItems, from everywhere"
     getMachineItems: [MachineItem]
 }
 
@@ -124,6 +146,7 @@ input CreateMachineItemInput {
     machineId: ID!
     itemId: ID!
     name: String
+    quantity: Int!
 }
 
 # Update and overwrite ALL Items in the Machine

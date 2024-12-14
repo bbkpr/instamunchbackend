@@ -15,22 +15,31 @@ import {
   createItem,
   createLocation,
   createMachine,
-  deleteItem, deleteLocation,
+  deleteItem,
+  deleteLocation,
   deleteMachine,
   getMachineItems,
-  getMachines, deleteMachineItem,
+  getMachines,
+  deleteMachineItem,
   deleteMachineLocation,
-  updateItem, updateLocation,
-  updateMachine, updateMachineItems, updateMachineLocation, getItems
+  updateItem,
+  updateLocation,
+  updateMachine,
+  updateMachineItems,
+  updateMachineLocation,
+  getItems,
+  getLocations,
+  getItemsByMachine,
+  getMachinesByItem,
+  getLocationsByItem, getLocationsByMachineName, getMachinesByLocation
 } from '../dal/machine.dal';
-import { Item } from '@prisma/client';
-import { timestampToISOString, WithStringTimeStamps, WithTimeStamps } from '../util/typeguards';
 
 export const resolvers: Resolvers<InstaMunchContext> = {
   Query: {
-    async getItems(_, { }, context) {
+    async getItems(_, {}, context) {
       try {
         const items = await getItems();
+        debug(`${items.length} Items found`);
         return items.map(item => ({
           id: item.id,
           name: item.name,
@@ -38,15 +47,16 @@ export const resolvers: Resolvers<InstaMunchContext> = {
           updatedAt: item.updatedAt.toISOString(),
           basePrice: item.basePrice,
           expirationPeriod: item.expirationPeriod
-        }))
+        }));
       } catch (error) {
         debug('Error in machines query:', error);
         throw error;
       }
     },
-    async getMachines(_, { }, context) {
+    async getMachines(_, {}, context) {
       try {
         const machines = await getMachines();
+        debug(`${machines.length} Machines found`);
         return machines.map(adaptMachine);
       } catch (error) {
         debug('Error in machines query:', error);
@@ -56,9 +66,75 @@ export const resolvers: Resolvers<InstaMunchContext> = {
     async getMachineItems(): Promise<MachineItem[]> {
       try {
         const items = await getMachineItems();
+        debug(`${items.length} MachineItems found`);
         return items.map(adaptMachineItem);
       } catch (error) {
         debug('Error in machineItems query:', error);
+        throw error;
+      }
+    },
+    async getLocations(_, {}, context) {
+      try {
+        const locations = await getLocations();
+        debug(`${locations.length} Locations found`);
+        return locations.map(adaptLocation);
+      } catch (error) {
+        debug('Error in locations query:', error);
+        throw error;
+      }
+    },
+
+    async getItemsByMachine(_, { machineId }, context) {
+      try {
+        const items = await getItemsByMachine(machineId);
+        debug(`${items.length} Items found for machine ${machineId}`);
+        return items.map(adaptMachineItem);
+      } catch (error) {
+        debug('Error in getItemsByMachine query:', error);
+        throw error;
+      }
+    },
+
+    async getMachinesByItem(_, { itemId }, context) {
+      try {
+        const machines = await getMachinesByItem(itemId);
+        debug(`${machines.length} Machines found for item ${itemId}`);
+        return machines.map(adaptMachineItem);
+      } catch (error) {
+        debug('Error in getMachinesByItem query:', error);
+        throw error;
+      }
+    },
+
+    async getLocationsByItem(_, { itemId }, context) {
+      try {
+        const locations = await getLocationsByItem(itemId);
+        debug(`${locations.length} Locations found for item ${itemId}`);
+        return locations.map(adaptLocation);
+      } catch (error) {
+        debug('Error in getLocationsByItem query:', error);
+        throw error;
+      }
+    },
+
+    async getLocationsByMachineName(_, { machineName }, context) {
+      try {
+        const locations = await getLocationsByMachineName(machineName);
+        debug(`${locations.length} Locations found for machine name ${machineName}`);
+        return locations.map(adaptLocation);
+      } catch (error) {
+        debug('Error in getLocationsByMachineName query:', error);
+        throw error;
+      }
+    },
+
+    async getMachinesByLocation(_, { locationId }, context) {
+      try {
+        const machines = await getMachinesByLocation(locationId);
+        debug(`${machines.length} Machines found for location ${locationId}`);
+        return machines.map(adaptMachine);
+      } catch (error) {
+        debug('Error in getMachinesByLocation query:', error);
         throw error;
       }
     }
@@ -67,6 +143,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
     // Machine operations
     async createMachine(_, { input }, context) {
       const machine = await createMachine(input);
+      debug(`Machine created with ID ${machine.id}`);
       return {
         code: 'CREATED',
         success: true,
@@ -77,6 +154,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
 
     async updateMachine(_, { input }, context) {
       const machine = await updateMachine(input);
+      debug(`Machine updated with ID ${machine.id}, Name: ${input.name}`);
       return {
         code: 'UPDATED',
         success: true,
@@ -87,28 +165,43 @@ export const resolvers: Resolvers<InstaMunchContext> = {
 
     async deleteMachine(_, { id }, context) {
       await deleteMachine(id);
+      debug(`Machine deleted with ID ${id}`);
       return { code: 'DELETED', success: true, message: `Machine deleted: ${id}` };
     },
 
     // Item operations
     async createItem(_: any, { input }: { input: CreateItemInput }, context: InstaMunchContext) {
       const item = await createItem(input);
-      return { code: 'CREATED', success: true, message: `Item created: ${item.id}`, item: adaptItemWithStringTimestamps(item) };
+      debug(`Item created with ID ${item.id}, Name: ${item.name}`);
+      return {
+        code: 'CREATED',
+        success: true,
+        message: `Item created: ${item.id}`,
+        item: adaptItemWithStringTimestamps(item)
+      };
     },
 
     async updateItem(_: any, { input }: { input: UpdateItemInput }, context: InstaMunchContext) {
       const item = await updateItem(input);
-      return { code: 'UPDATED', success: true, message: `Item updated: ${item.id}`, item: adaptItemWithStringTimestamps(item) };
+      debug(`Item updated with ID ${item.id}, Name: ${item.name}`);
+      return {
+        code: 'UPDATED',
+        success: true,
+        message: `Item updated: ${item.id}`,
+        item: adaptItemWithStringTimestamps(item)
+      };
     },
 
     async deleteItem(_, { id }: { id: string }, context: InstaMunchContext) {
       await deleteItem(id);
+      debug(`Item deleted with ID ${id}`);
       return { code: 'DELETED', success: true, message: `Item deleted: ${id}` };
     },
 
     // Location operations
     async createLocation(_, { input }, context: InstaMunchContext) {
       const location = await createLocation(input);
+      debug(`Location created with ID ${location.id}, Address1: ${location.address1}`);
       return {
         code: 'CREATED',
         success: true,
@@ -119,6 +212,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
 
     async updateLocation(_, { input }, context: InstaMunchContext) {
       const location = await updateLocation(input);
+      debug(`Location updated with ID ${location.id}, Address1: ${location.address1}`);
       return {
         code: 'UPDATED',
         success: true,
@@ -129,12 +223,14 @@ export const resolvers: Resolvers<InstaMunchContext> = {
 
     async deleteLocation(_, { id }, context: InstaMunchContext) {
       await deleteLocation(id);
+      debug(`Location deleted with ID ${id}`);
       return { code: 'DELETED', success: true, message: `Location deleted: ${id}` };
     },
 
     // MachineLocation operations
     async createMachineLocation(_, { input }, context: InstaMunchContext) {
       const machineLocation = await createMachineLocation(input);
+      debug(`MachineLocation created with ID ${machineLocation.id}, machineId ${input.machineId}, locationId: ${input.locationId}`);
       return {
         code: 'CREATED',
         success: true,
@@ -145,6 +241,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
 
     async updateMachineLocation(_, { input }, context: InstaMunchContext) {
       const machineLocation = await updateMachineLocation(input);
+      debug(`MachineLocation updated with ID ${machineLocation.id}, machineId ${input.machineId}, locationId: ${input.locationId}`);
       return {
         code: 'UPDATED',
         success: true,
@@ -155,12 +252,14 @@ export const resolvers: Resolvers<InstaMunchContext> = {
 
     async deleteMachineLocation(_, { id }, context: InstaMunchContext) {
       await deleteMachineLocation(id);
+      debug(`MachineLocation deleted with ID ${id}`);
       return { code: 'DELETED', success: true, message: `MachineLocation deleted: ${id}` };
     },
 
     // MachineItem operations
     async createMachineItem(_, { input }, context: InstaMunchContext) {
       const machineItem = await createMachineItem(input);
+      debug(`MachineItem created with ID ${machineItem.id}, Name: ${machineItem.name}`);
       return {
         code: 'CREATED',
         success: true,
@@ -171,12 +270,14 @@ export const resolvers: Resolvers<InstaMunchContext> = {
 
     async deleteMachineItem(_, { id }, context: InstaMunchContext) {
       await deleteMachineItem(id);
+      debug(`MachineItem deleted with ID ${id}`);
       return { code: 'DELETED', success: true, message: `MachineItem deleted: ${id} ` };
     },
 
     async updateMachineItems(_, { input }, context: InstaMunchContext) {
       try {
         const items = await updateMachineItems(input.machineId, input.itemIds);
+        debug(`MachineItems updated with machineId ${input.machineId}, itemIds: ${input.itemIds.join(', ')}`);
         return {
           code: '200',
           success: true,

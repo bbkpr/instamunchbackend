@@ -3,7 +3,7 @@ import {
   MachineItem as PrismaMachineItem,
   Item as PrismaItem,
   Location as PrismaLocation,
-  MachineLocation as PrismaMachineLocation, Prisma
+  MachineLocation as PrismaMachineLocation
 } from '@prisma/client';
 import {
   Machine,
@@ -37,7 +37,7 @@ type PrismaItemWithRelations = WithTimeStamps<PrismaItem> & {
 };
 
 type PrismaMachineItemWithRelations = PrismaMachineItem & {
-  machine: PrismaMachine;
+  machine: WithTimeStamps<PrismaMachine>;
   item: WithTimeStamps<PrismaItem>;
 };
 
@@ -93,6 +93,7 @@ export const adaptMachine = (prismaMachine: PrismaMachineWithRelations): Machine
   machineItems: prismaMachine.machineItems?.map(machineItem => ({
     id: machineItem.id,
     name: machineItem.name,
+    quantity: machineItem.quantity,
     itemId: machineItem.itemId,
     item: {
       id: machineItem.item!.id,
@@ -145,10 +146,11 @@ export const adaptItemWithStringTimestamps = (prismaItem: WithTimeStamps<PrismaI
   machineItems: prismaItem.machineItems?.map(machineItem => ({
     id: machineItem.id,
     name: machineItem.name,
+    quantity: machineItem.quantity,
     itemId: machineItem.itemId,
     machine: {
       id: machineItem.machineId,
-      name: `Item ${prismaItem.name} in Machine ${machineItem.machine!.name}`,
+      name: machineItem.name ?? `Item ${prismaItem.name} in Machine ${machineItem.machine!.name}`,
       createdAt: timestampToISOString(machineItem.machine!.createdAt),
       updatedAt: timestampToISOString(machineItem.machine!.updatedAt)
     },
@@ -159,12 +161,13 @@ export const adaptItemWithStringTimestamps = (prismaItem: WithTimeStamps<PrismaI
 export const adaptMachineItem = (prismaMachineItem: PrismaMachineItemWithRelations): MachineItem => ({
   id: prismaMachineItem.id,
   name: prismaMachineItem.name,
+  quantity: prismaMachineItem.quantity,
   machineId: prismaMachineItem.machineId,
   machine: {
     id: prismaMachineItem.machine.id,
     name: prismaMachineItem.machine.name!,
-    createdAt: prismaMachineItem.machine.createdAt.toISOString(),
-    updatedAt: prismaMachineItem.machine.updatedAt.toISOString()
+    createdAt: timestampToISOString(prismaMachineItem.machine.createdAt),
+    updatedAt: timestampToISOString(prismaMachineItem.machine.updatedAt)
   },
   itemId: prismaMachineItem.itemId,
   item: {

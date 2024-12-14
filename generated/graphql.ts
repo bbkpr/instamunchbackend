@@ -54,6 +54,7 @@ export type CreateMachineItemInput = {
   itemId: Scalars['ID']['input'];
   machineId: Scalars['ID']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
+  quantity: Scalars['Int']['input'];
 };
 
 export type CreateMachineItemMutationResponse = MutationResponse & {
@@ -123,11 +124,14 @@ export type DeleteMachineMutationResponse = MutationResponse & {
 
 export type Item = {
   __typename?: 'Item';
+  /** Default price if no specific pricing policy exists */
   basePrice?: Maybe<Scalars['Float']['output']>;
   createdAt?: Maybe<Scalars['String']['output']>;
+  /** Expected shelf life, in days, of newly purchased items */
   expirationPeriod?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   machineItems?: Maybe<Array<Maybe<MachineItem>>>;
+  /** Name of the item */
   name: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['String']['output']>;
 };
@@ -162,7 +166,9 @@ export type MachineItem = {
   itemId: Scalars['ID']['output'];
   machine?: Maybe<Machine>;
   machineId: Scalars['ID']['output'];
+  /** Optional override for item name in specific machine */
   name?: Maybe<Scalars['String']['output']>;
+  quantity: Scalars['Int']['output'];
 };
 
 export type MachineLocation = {
@@ -173,6 +179,7 @@ export type MachineLocation = {
   locationId: Scalars['ID']['output'];
   machine?: Maybe<Machine>;
   machineId: Scalars['ID']['output'];
+  /** Optional display name for this machine-location pairing */
   name?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['String']['output'];
 };
@@ -272,17 +279,59 @@ export type MutationUpdateMachineLocationArgs = {
 };
 
 export type MutationResponse = {
+  /** HTTP-style response code */
   code: Scalars['String']['output'];
+  /** Human-readable status message */
   message: Scalars['String']['output'];
+  /** Operation success indicator */
   success: Scalars['Boolean']['output'];
 };
 
 export type Query = {
   __typename?: 'Query';
+  /** Get all Items, from everywhere */
   getItems?: Maybe<Array<Maybe<Item>>>;
+  /** Get Items in a specific Machine */
+  getItemsByMachine: Array<MachineItem>;
+  /** Get all Locations, from everywhere */
   getLocations?: Maybe<Array<Maybe<Location>>>;
+  /** Get Locations stocking a specific Item */
+  getLocationsByItem: Array<Location>;
+  /** Get Locations with a Machine matching a name (case insensitive) */
+  getLocationsByMachineName: Array<Location>;
+  /** Get all MachineItems, from everywhere */
   getMachineItems?: Maybe<Array<Maybe<MachineItem>>>;
+  /** Get all Machines, from everywhere */
   getMachines?: Maybe<Array<Maybe<Machine>>>;
+  /** Get all Machines stocking a specific Item */
+  getMachinesByItem: Array<MachineItem>;
+  /** Get Machines at a specific Location */
+  getMachinesByLocation: Array<Machine>;
+};
+
+
+export type QueryGetItemsByMachineArgs = {
+  machineId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetLocationsByItemArgs = {
+  itemId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetLocationsByMachineNameArgs = {
+  machineName: Scalars['String']['input'];
+};
+
+
+export type QueryGetMachinesByItemArgs = {
+  itemId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetMachinesByLocationArgs = {
+  locationId: Scalars['ID']['input'];
 };
 
 export type UpdateItemInput = {
@@ -631,6 +680,7 @@ export type MachineItemResolvers<ContextType = any, ParentType extends Resolvers
   machine?: Resolver<Maybe<ResolversTypes['Machine']>, ParentType, ContextType>;
   machineId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -673,9 +723,14 @@ export type MutationResponseResolvers<ContextType = any, ParentType extends Reso
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   getItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['Item']>>>, ParentType, ContextType>;
+  getItemsByMachine?: Resolver<Array<ResolversTypes['MachineItem']>, ParentType, ContextType, RequireFields<QueryGetItemsByMachineArgs, 'machineId'>>;
   getLocations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Location']>>>, ParentType, ContextType>;
+  getLocationsByItem?: Resolver<Array<ResolversTypes['Location']>, ParentType, ContextType, RequireFields<QueryGetLocationsByItemArgs, 'itemId'>>;
+  getLocationsByMachineName?: Resolver<Array<ResolversTypes['Location']>, ParentType, ContextType, RequireFields<QueryGetLocationsByMachineNameArgs, 'machineName'>>;
   getMachineItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineItem']>>>, ParentType, ContextType>;
   getMachines?: Resolver<Maybe<Array<Maybe<ResolversTypes['Machine']>>>, ParentType, ContextType>;
+  getMachinesByItem?: Resolver<Array<ResolversTypes['MachineItem']>, ParentType, ContextType, RequireFields<QueryGetMachinesByItemArgs, 'itemId'>>;
+  getMachinesByLocation?: Resolver<Array<ResolversTypes['Machine']>, ParentType, ContextType, RequireFields<QueryGetMachinesByLocationArgs, 'locationId'>>;
 };
 
 export type UpdateItemMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateItemMutationResponse'] = ResolversParentTypes['UpdateItemMutationResponse']> = {
