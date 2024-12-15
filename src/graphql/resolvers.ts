@@ -7,7 +7,7 @@ import {
 } from '../adapters/model.adapters';
 
 const debug = require('debug')('instamunchbackend:resolvers');
-import { CreateItemInput, Machine, MachineItem, Resolvers, UpdateItemInput } from '../generated/graphql';
+import { CreateItemInput, Machine, MachineItem, Resolvers, UpdateItemInput } from '../../generated/graphql';
 import { InstaMunchContext } from './context';
 import {
   createMachineItem,

@@ -6,7 +6,7 @@ import {Express} from "express";
  * Module dependencies.
  */
 
-var app = require('../app');
+var app = require('../../app');
 var debug = require('debug')('instamunchbackend:server');
 var http = require('http');
 

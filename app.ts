@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { ErrorRequestHandler } from 'express-serve-static-core';
 import { readFileSync } from 'fs';
-import { resolvers } from './graphql/resolvers';
+import { resolvers } from './src/graphql/resolvers';
 
 const typeDefs = readFileSync('./schema.graphql', { encoding: 'utf-8' });
 var createError = require('http-errors');
@@ -9,7 +9,7 @@ var createError = require('http-errors');
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import express from 'express';
-import { InstaMunchContext } from './graphql/context';
+import { InstaMunchContext } from './src/graphql/context';
 
 const hbs = require('hbs');
 let cors = require('cors');
@@ -18,8 +18,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes');
-var usersRouter = require('./routes/users');
+var indexRouter = require('./src/routes');
+var usersRouter = require('./src/routes/users');
 
 var app = express();
 

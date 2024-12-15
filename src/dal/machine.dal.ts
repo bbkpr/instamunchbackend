@@ -1,4 +1,4 @@
-import { prisma } from '../prisma/prismaClient';
+import { prisma } from './prismaClient';
 
 const debug = require('debug')('instamunchbackend:dal');
 import {
@@ -7,7 +7,7 @@ import {
   CreateMachineLocationInput, CreateMachineTypeInput,
   UpdateItemInput, UpdateLocationInput,
   UpdateMachineInput, UpdateMachineLocationInput, UpdateMachineTypeInput
-} from '../generated/graphql';
+} from '../../generated/graphql';
 
 export const getItems = async () => {
   try {

@@ -6,7 +6,8 @@
     "codegen": "graphql-codegen --config codegen.ts",
     "prisma:migrate": "prisma migrate dev",
     "prisma:pushschema": "prisma db push",
-    "start": "npm run codegen && nodemon --verbose --ext ts,hbs,json --exec ts-node --ignore '*.test.ts' --ignore db-data --ignore pgadmin-data --ignore node_modules --ignore schema.prisma --ignore prisma bin/www.ts"
+    "start": "npm run codegen && nodemon --verbose --ext ts,hbs,json --exec ts-node --ignore '*.test.ts' --ignore db-data --ignore pgadmin-data --ignore node_modules --ignore schema.prisma --ignore prisma src/bin/www.ts",
+    "test": "jest"
   },
   "dependencies": {
     "@apollo/server": "~4.11.2",
@@ -30,10 +31,13 @@
     "@graphql-codegen/typescript": "4.1.2",
     "@graphql-codegen/typescript-resolvers": "4.4.1",
     "@types/express": "~4.17.21",
+    "@types/jest": "~29.5.14",
     "@types/node": "~22.10.1",
     "@types/pg": "~8.11.10",
+    "jest": "~29.7.0",
     "nodemon": "~3.1.7",
     "prettier": "~3.4.2",
+    "ts-jest": "~29.2.5",
     "ts-node": "~10.9.2",
     "typescript": "~5.7.2"
   }

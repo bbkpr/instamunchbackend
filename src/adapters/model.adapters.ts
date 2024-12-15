@@ -11,7 +11,7 @@ import {
   Item,
   Location,
   MachineLocation, Maybe
-} from '../generated/graphql';
+} from '../../generated/graphql';
 import {
   DateTimeStamps,
   StringTimeStamps,
