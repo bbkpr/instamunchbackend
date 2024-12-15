@@ -56,9 +56,19 @@ model MachineLocation {
   updatedAt  DateTime @updatedAt
 }
 
+model MachineType {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  machines  Machine[]
+}
+
 model Machine {
   id               String            @id @default(uuid())
   name             String
+  machineTypeId    String            @default("92f0a230-89fe-4f68-abf9-270a5239ce9c")
+  machineType      MachineType       @relation(fields: [machineTypeId], references: [id])
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   machineItems     MachineItem[]

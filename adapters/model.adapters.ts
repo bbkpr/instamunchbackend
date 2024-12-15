@@ -3,7 +3,7 @@ import {
   MachineItem as PrismaMachineItem,
   Item as PrismaItem,
   Location as PrismaLocation,
-  MachineLocation as PrismaMachineLocation
+  MachineLocation as PrismaMachineLocation, MachineType as PrismaMachineType,
 } from '@prisma/client';
 import {
   Machine,
@@ -28,10 +28,17 @@ type PrismaMachineWithRelations = WithTimeStamps<PrismaMachine> & {
   machineLocations?: (PrismaMachineLocation & {
     location?: WithTimeStamps<PrismaLocation>
   })[];
+  machineType?: WithTimeStamps<PrismaMachineType>
 };
 
 type PrismaItemWithRelations = WithTimeStamps<PrismaItem> & {
   machineItems?: (PrismaMachineItem & {
+    machine?: WithTimeStamps<PrismaMachineWithRelations>
+  })[];
+};
+
+type PrismaLocationWithRelations = WithTimeStamps<PrismaLocation> & {
+  machineLocations?: (PrismaMachineLocation & {
     machine?: WithTimeStamps<PrismaMachineWithRelations>
   })[];
 };
@@ -49,15 +56,29 @@ type PrismaMachineLocationWithRelations = PrismaMachineLocation & {
 export type ItemWithDates = Omit<Item, 'createdAt' | 'updatedAt'> & { createdAt: Date, updatedAt: Date };
 
 // Adapters
-export const adaptLocation = (prismaLocation: PrismaLocation): Location => ({
+export const adaptLocation = (prismaLocation: PrismaLocationWithRelations): Location => ({
   id: prismaLocation.id,
   address1: prismaLocation.address1,
   address2: prismaLocation.address2 ?? null,
   city: prismaLocation.city,
   stateOrProvince: prismaLocation.stateOrProvince,
   country: prismaLocation.country,
-  createdAt: prismaLocation.createdAt.toISOString(),
-  updatedAt: prismaLocation.updatedAt.toISOString()
+  createdAt: timestampToISOString(prismaLocation.createdAt),
+  updatedAt: timestampToISOString(prismaLocation.updatedAt),
+  machineLocations: prismaLocation.machineLocations?.map(ml => ({
+    id: ml.id,
+    name: ml.name,
+    machineId: ml.machineId,
+    locationId: ml.locationId,
+    createdAt: timestampToISOString(ml.createdAt),
+    updatedAt: timestampToISOString(ml.updatedAt),
+    machine: {
+      id: ml.machineId,
+      name: ml.machine!.name,
+      createdAt: timestampToISOString(ml.machine!.createdAt),
+      updatedAt: timestampToISOString(ml.machine!.updatedAt),
+    }
+  }))
 });
 
 export const adaptMachineLocation = (
@@ -90,6 +111,12 @@ export const adaptMachineLocation = (
 export const adaptMachine = (prismaMachine: PrismaMachineWithRelations): Machine => ({
   id: prismaMachine.id,
   name: prismaMachine.name!,
+  machineType: prismaMachine.machineType ? {
+    id: prismaMachine.machineType.id,
+    name: prismaMachine.machineType.name,
+    createdAt: timestampToISOString(prismaMachine.machineType.createdAt),
+    updatedAt: timestampToISOString(prismaMachine.machineType.updatedAt)
+  } : null,
   machineItems: prismaMachine.machineItems?.map(machineItem => ({
     id: machineItem.id,
     name: machineItem.name,
@@ -125,15 +152,6 @@ export const adaptMachine = (prismaMachine: PrismaMachineWithRelations): Machine
   })),
   createdAt: timestampToISOString(prismaMachine.createdAt),
   updatedAt: timestampToISOString(prismaMachine.updatedAt)
-});
-
-export const adaptItemWithTimestamps = (prismaItem: WithTimeStamps<PrismaItem>): WithTimeStamps<Item> => ({
-  id: prismaItem.id,
-  name: prismaItem.name!,
-  basePrice: prismaItem.basePrice,
-  expirationPeriod: prismaItem.expirationPeriod || 90,
-  createdAt: timestampToISOString(prismaItem.createdAt),
-  updatedAt: timestampToISOString(prismaItem.updatedAt)
 });
 
 export const adaptItemWithStringTimestamps = (prismaItem: WithTimeStamps<PrismaItemWithRelations>): WithStringTimeStamps<Item> => ({

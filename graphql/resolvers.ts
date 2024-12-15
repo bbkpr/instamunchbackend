@@ -31,7 +31,12 @@ import {
   getLocations,
   getItemsByMachine,
   getMachinesByItem,
-  getLocationsByItem, getLocationsByMachineName, getMachinesByLocation
+  getLocationsByItem,
+  getLocationsByMachineName,
+  getMachinesByLocation,
+  getMachineType,
+  getMachineTypes,
+  deleteMachineType, updateMachineType, createMachineType
 } from '../dal/machine.dal';
 
 export const resolvers: Resolvers<InstaMunchContext> = {
@@ -137,6 +142,39 @@ export const resolvers: Resolvers<InstaMunchContext> = {
         debug('Error in getMachinesByLocation query:', error);
         throw error;
       }
+    },
+    async getMachineTypes(_, {}, context) {
+      try {
+        const types = await getMachineTypes();
+        debug(`${types.length} MachineTypes found`);
+        return types.map(type => ({
+          id: type.id,
+          name: type.name,
+          createdAt: type.createdAt.toISOString(),
+          updatedAt: type.updatedAt.toISOString(),
+          machines: type.machines?.map(adaptMachine) || []
+        }));
+      } catch (error) {
+        debug('Error in machineTypes query:', error);
+        throw error;
+      }
+    },
+
+    async getMachineType(_, { id }, context) {
+      try {
+        const type = await getMachineType(id);
+        if (!type) return null;
+        return {
+          id: type.id,
+          name: type.name,
+          createdAt: type.createdAt.toISOString(),
+          updatedAt: type.updatedAt.toISOString(),
+          machines: type.machines?.map(adaptMachine) || []
+        };
+      } catch (error) {
+        debug('Error in machineType query:', error);
+        throw error;
+      }
     }
   },
   Mutation: {
@@ -145,7 +183,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
       const machine = await createMachine(input);
       debug(`Machine created with ID ${machine.id}`);
       return {
-        code: 'CREATED',
+        code: '200',
         success: true,
         message: `Machine created: ${machine.id}`,
         machine: adaptMachine(machine)
@@ -156,7 +194,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
       const machine = await updateMachine(input);
       debug(`Machine updated with ID ${machine.id}, Name: ${input.name}`);
       return {
-        code: 'UPDATED',
+        code: '200',
         success: true,
         message: `Machine updated: ${machine.id}`,
         machine: adaptMachine(machine)
@@ -166,7 +204,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
     async deleteMachine(_, { id }, context) {
       await deleteMachine(id);
       debug(`Machine deleted with ID ${id}`);
-      return { code: 'DELETED', success: true, message: `Machine deleted: ${id}` };
+      return { code: '200', success: true, message: `Machine deleted: ${id}` };
     },
 
     // Item operations
@@ -174,7 +212,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
       const item = await createItem(input);
       debug(`Item created with ID ${item.id}, Name: ${item.name}`);
       return {
-        code: 'CREATED',
+        code: '200',
         success: true,
         message: `Item created: ${item.id}`,
         item: adaptItemWithStringTimestamps(item)
@@ -185,7 +223,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
       const item = await updateItem(input);
       debug(`Item updated with ID ${item.id}, Name: ${item.name}`);
       return {
-        code: 'UPDATED',
+        code: '200',
         success: true,
         message: `Item updated: ${item.id}`,
         item: adaptItemWithStringTimestamps(item)
@@ -195,7 +233,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
     async deleteItem(_, { id }: { id: string }, context: InstaMunchContext) {
       await deleteItem(id);
       debug(`Item deleted with ID ${id}`);
-      return { code: 'DELETED', success: true, message: `Item deleted: ${id}` };
+      return { code: '200', success: true, message: `Item deleted: ${id}` };
     },
 
     // Location operations
@@ -203,7 +241,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
       const location = await createLocation(input);
       debug(`Location created with ID ${location.id}, Address1: ${location.address1}`);
       return {
-        code: 'CREATED',
+        code: '200',
         success: true,
         message: `Location created: ${location.id}`,
         location: adaptLocation(location)
@@ -214,7 +252,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
       const location = await updateLocation(input);
       debug(`Location updated with ID ${location.id}, Address1: ${location.address1}`);
       return {
-        code: 'UPDATED',
+        code: '200',
         success: true,
         message: `Location updated: ${location.id}`,
         location: adaptLocation(location)
@@ -224,7 +262,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
     async deleteLocation(_, { id }, context: InstaMunchContext) {
       await deleteLocation(id);
       debug(`Location deleted with ID ${id}`);
-      return { code: 'DELETED', success: true, message: `Location deleted: ${id}` };
+      return { code: '200', success: true, message: `Location deleted: ${id}` };
     },
 
     // MachineLocation operations
@@ -232,7 +270,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
       const machineLocation = await createMachineLocation(input);
       debug(`MachineLocation created with ID ${machineLocation.id}, machineId ${input.machineId}, locationId: ${input.locationId}`);
       return {
-        code: 'CREATED',
+        code: '200',
         success: true,
         message: `MachineLocation created: ${machineLocation.id}`,
         machineLocation: adaptMachineLocation(machineLocation)
@@ -243,7 +281,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
       const machineLocation = await updateMachineLocation(input);
       debug(`MachineLocation updated with ID ${machineLocation.id}, machineId ${input.machineId}, locationId: ${input.locationId}`);
       return {
-        code: 'UPDATED',
+        code: '200',
         success: true,
         message: `MachineLocation updated: ${machineLocation.id}`,
         machineLocation: adaptMachineLocation(machineLocation)
@@ -253,7 +291,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
     async deleteMachineLocation(_, { id }, context: InstaMunchContext) {
       await deleteMachineLocation(id);
       debug(`MachineLocation deleted with ID ${id}`);
-      return { code: 'DELETED', success: true, message: `MachineLocation deleted: ${id}` };
+      return { code: '200', success: true, message: `MachineLocation deleted: ${id}` };
     },
 
     // MachineItem operations
@@ -261,7 +299,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
       const machineItem = await createMachineItem(input);
       debug(`MachineItem created with ID ${machineItem.id}, Name: ${machineItem.name}`);
       return {
-        code: 'CREATED',
+        code: '200',
         success: true,
         message: `MachineItem created: ${machineItem.id}`,
         machineItem: adaptMachineItem(machineItem)
@@ -271,7 +309,72 @@ export const resolvers: Resolvers<InstaMunchContext> = {
     async deleteMachineItem(_, { id }, context: InstaMunchContext) {
       await deleteMachineItem(id);
       debug(`MachineItem deleted with ID ${id}`);
-      return { code: 'DELETED', success: true, message: `MachineItem deleted: ${id} ` };
+      return { code: '200', success: true, message: `MachineItem deleted: ${id} ` };
+    },
+
+    async createMachineType(_, { input }, context) {
+      try {
+        const machineType = await createMachineType(input);
+        return {
+          code: '200',
+          success: true,
+          message: 'Machine type created successfully',
+          machineType: {
+            id: machineType.id,
+            name: machineType.name,
+            createdAt: machineType.createdAt.toISOString(),
+            updatedAt: machineType.updatedAt.toISOString(),
+            machines: machineType.machines?.map(adaptMachine) || []
+          }
+        };
+      } catch (error) {
+        return {
+          code: '500',
+          success: false,
+          message: (error as any).message
+        };
+      }
+    },
+
+    async updateMachineType(_, { input }, context) {
+      try {
+        const machineType = await updateMachineType(input);
+        return {
+          code: '200',
+          success: true,
+          message: 'Machine type updated successfully',
+          machineType: {
+            id: machineType.id,
+            name: machineType.name,
+            createdAt: machineType.createdAt.toISOString(),
+            updatedAt: machineType.updatedAt.toISOString(),
+            machines: machineType.machines?.map(adaptMachine) || []
+          }
+        };
+      } catch (error) {
+        return {
+          code: '500',
+          success: false,
+          message: (error as any).message
+        };
+      }
+    },
+
+    async deleteMachineType(_, { id }, context) {
+      try {
+        await deleteMachineType(id);
+        return {
+          code: '200',
+          success: true,
+          message: 'Machine type deleted successfully'
+        };
+      } catch (error) {
+        return {
+          code: '500',
+          success: false,
+          message: (error as any).message
+        };
+      }
     },
 
     async updateMachineItems(_, { input }, context: InstaMunchContext) {

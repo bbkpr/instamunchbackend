@@ -4,16 +4,109 @@ const debug = require('debug')('instamunchbackend:dal');
 import {
   CreateItemInput, CreateLocationInput,
   CreateMachineInput, CreateMachineItemInput,
-  CreateMachineLocationInput,
+  CreateMachineLocationInput, CreateMachineTypeInput,
   UpdateItemInput, UpdateLocationInput,
-  UpdateMachineInput, UpdateMachineLocationInput
+  UpdateMachineInput, UpdateMachineLocationInput, UpdateMachineTypeInput
 } from '../generated/graphql';
 
-// Machine operations
+export const getItems = async () => {
+  try {
+    const items = await prisma.item.findMany({
+      include: {
+        machineItems: {
+          include: {
+            machine: true
+          }
+        }
+      }
+    });
+    await prisma.$disconnect();
+    debug(`getItems retrieved ${items.length} items`);
+    return items;
+  } catch (e: any) {
+    console.error(`Error fetching Machines - ${e.name}: ${e.message}`);
+    await prisma.$disconnect();
+    throw e;
+  }
+};
+
+// Get all Items in a specific Machine
+export const getItemsByMachine = async (machineId: string) => {
+  try {
+    const machineItems = await prisma.machineItem.findMany({
+      where: { machineId },
+      include: {
+        item: true,
+        machine: true
+      }
+    });
+    await prisma.$disconnect();
+    debug(`getItemsByMachine retrieved ${machineItems.length} items`);
+    return machineItems;
+  } catch (e: any) {
+    console.error(`Error fetching Locations - ${e.name}: ${e.message}`);
+    await prisma.$disconnect();
+    throw e;
+  }
+};
+
+export const getLocations = async () => {
+  try {
+    const locations = await prisma.location.findMany({
+      include: {
+        machineLocations: {
+          include: {
+            machine: {
+              include: {
+                machineItems: {
+                  include: {
+                    item: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+    await prisma.$disconnect();
+    return locations;
+  } catch (e: any) {
+    console.error(`Error fetching Locations - ${e.name}: ${e.message}`);
+    await prisma.$disconnect();
+    throw e;
+  }
+};
+
+export const getLocationsByMachineName = async (machineName: string) => {
+  return prisma.location.findMany({
+    where: {
+      machineLocations: {
+        some: {
+          machine: {
+            name: {
+              contains: machineName,
+              mode: 'insensitive'
+            }
+          }
+        }
+      }
+    },
+    include: {
+      machineLocations: {
+        include: {
+          machine: true
+        }
+      }
+    }
+  });
+};
+
 export const getMachines = async () => {
   try {
     const machines = await prisma.machine.findMany({
       include: {
+        machineType: true,
         machineItems: {
           include: {
             item: true
@@ -88,94 +181,6 @@ export const getMachineLocations = async () => {
   }
 };
 
-export const createMachine = async (input: CreateMachineInput) => {
-  return prisma.machine.create({
-    data: {
-      name: input.name!,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    include: {
-      machineItems: {
-        include: {
-          item: true
-        }
-      },
-      machineLocations: {
-        include: {
-          location: true
-        }
-      }
-    }
-  });
-};
-
-export const updateMachine = async (input: UpdateMachineInput) => {
-  return prisma.machine.update({
-    where: { id: input.id },
-    data: {
-      name: input.name ?? undefined,
-      updatedAt: new Date()
-    },
-    include: {
-      machineItems: {
-        include: {
-          item: true
-        }
-      },
-      machineLocations: {
-        include: {
-          location: true
-        }
-      }
-    }
-  });
-};
-
-export const deleteMachine = async (id: string) => {
-  await prisma.machineItem.deleteMany({
-    where: { machineId: id }
-  });
-
-  await prisma.machine.delete({
-    where: { id }
-  });
-
-  return true;
-};
-
-// Item operations
-export const getItems = async () => {
-  try {
-    const items = await prisma.item.findMany({
-      include: {
-        machineItems: {
-          include: {
-            machine: true
-          }
-        }
-      }
-    });
-    await prisma.$disconnect();
-    return items;
-  } catch (e: any) {
-    console.error(`Error fetching Machines - ${e.name}: ${e.message}`);
-    await prisma.$disconnect();
-    throw e;
-  }
-};
-
-// Get all Items in a specific Machine
-export const getItemsByMachine = async (machineId: string) => {
-  return prisma.machineItem.findMany({
-    where: { machineId },
-    include: {
-      item: true,
-      machine: true
-    }
-  });
-};
-
 export const createItem = async (input: CreateItemInput) => {
   return prisma.item.create({
     data: {
@@ -200,49 +205,83 @@ export const updateItem = async (input: UpdateItemInput) => {
   });
 };
 
+export const createMachine = async (input: CreateMachineInput) => {
+  return prisma.machine.create({
+    data: {
+      name: input.name!,
+      machineTypeId: input.machineTypeId,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    include: {
+      machineItems: {
+        include: {
+          item: true
+        }
+      },
+      machineLocations: {
+        include: {
+          location: true
+        }
+      },
+      machineType: true
+    }
+  });
+};
+
+export const updateMachine = async (input: UpdateMachineInput) => {
+  return prisma.machine.update({
+    where: { id: input.id },
+    data: {
+      name: input.name ?? undefined,
+      updatedAt: new Date()
+    },
+    include: {
+      machineItems: {
+        include: {
+          item: true
+        }
+      },
+      machineLocations: {
+        include: {
+          location: true
+        }
+      },
+      machineType: true
+    }
+  });
+};
+
+export const deleteMachine = async (id: string) => {
+  const deleteManyMachineItemsResult = await prisma.machineItem.deleteMany({
+    where: { machineId: id }
+  });
+  debug(`deleteMachine deleted ${deleteManyMachineItemsResult.count} machineItems`);
+
+  await prisma.machine.delete({
+    where: { id }
+  });
+  debug(`deleteMachine deleted Machine id ${id}`);
+
+  return true;
+};
+
 /**
  *
  * @param id
  */
 export const deleteItem = async (id: string) => {
-  await prisma.machineItem.deleteMany({
+  const deleteManyMachineItemsResult = await prisma.machineItem.deleteMany({
     where: { itemId: id }
   });
+  debug(`deleteItem deleted ${deleteManyMachineItemsResult.count} machineItems`);
 
   await prisma.item.delete({
     where: { id }
   });
+  debug(`deleteItem deleted Item id ${id}`);
 
   return true;
-};
-
-// Location operations
-export const getLocations = async () => {
-  try {
-    const locations = await prisma.location.findMany({
-      include: {
-        machineLocations: {
-          include: {
-            machine: {
-              include: {
-                machineItems: {
-                  include: {
-                    item: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    });
-    await prisma.$disconnect();
-    return locations;
-  } catch (e: any) {
-    console.error(`Error fetching Locations - ${e.name}: ${e.message}`);
-    await prisma.$disconnect();
-    throw e;
-  }
 };
 
 export const createLocation = async (input: CreateLocationInput) => {
@@ -302,31 +341,6 @@ export const createMachineLocation = async (input: CreateMachineLocationInput) =
   });
 
   return result;
-};
-
-// Get all Locations with a Machine of a specific name
-export const getLocationsByMachineName = async (machineName: string) => {
-  return prisma.location.findMany({
-    where: {
-      machineLocations: {
-        some: {
-          machine: {
-            name: {
-              contains: machineName,
-              mode: 'insensitive'
-            }
-          }
-        }
-      }
-    },
-    include: {
-      machineLocations: {
-        include: {
-          machine: true
-        }
-      }
-    }
-  });
 };
 
 export const updateMachineLocation = async (input: UpdateMachineLocationInput) => {
@@ -494,3 +508,78 @@ export const deleteMachineItem = async (id: string) => {
   return true;
 };
 
+export const getMachineTypes = async () => {
+  try {
+    const machineTypes = await prisma.machineType.findMany({
+      include: {
+        machines: true
+      }
+    });
+    await prisma.$disconnect();
+    return machineTypes;
+  } catch (e: any) {
+    console.error(`Error fetching MachineTypes - ${e.name}: ${e.message}`);
+    await prisma.$disconnect();
+    throw e;
+  }
+};
+
+export const getMachineType = async (id: string) => {
+  try {
+    const machineType = await prisma.machineType.findUnique({
+      where: { id },
+      include: {
+        machines: true
+      }
+    });
+    await prisma.$disconnect();
+    return machineType;
+  } catch (e: any) {
+    console.error(`Error fetching MachineType - ${e.name}: ${e.message}`);
+    await prisma.$disconnect();
+    throw e;
+  }
+};
+
+export const createMachineType = async (input: CreateMachineTypeInput) => {
+  return prisma.machineType.create({
+    data: {
+      name: input.name,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    include: {
+      machines: true
+    }
+  });
+};
+
+export const updateMachineType = async (input: UpdateMachineTypeInput) => {
+  return prisma.machineType.update({
+    where: { id: input.id },
+    data: {
+      name: input.name ?? undefined,
+      updatedAt: new Date()
+    },
+    include: {
+      machines: true
+    }
+  });
+};
+
+export const deleteMachineType = async (id: string) => {
+  // Check if there are any machines using this type
+  const machinesUsingType = await prisma.machine.count({
+    where: { machineTypeId: id }
+  });
+
+  if (machinesUsingType > 0) {
+    throw new Error('Cannot delete machine type that is in use by machines');
+  }
+
+  await prisma.machineType.delete({
+    where: { id }
+  });
+
+  return true;
+};
