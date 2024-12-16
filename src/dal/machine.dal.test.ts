@@ -11,19 +11,19 @@ import {
 jest.mock('./prismaClient', () => ({
   prisma: {
     item: {
-      findMany: jest.fn(),
+      findMany: jest.fn()
     },
     machineItem: {
-      findMany: jest.fn(),
+      findMany: jest.fn()
     },
     location: {
-      findMany: jest.fn(),
+      findMany: jest.fn()
     },
     machine: {
-      findMany: jest.fn(),
+      findMany: jest.fn()
     },
-    $disconnect: jest.fn(),
-  },
+    $disconnect: jest.fn()
+  }
 }));
 
 describe('Machine DAL Tests', () => {
@@ -62,7 +62,7 @@ describe('Machine DAL Tests', () => {
       expect(prisma.$disconnect).toHaveBeenCalled();
     });
 
-    it('should handle errors properly', async () => {
+    it('should handle errors properly and still disconnect', async () => {
       const error = new Error('Database error');
       (prisma.item.findMany as jest.Mock).mockRejectedValue(error);
 
@@ -97,7 +97,7 @@ describe('Machine DAL Tests', () => {
       expect(prisma.$disconnect).toHaveBeenCalled();
     });
 
-    it('should handle errors properly', async () => {
+    it('should handle errors properly and still disconnect', async () => {
       const error = new Error('Database error');
       (prisma.machineItem.findMany as jest.Mock).mockRejectedValue(error);
 
@@ -152,7 +152,7 @@ describe('Machine DAL Tests', () => {
       expect(prisma.$disconnect).toHaveBeenCalled();
     });
 
-    it('should handle errors properly', async () => {
+    it('should handle errors properly and still disconnect', async () => {
       const error = new Error('Database error');
       (prisma.location.findMany as jest.Mock).mockRejectedValue(error);
 
@@ -200,6 +200,15 @@ describe('Machine DAL Tests', () => {
           }
         }
       });
+      expect(prisma.$disconnect).toHaveBeenCalled();
+    });
+
+    it('should handle errors properly and still disconnect', async () => {
+      const error = new Error('Database error');
+      (prisma.location.findMany as jest.Mock).mockRejectedValue(error);
+
+      await expect(getLocationsByMachineName('Test')).rejects.toThrow('Database error');
+      expect(prisma.$disconnect).toHaveBeenCalled();
     });
   });
 
@@ -242,7 +251,7 @@ describe('Machine DAL Tests', () => {
       expect(prisma.$disconnect).toHaveBeenCalled();
     });
 
-    it('should handle errors properly', async () => {
+    it('should handle errors properly and still disconnect', async () => {
       const error = new Error('Database error');
       (prisma.machine.findMany as jest.Mock).mockRejectedValue(error);
 
