@@ -192,12 +192,12 @@ export const resolvers: Resolvers<InstaMunchContext> = {
 
     async updateMachine(_, { input }, context) {
       const machine = await updateMachine(input);
-      debug(`Machine updated with ID ${machine.id}, Name: ${input.name}`);
+      debug(`Machine updated with ID ${machine!.id}, Name: ${input.name}`);
       return {
         code: '200',
         success: true,
-        message: `Machine updated: ${machine.id}`,
-        machine: adaptMachine(machine)
+        message: `Machine updated: ${machine!.id}`,
+        machine: adaptMachine(machine!)
       };
     },
 
