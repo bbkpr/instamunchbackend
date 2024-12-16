@@ -36,7 +36,7 @@ import {
   getMachinesByLocation,
   getMachineType,
   getMachineTypes,
-  deleteMachineType, updateMachineType, createMachineType
+  deleteMachineType, updateMachineType, createMachineType, getMachineManufacturers, getMachineManufacturer
 } from '../dal/machine.dal';
 
 export const resolvers: Resolvers<InstaMunchContext> = {
@@ -175,7 +175,40 @@ export const resolvers: Resolvers<InstaMunchContext> = {
         debug('Error in machineType query:', error);
         throw error;
       }
-    }
+    },
+    async getMachineManufacturers(_, {}, context) {
+  try {
+    const manufacturers = await getMachineManufacturers();
+    debug(`${manufacturers.length} MachineManufacturers found`);
+    return manufacturers.map(manufacturer => ({
+      id: manufacturer.id,
+      name: manufacturer.name,
+      createdAt: manufacturer.createdAt.toISOString(),
+      updatedAt: manufacturer.updatedAt.toISOString(),
+      machines: manufacturer.machines?.map(adaptMachine) || []
+    }));
+  } catch (error) {
+    debug('Error in machineManufacturers query:', error);
+    throw error;
+  }
+},
+
+async getMachineManufacturer(_, { id }, context) {
+  try {
+    const manufacturer = await getMachineManufacturer(id);
+    if (!manufacturer) return null;
+    return {
+      id: manufacturer.id,
+      name: manufacturer.name,
+      createdAt: manufacturer.createdAt.toISOString(),
+      updatedAt: manufacturer.updatedAt.toISOString(),
+      machines: manufacturer.machines?.map(adaptMachine) || []
+    };
+  } catch (error) {
+    debug('Error in machineManufacturer query:', error);
+    throw error;
+  }
+}
   },
   Mutation: {
     // Machine operations

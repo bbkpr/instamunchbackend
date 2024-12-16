@@ -64,13 +64,24 @@ model MachineType {
   machines  Machine[]
 }
 
+model MachineManufacturer {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  machines  Machine[]
+}
+
+// Update Machine model to include manufacturer
 model Machine {
-  id               String            @id @default(uuid())
+  id               String              @id @default(uuid())
   name             String
-  machineTypeId    String            @default("92f0a230-89fe-4f68-abf9-270a5239ce9c")
-  machineType      MachineType       @relation(fields: [machineTypeId], references: [id])
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  machineTypeId    String
+  machineType      MachineType         @relation(fields: [machineTypeId], references: [id])
+  manufacturerId   String
+  manufacturer     MachineManufacturer @relation(fields: [manufacturerId], references: [id])
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
   machineItems     MachineItem[]
   machineLocations MachineLocation[]
 }

@@ -4,9 +4,9 @@ const debug = require('debug')('instamunchbackend:dal');
 import {
   CreateItemInput, CreateLocationInput,
   CreateMachineInput, CreateMachineItemInput,
-  CreateMachineLocationInput, CreateMachineTypeInput,
+  CreateMachineLocationInput, CreateMachineManufacturerInput, CreateMachineTypeInput,
   UpdateItemInput, UpdateLocationInput,
-  UpdateMachineInput, UpdateMachineLocationInput, UpdateMachineTypeInput
+  UpdateMachineInput, UpdateMachineLocationInput, UpdateMachineManufacturerInput, UpdateMachineTypeInput
 } from '../../generated/graphql';
 
 export const getItems = async () => {
@@ -213,6 +213,128 @@ export const createItem = async (input: CreateItemInput) => {
   }
 };
 
+export const getMachineManufacturers = async () => {
+  try {
+    return prisma.machineManufacturer.findMany({
+      include: {
+        machines: {
+          include: {
+            machineType: true,
+            machineItems: {
+              include: {
+                item: true
+              }
+            },
+            machineLocations: {
+              include: {
+                location: true
+              }
+            }
+          }
+        }
+      }
+    });
+  } catch (e: any) {
+    console.error(`Error fetching MachineManufacturers - ${e.name}: ${e.message}`);
+    throw e;
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
+export const getMachineManufacturer = async (id: string) => {
+  try {
+    return prisma.machineManufacturer.findUnique({
+      where: { id },
+      include: {
+        machines: {
+          include: {
+            machineType: true,
+            machineItems: {
+              include: {
+                item: true
+              }
+            },
+            machineLocations: {
+              include: {
+                location: true
+              }
+            }
+          }
+        }
+      }
+    });
+  } catch (e: any) {
+    console.error(`Error fetching MachineManufacturer ${id} - ${e.name}: ${e.message}`);
+    throw e;
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
+export const createMachineManufacturer = async (input: CreateMachineManufacturerInput) => {
+  try {
+    return prisma.machineManufacturer.create({
+      data: {
+        name: input.name,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      include: {
+        machines: true
+      }
+    });
+  } catch (e: any) {
+    console.error(`Error creating MachineManufacturer ${input.name} - ${e.name}: ${e.message}`);
+    throw e;
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
+export const updateMachineManufacturer = async (input: UpdateMachineManufacturerInput) => {
+  try {
+    return prisma.machineManufacturer.update({
+      where: { id: input.id },
+      data: {
+        name: input.name ?? undefined,
+        updatedAt: new Date()
+      },
+      include: {
+        machines: true
+      }
+    });
+  } catch (e: any) {
+    console.error(`Error updating MachineManufacturer ${input.id} - ${e.name}: ${e.message}`);
+    throw e;
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
+export const deleteMachineManufacturer = async (id: string) => {
+  try {
+    // Check if there are any machines using this manufacturer
+    const machinesUsingManufacturer = await prisma.machine.count({
+      where: { manufacturerId: id }
+    });
+
+    if (machinesUsingManufacturer > 0) {
+      throw new Error('Cannot delete manufacturer that is in use by machines');
+    }
+
+    await prisma.machineManufacturer.delete({
+      where: { id }
+    });
+    return true;
+  } catch (e: any) {
+    console.error(`Error deleting MachineManufacturer ${id} - ${e.name}: ${e.message}`);
+    throw e;
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
 export const updateItem = async (input: UpdateItemInput) => {
   try {
     return prisma.item.update({
@@ -238,6 +360,7 @@ export const createMachine = async (input: CreateMachineInput) => {
       data: {
         name: input.name!,
         machineTypeId: input.machineTypeId,
+        manufacturerId: input.machineTypeId,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -287,10 +410,10 @@ export const updateMachine = async (input: UpdateMachineInput) => {
     });
   } catch (e: any) {
     console.error(`Error updating Machine ${input.id} - ${e.name}: ${e.message}`);
+    throw e;
   } finally {
     await prisma.$disconnect();
   }
-
 };
 
 export const deleteMachine = async (id: string) => {

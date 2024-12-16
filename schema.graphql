@@ -32,6 +32,14 @@ type MachineItem {
     item: Item
 }
 
+type MachineManufacturer {
+    id: ID!
+    name: String!
+    createdAt: String!
+    updatedAt: String!
+    machines: [Machine]
+}
+
 type MachineType {
     id: ID!
     name: String!
@@ -43,9 +51,10 @@ type MachineType {
 type Machine {
     id: ID!
     name: String!
-    machineItems: [MachineItem] # Items currently in this machine
+    machineItems: [MachineItem]
     machineLocations: [MachineLocation]
     machineType: MachineType
+    manufacturer: MachineManufacturer
     createdAt: String
     updatedAt: String
 }
@@ -87,6 +96,10 @@ type Query {
     getLocationsByMachineName(machineName: String!): [Location!]!
     "Get all Machines, from everywhere"
     getMachines: [Machine]
+    "Get a MachineManufacturer by ID"
+    getMachineManufacturer(id: ID!): MachineManufacturer
+    "Get all MachineManufacturers"
+    getMachineManufacturers: [MachineManufacturer!]!
     "Get a MachineType by ID"
     getMachineType(id: ID!): MachineType
     "Get all MachineTypes"
@@ -119,12 +132,14 @@ input UpdateItemInput {
 input CreateMachineInput {
     name: String!
     machineTypeId: ID!
+    manufacturerId: ID!
 }
 
 input UpdateMachineInput {
     id: ID!
     name: String
     machineTypeId: ID
+    manufacturerId: ID
 }
 
 input CreateLocationInput {
@@ -162,6 +177,15 @@ input CreateMachineItemInput {
     itemId: ID!
     name: String
     quantity: Int!
+}
+
+input CreateMachineManufacturerInput {
+    name: String!
+}
+
+input UpdateMachineManufacturerInput {
+    id: ID!
+    name: String
 }
 
 input CreateMachineTypeInput {
@@ -273,6 +297,26 @@ type DeleteMachineLocationMutationResponse implements MutationResponse {
     message: String!
 }
 
+type CreateMachineManufacturerMutationResponse implements MutationResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+    manufacturer: MachineManufacturer
+}
+
+type UpdateMachineManufacturerMutationResponse implements MutationResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+    manufacturer: MachineManufacturer
+}
+
+type DeleteMachineManufacturerMutationResponse implements MutationResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+}
+
 type CreateMachineTypeMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
@@ -300,27 +344,18 @@ input UpdateMachineItemsInput {
 }
 
 type Mutation {
-    # Item operations
     createItem(input: CreateItemInput!): CreateItemMutationResponse!
     updateItem(input: UpdateItemInput!): UpdateItemMutationResponse!
     deleteItem(id: ID!): DeleteItemMutationResponse!
 
-    # Machine operations
     createMachine(input: CreateMachineInput!): CreateMachineMutationResponse!
     updateMachine(input: UpdateMachineInput!): CreateMachineMutationResponse!
     deleteMachine(id: ID!): DeleteMachineMutationResponse!
 
-    # MachineItem operations
     createMachineItem(input: CreateMachineItemInput!): CreateMachineItemMutationResponse!
     updateMachineItems(input: UpdateMachineItemsInput!): UpdateMachineItemsMutationResponse!
     deleteMachineItem(id: ID!): DeleteMachineItemMutationResponse!
 
-    # Location operations
-    createLocation(input: CreateLocationInput!): CreateLocationMutationResponse!
-    updateLocation(input: UpdateLocationInput!): UpdateLocationMutationResponse!
-    deleteLocation(id: ID!): DeleteLocationMutationResponse!
-
-    # MachineLocation operations
     "Assign a Machine to a Location"
     createMachineLocation(input: CreateMachineLocationInput!): CreateMachineLocationMutationResponse!
     "Update a MachineLocation relation"
@@ -328,7 +363,14 @@ type Mutation {
     "Delete a MachineLocation relation"
     deleteMachineLocation(id: ID!): DeleteMachineLocationMutationResponse!
 
-    # MachineType operations
+    createMachineManufacturer(input: CreateMachineManufacturerInput!): CreateMachineManufacturerMutationResponse!
+    updateMachineManufacturer(input: UpdateMachineManufacturerInput!): UpdateMachineManufacturerMutationResponse!
+    deleteMachineManufacturer(id: ID!): DeleteMachineManufacturerMutationResponse!
+
+    createLocation(input: CreateLocationInput!): CreateLocationMutationResponse!
+    updateLocation(input: UpdateLocationInput!): UpdateLocationMutationResponse!
+    deleteLocation(id: ID!): DeleteLocationMutationResponse!
+
     "Assign a Machine to a Type"
     createMachineType(input: CreateMachineTypeInput!): CreateMachineTypeMutationResponse!
     "Update a MachineType relation"

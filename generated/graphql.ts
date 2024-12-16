@@ -48,6 +48,7 @@ export type CreateLocationMutationResponse = MutationResponse & {
 
 export type CreateMachineInput = {
   machineTypeId: Scalars['ID']['input'];
+  manufacturerId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
 };
 
@@ -76,6 +77,18 @@ export type CreateMachineLocationMutationResponse = MutationResponse & {
   __typename?: 'CreateMachineLocationMutationResponse';
   code: Scalars['String']['output'];
   machineLocation?: Maybe<MachineLocation>;
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type CreateMachineManufacturerInput = {
+  name: Scalars['String']['input'];
+};
+
+export type CreateMachineManufacturerMutationResponse = MutationResponse & {
+  __typename?: 'CreateMachineManufacturerMutationResponse';
+  code: Scalars['String']['output'];
+  manufacturer?: Maybe<MachineManufacturer>;
   message: Scalars['String']['output'];
   success: Scalars['Boolean']['output'];
 };
@@ -123,6 +136,13 @@ export type DeleteMachineItemMutationResponse = MutationResponse & {
 
 export type DeleteMachineLocationMutationResponse = MutationResponse & {
   __typename?: 'DeleteMachineLocationMutationResponse';
+  code: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type DeleteMachineManufacturerMutationResponse = MutationResponse & {
+  __typename?: 'DeleteMachineManufacturerMutationResponse';
   code: Scalars['String']['output'];
   message: Scalars['String']['output'];
   success: Scalars['Boolean']['output'];
@@ -176,6 +196,7 @@ export type Machine = {
   machineItems?: Maybe<Array<Maybe<MachineItem>>>;
   machineLocations?: Maybe<Array<Maybe<MachineLocation>>>;
   machineType?: Maybe<MachineType>;
+  manufacturer?: Maybe<MachineManufacturer>;
   name: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['String']['output']>;
 };
@@ -205,6 +226,15 @@ export type MachineLocation = {
   updatedAt: Scalars['String']['output'];
 };
 
+export type MachineManufacturer = {
+  __typename?: 'MachineManufacturer';
+  createdAt: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  machines?: Maybe<Array<Maybe<Machine>>>;
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
 export type MachineType = {
   __typename?: 'MachineType';
   createdAt: Scalars['String']['output'];
@@ -222,6 +252,7 @@ export type Mutation = {
   createMachineItem: CreateMachineItemMutationResponse;
   /** Assign a Machine to a Location */
   createMachineLocation: CreateMachineLocationMutationResponse;
+  createMachineManufacturer: CreateMachineManufacturerMutationResponse;
   /** Assign a Machine to a Type */
   createMachineType: CreateMachineTypeMutationResponse;
   deleteItem: DeleteItemMutationResponse;
@@ -230,6 +261,7 @@ export type Mutation = {
   deleteMachineItem: DeleteMachineItemMutationResponse;
   /** Delete a MachineLocation relation */
   deleteMachineLocation: DeleteMachineLocationMutationResponse;
+  deleteMachineManufacturer: DeleteMachineManufacturerMutationResponse;
   /** Delete a MachineType relation */
   deleteMachineType: DeleteMachineTypeMutationResponse;
   updateItem: UpdateItemMutationResponse;
@@ -238,6 +270,7 @@ export type Mutation = {
   updateMachineItems: UpdateMachineItemsMutationResponse;
   /** Update a MachineLocation relation */
   updateMachineLocation: UpdateMachineLocationMutationResponse;
+  updateMachineManufacturer: UpdateMachineManufacturerMutationResponse;
   /** Update a MachineType relation */
   updateMachineType: UpdateMachineTypeMutationResponse;
 };
@@ -268,6 +301,11 @@ export type MutationCreateMachineLocationArgs = {
 };
 
 
+export type MutationCreateMachineManufacturerArgs = {
+  input: CreateMachineManufacturerInput;
+};
+
+
 export type MutationCreateMachineTypeArgs = {
   input: CreateMachineTypeInput;
 };
@@ -294,6 +332,11 @@ export type MutationDeleteMachineItemArgs = {
 
 
 export type MutationDeleteMachineLocationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteMachineManufacturerArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -328,6 +371,11 @@ export type MutationUpdateMachineLocationArgs = {
 };
 
 
+export type MutationUpdateMachineManufacturerArgs = {
+  input: UpdateMachineManufacturerInput;
+};
+
+
 export type MutationUpdateMachineTypeArgs = {
   input: UpdateMachineTypeInput;
 };
@@ -355,6 +403,10 @@ export type Query = {
   getLocationsByMachineName: Array<Location>;
   /** Get all MachineItems, from everywhere */
   getMachineItems?: Maybe<Array<Maybe<MachineItem>>>;
+  /** Get a MachineManufacturer by ID */
+  getMachineManufacturer?: Maybe<MachineManufacturer>;
+  /** Get all MachineManufacturers */
+  getMachineManufacturers: Array<MachineManufacturer>;
   /** Get a MachineType by ID */
   getMachineType?: Maybe<MachineType>;
   /** Get all MachineTypes */
@@ -380,6 +432,11 @@ export type QueryGetLocationsByItemArgs = {
 
 export type QueryGetLocationsByMachineNameArgs = {
   machineName: Scalars['String']['input'];
+};
+
+
+export type QueryGetMachineManufacturerArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -432,6 +489,7 @@ export type UpdateLocationMutationResponse = MutationResponse & {
 export type UpdateMachineInput = {
   id: Scalars['ID']['input'];
   machineTypeId?: InputMaybe<Scalars['ID']['input']>;
+  manufacturerId?: InputMaybe<Scalars['ID']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -459,6 +517,19 @@ export type UpdateMachineLocationMutationResponse = MutationResponse & {
   __typename?: 'UpdateMachineLocationMutationResponse';
   code: Scalars['String']['output'];
   machineLocation?: Maybe<MachineLocation>;
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type UpdateMachineManufacturerInput = {
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateMachineManufacturerMutationResponse = MutationResponse & {
+  __typename?: 'UpdateMachineManufacturerMutationResponse';
+  code: Scalars['String']['output'];
+  manufacturer?: Maybe<MachineManufacturer>;
   message: Scalars['String']['output'];
   success: Scalars['Boolean']['output'];
 };
@@ -554,7 +625,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  MutationResponse: ( CreateItemMutationResponse ) | ( CreateLocationMutationResponse ) | ( CreateMachineItemMutationResponse ) | ( CreateMachineLocationMutationResponse ) | ( CreateMachineMutationResponse ) | ( CreateMachineTypeMutationResponse ) | ( DeleteItemMutationResponse ) | ( DeleteLocationMutationResponse ) | ( DeleteMachineItemMutationResponse ) | ( DeleteMachineLocationMutationResponse ) | ( DeleteMachineMutationResponse ) | ( DeleteMachineTypeMutationResponse ) | ( UpdateItemMutationResponse ) | ( UpdateLocationMutationResponse ) | ( UpdateMachineItemsMutationResponse ) | ( UpdateMachineLocationMutationResponse ) | ( UpdateMachineMutationResponse ) | ( UpdateMachineTypeMutationResponse );
+  MutationResponse: ( CreateItemMutationResponse ) | ( CreateLocationMutationResponse ) | ( CreateMachineItemMutationResponse ) | ( CreateMachineLocationMutationResponse ) | ( CreateMachineManufacturerMutationResponse ) | ( CreateMachineMutationResponse ) | ( CreateMachineTypeMutationResponse ) | ( DeleteItemMutationResponse ) | ( DeleteLocationMutationResponse ) | ( DeleteMachineItemMutationResponse ) | ( DeleteMachineLocationMutationResponse ) | ( DeleteMachineManufacturerMutationResponse ) | ( DeleteMachineMutationResponse ) | ( DeleteMachineTypeMutationResponse ) | ( UpdateItemMutationResponse ) | ( UpdateLocationMutationResponse ) | ( UpdateMachineItemsMutationResponse ) | ( UpdateMachineLocationMutationResponse ) | ( UpdateMachineManufacturerMutationResponse ) | ( UpdateMachineMutationResponse ) | ( UpdateMachineTypeMutationResponse );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -569,6 +640,8 @@ export type ResolversTypes = {
   CreateMachineItemMutationResponse: ResolverTypeWrapper<CreateMachineItemMutationResponse>;
   CreateMachineLocationInput: CreateMachineLocationInput;
   CreateMachineLocationMutationResponse: ResolverTypeWrapper<CreateMachineLocationMutationResponse>;
+  CreateMachineManufacturerInput: CreateMachineManufacturerInput;
+  CreateMachineManufacturerMutationResponse: ResolverTypeWrapper<CreateMachineManufacturerMutationResponse>;
   CreateMachineMutationResponse: ResolverTypeWrapper<CreateMachineMutationResponse>;
   CreateMachineTypeInput: CreateMachineTypeInput;
   CreateMachineTypeMutationResponse: ResolverTypeWrapper<CreateMachineTypeMutationResponse>;
@@ -576,6 +649,7 @@ export type ResolversTypes = {
   DeleteLocationMutationResponse: ResolverTypeWrapper<DeleteLocationMutationResponse>;
   DeleteMachineItemMutationResponse: ResolverTypeWrapper<DeleteMachineItemMutationResponse>;
   DeleteMachineLocationMutationResponse: ResolverTypeWrapper<DeleteMachineLocationMutationResponse>;
+  DeleteMachineManufacturerMutationResponse: ResolverTypeWrapper<DeleteMachineManufacturerMutationResponse>;
   DeleteMachineMutationResponse: ResolverTypeWrapper<DeleteMachineMutationResponse>;
   DeleteMachineTypeMutationResponse: ResolverTypeWrapper<DeleteMachineTypeMutationResponse>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
@@ -586,6 +660,7 @@ export type ResolversTypes = {
   Machine: ResolverTypeWrapper<Machine>;
   MachineItem: ResolverTypeWrapper<MachineItem>;
   MachineLocation: ResolverTypeWrapper<MachineLocation>;
+  MachineManufacturer: ResolverTypeWrapper<MachineManufacturer>;
   MachineType: ResolverTypeWrapper<MachineType>;
   Mutation: ResolverTypeWrapper<{}>;
   MutationResponse: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['MutationResponse']>;
@@ -600,6 +675,8 @@ export type ResolversTypes = {
   UpdateMachineItemsMutationResponse: ResolverTypeWrapper<UpdateMachineItemsMutationResponse>;
   UpdateMachineLocationInput: UpdateMachineLocationInput;
   UpdateMachineLocationMutationResponse: ResolverTypeWrapper<UpdateMachineLocationMutationResponse>;
+  UpdateMachineManufacturerInput: UpdateMachineManufacturerInput;
+  UpdateMachineManufacturerMutationResponse: ResolverTypeWrapper<UpdateMachineManufacturerMutationResponse>;
   UpdateMachineMutationResponse: ResolverTypeWrapper<UpdateMachineMutationResponse>;
   UpdateMachineTypeInput: UpdateMachineTypeInput;
   UpdateMachineTypeMutationResponse: ResolverTypeWrapper<UpdateMachineTypeMutationResponse>;
@@ -617,6 +694,8 @@ export type ResolversParentTypes = {
   CreateMachineItemMutationResponse: CreateMachineItemMutationResponse;
   CreateMachineLocationInput: CreateMachineLocationInput;
   CreateMachineLocationMutationResponse: CreateMachineLocationMutationResponse;
+  CreateMachineManufacturerInput: CreateMachineManufacturerInput;
+  CreateMachineManufacturerMutationResponse: CreateMachineManufacturerMutationResponse;
   CreateMachineMutationResponse: CreateMachineMutationResponse;
   CreateMachineTypeInput: CreateMachineTypeInput;
   CreateMachineTypeMutationResponse: CreateMachineTypeMutationResponse;
@@ -624,6 +703,7 @@ export type ResolversParentTypes = {
   DeleteLocationMutationResponse: DeleteLocationMutationResponse;
   DeleteMachineItemMutationResponse: DeleteMachineItemMutationResponse;
   DeleteMachineLocationMutationResponse: DeleteMachineLocationMutationResponse;
+  DeleteMachineManufacturerMutationResponse: DeleteMachineManufacturerMutationResponse;
   DeleteMachineMutationResponse: DeleteMachineMutationResponse;
   DeleteMachineTypeMutationResponse: DeleteMachineTypeMutationResponse;
   Float: Scalars['Float']['output'];
@@ -634,6 +714,7 @@ export type ResolversParentTypes = {
   Machine: Machine;
   MachineItem: MachineItem;
   MachineLocation: MachineLocation;
+  MachineManufacturer: MachineManufacturer;
   MachineType: MachineType;
   Mutation: {};
   MutationResponse: ResolversInterfaceTypes<ResolversParentTypes>['MutationResponse'];
@@ -648,6 +729,8 @@ export type ResolversParentTypes = {
   UpdateMachineItemsMutationResponse: UpdateMachineItemsMutationResponse;
   UpdateMachineLocationInput: UpdateMachineLocationInput;
   UpdateMachineLocationMutationResponse: UpdateMachineLocationMutationResponse;
+  UpdateMachineManufacturerInput: UpdateMachineManufacturerInput;
+  UpdateMachineManufacturerMutationResponse: UpdateMachineManufacturerMutationResponse;
   UpdateMachineMutationResponse: UpdateMachineMutationResponse;
   UpdateMachineTypeInput: UpdateMachineTypeInput;
   UpdateMachineTypeMutationResponse: UpdateMachineTypeMutationResponse;
@@ -680,6 +763,14 @@ export type CreateMachineItemMutationResponseResolvers<ContextType = any, Parent
 export type CreateMachineLocationMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateMachineLocationMutationResponse'] = ResolversParentTypes['CreateMachineLocationMutationResponse']> = {
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   machineLocation?: Resolver<Maybe<ResolversTypes['MachineLocation']>, ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CreateMachineManufacturerMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateMachineManufacturerMutationResponse'] = ResolversParentTypes['CreateMachineManufacturerMutationResponse']> = {
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  manufacturer?: Resolver<Maybe<ResolversTypes['MachineManufacturer']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -723,6 +814,13 @@ export type DeleteMachineItemMutationResponseResolvers<ContextType = any, Parent
 };
 
 export type DeleteMachineLocationMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteMachineLocationMutationResponse'] = ResolversParentTypes['DeleteMachineLocationMutationResponse']> = {
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type DeleteMachineManufacturerMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteMachineManufacturerMutationResponse'] = ResolversParentTypes['DeleteMachineManufacturerMutationResponse']> = {
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -773,6 +871,7 @@ export type MachineResolvers<ContextType = any, ParentType extends ResolversPare
   machineItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineItem']>>>, ParentType, ContextType>;
   machineLocations?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineLocation']>>>, ParentType, ContextType>;
   machineType?: Resolver<Maybe<ResolversTypes['MachineType']>, ParentType, ContextType>;
+  manufacturer?: Resolver<Maybe<ResolversTypes['MachineManufacturer']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -801,6 +900,15 @@ export type MachineLocationResolvers<ContextType = any, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type MachineManufacturerResolvers<ContextType = any, ParentType extends ResolversParentTypes['MachineManufacturer'] = ResolversParentTypes['MachineManufacturer']> = {
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  machines?: Resolver<Maybe<Array<Maybe<ResolversTypes['Machine']>>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MachineTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['MachineType'] = ResolversParentTypes['MachineType']> = {
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -816,23 +924,26 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createMachine?: Resolver<ResolversTypes['CreateMachineMutationResponse'], ParentType, ContextType, RequireFields<MutationCreateMachineArgs, 'input'>>;
   createMachineItem?: Resolver<ResolversTypes['CreateMachineItemMutationResponse'], ParentType, ContextType, RequireFields<MutationCreateMachineItemArgs, 'input'>>;
   createMachineLocation?: Resolver<ResolversTypes['CreateMachineLocationMutationResponse'], ParentType, ContextType, RequireFields<MutationCreateMachineLocationArgs, 'input'>>;
+  createMachineManufacturer?: Resolver<ResolversTypes['CreateMachineManufacturerMutationResponse'], ParentType, ContextType, RequireFields<MutationCreateMachineManufacturerArgs, 'input'>>;
   createMachineType?: Resolver<ResolversTypes['CreateMachineTypeMutationResponse'], ParentType, ContextType, RequireFields<MutationCreateMachineTypeArgs, 'input'>>;
   deleteItem?: Resolver<ResolversTypes['DeleteItemMutationResponse'], ParentType, ContextType, RequireFields<MutationDeleteItemArgs, 'id'>>;
   deleteLocation?: Resolver<ResolversTypes['DeleteLocationMutationResponse'], ParentType, ContextType, RequireFields<MutationDeleteLocationArgs, 'id'>>;
   deleteMachine?: Resolver<ResolversTypes['DeleteMachineMutationResponse'], ParentType, ContextType, RequireFields<MutationDeleteMachineArgs, 'id'>>;
   deleteMachineItem?: Resolver<ResolversTypes['DeleteMachineItemMutationResponse'], ParentType, ContextType, RequireFields<MutationDeleteMachineItemArgs, 'id'>>;
   deleteMachineLocation?: Resolver<ResolversTypes['DeleteMachineLocationMutationResponse'], ParentType, ContextType, RequireFields<MutationDeleteMachineLocationArgs, 'id'>>;
+  deleteMachineManufacturer?: Resolver<ResolversTypes['DeleteMachineManufacturerMutationResponse'], ParentType, ContextType, RequireFields<MutationDeleteMachineManufacturerArgs, 'id'>>;
   deleteMachineType?: Resolver<ResolversTypes['DeleteMachineTypeMutationResponse'], ParentType, ContextType, RequireFields<MutationDeleteMachineTypeArgs, 'id'>>;
   updateItem?: Resolver<ResolversTypes['UpdateItemMutationResponse'], ParentType, ContextType, RequireFields<MutationUpdateItemArgs, 'input'>>;
   updateLocation?: Resolver<ResolversTypes['UpdateLocationMutationResponse'], ParentType, ContextType, RequireFields<MutationUpdateLocationArgs, 'input'>>;
   updateMachine?: Resolver<ResolversTypes['CreateMachineMutationResponse'], ParentType, ContextType, RequireFields<MutationUpdateMachineArgs, 'input'>>;
   updateMachineItems?: Resolver<ResolversTypes['UpdateMachineItemsMutationResponse'], ParentType, ContextType, RequireFields<MutationUpdateMachineItemsArgs, 'input'>>;
   updateMachineLocation?: Resolver<ResolversTypes['UpdateMachineLocationMutationResponse'], ParentType, ContextType, RequireFields<MutationUpdateMachineLocationArgs, 'input'>>;
+  updateMachineManufacturer?: Resolver<ResolversTypes['UpdateMachineManufacturerMutationResponse'], ParentType, ContextType, RequireFields<MutationUpdateMachineManufacturerArgs, 'input'>>;
   updateMachineType?: Resolver<ResolversTypes['UpdateMachineTypeMutationResponse'], ParentType, ContextType, RequireFields<MutationUpdateMachineTypeArgs, 'input'>>;
 };
 
 export type MutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['MutationResponse'] = ResolversParentTypes['MutationResponse']> = {
-  __resolveType: TypeResolveFn<'CreateItemMutationResponse' | 'CreateLocationMutationResponse' | 'CreateMachineItemMutationResponse' | 'CreateMachineLocationMutationResponse' | 'CreateMachineMutationResponse' | 'CreateMachineTypeMutationResponse' | 'DeleteItemMutationResponse' | 'DeleteLocationMutationResponse' | 'DeleteMachineItemMutationResponse' | 'DeleteMachineLocationMutationResponse' | 'DeleteMachineMutationResponse' | 'DeleteMachineTypeMutationResponse' | 'UpdateItemMutationResponse' | 'UpdateLocationMutationResponse' | 'UpdateMachineItemsMutationResponse' | 'UpdateMachineLocationMutationResponse' | 'UpdateMachineMutationResponse' | 'UpdateMachineTypeMutationResponse', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'CreateItemMutationResponse' | 'CreateLocationMutationResponse' | 'CreateMachineItemMutationResponse' | 'CreateMachineLocationMutationResponse' | 'CreateMachineManufacturerMutationResponse' | 'CreateMachineMutationResponse' | 'CreateMachineTypeMutationResponse' | 'DeleteItemMutationResponse' | 'DeleteLocationMutationResponse' | 'DeleteMachineItemMutationResponse' | 'DeleteMachineLocationMutationResponse' | 'DeleteMachineManufacturerMutationResponse' | 'DeleteMachineMutationResponse' | 'DeleteMachineTypeMutationResponse' | 'UpdateItemMutationResponse' | 'UpdateLocationMutationResponse' | 'UpdateMachineItemsMutationResponse' | 'UpdateMachineLocationMutationResponse' | 'UpdateMachineManufacturerMutationResponse' | 'UpdateMachineMutationResponse' | 'UpdateMachineTypeMutationResponse', ParentType, ContextType>;
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -845,6 +956,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getLocationsByItem?: Resolver<Maybe<Array<ResolversTypes['Location']>>, ParentType, ContextType, RequireFields<QueryGetLocationsByItemArgs, 'itemId'>>;
   getLocationsByMachineName?: Resolver<Array<ResolversTypes['Location']>, ParentType, ContextType, RequireFields<QueryGetLocationsByMachineNameArgs, 'machineName'>>;
   getMachineItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineItem']>>>, ParentType, ContextType>;
+  getMachineManufacturer?: Resolver<Maybe<ResolversTypes['MachineManufacturer']>, ParentType, ContextType, RequireFields<QueryGetMachineManufacturerArgs, 'id'>>;
+  getMachineManufacturers?: Resolver<Array<ResolversTypes['MachineManufacturer']>, ParentType, ContextType>;
   getMachineType?: Resolver<Maybe<ResolversTypes['MachineType']>, ParentType, ContextType, RequireFields<QueryGetMachineTypeArgs, 'id'>>;
   getMachineTypes?: Resolver<Array<ResolversTypes['MachineType']>, ParentType, ContextType>;
   getMachines?: Resolver<Maybe<Array<Maybe<ResolversTypes['Machine']>>>, ParentType, ContextType>;
@@ -884,6 +997,14 @@ export type UpdateMachineLocationMutationResponseResolvers<ContextType = any, Pa
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UpdateMachineManufacturerMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateMachineManufacturerMutationResponse'] = ResolversParentTypes['UpdateMachineManufacturerMutationResponse']> = {
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  manufacturer?: Resolver<Maybe<ResolversTypes['MachineManufacturer']>, ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UpdateMachineMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateMachineMutationResponse'] = ResolversParentTypes['UpdateMachineMutationResponse']> = {
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   machine?: Resolver<Maybe<ResolversTypes['Machine']>, ParentType, ContextType>;
@@ -905,12 +1026,14 @@ export type Resolvers<ContextType = any> = {
   CreateLocationMutationResponse?: CreateLocationMutationResponseResolvers<ContextType>;
   CreateMachineItemMutationResponse?: CreateMachineItemMutationResponseResolvers<ContextType>;
   CreateMachineLocationMutationResponse?: CreateMachineLocationMutationResponseResolvers<ContextType>;
+  CreateMachineManufacturerMutationResponse?: CreateMachineManufacturerMutationResponseResolvers<ContextType>;
   CreateMachineMutationResponse?: CreateMachineMutationResponseResolvers<ContextType>;
   CreateMachineTypeMutationResponse?: CreateMachineTypeMutationResponseResolvers<ContextType>;
   DeleteItemMutationResponse?: DeleteItemMutationResponseResolvers<ContextType>;
   DeleteLocationMutationResponse?: DeleteLocationMutationResponseResolvers<ContextType>;
   DeleteMachineItemMutationResponse?: DeleteMachineItemMutationResponseResolvers<ContextType>;
   DeleteMachineLocationMutationResponse?: DeleteMachineLocationMutationResponseResolvers<ContextType>;
+  DeleteMachineManufacturerMutationResponse?: DeleteMachineManufacturerMutationResponseResolvers<ContextType>;
   DeleteMachineMutationResponse?: DeleteMachineMutationResponseResolvers<ContextType>;
   DeleteMachineTypeMutationResponse?: DeleteMachineTypeMutationResponseResolvers<ContextType>;
   Item?: ItemResolvers<ContextType>;
@@ -918,6 +1041,7 @@ export type Resolvers<ContextType = any> = {
   Machine?: MachineResolvers<ContextType>;
   MachineItem?: MachineItemResolvers<ContextType>;
   MachineLocation?: MachineLocationResolvers<ContextType>;
+  MachineManufacturer?: MachineManufacturerResolvers<ContextType>;
   MachineType?: MachineTypeResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   MutationResponse?: MutationResponseResolvers<ContextType>;
@@ -926,6 +1050,7 @@ export type Resolvers<ContextType = any> = {
   UpdateLocationMutationResponse?: UpdateLocationMutationResponseResolvers<ContextType>;
   UpdateMachineItemsMutationResponse?: UpdateMachineItemsMutationResponseResolvers<ContextType>;
   UpdateMachineLocationMutationResponse?: UpdateMachineLocationMutationResponseResolvers<ContextType>;
+  UpdateMachineManufacturerMutationResponse?: UpdateMachineManufacturerMutationResponseResolvers<ContextType>;
   UpdateMachineMutationResponse?: UpdateMachineMutationResponseResolvers<ContextType>;
   UpdateMachineTypeMutationResponse?: UpdateMachineTypeMutationResponseResolvers<ContextType>;
 };

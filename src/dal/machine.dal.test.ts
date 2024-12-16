@@ -1,10 +1,11 @@
 import { prisma } from './prismaClient';
 import {
+  createMachineManufacturer,
   getItems,
   getItemsByMachine,
   getLocations,
-  getLocationsByMachineName,
-  getMachines
+  getLocationsByMachineName, getMachineManufacturer, getMachineManufacturers,
+  getMachines, getMachineType, getMachineTypes
 } from './machine.dal';
 
 // Mock the entire prisma module
@@ -21,6 +22,15 @@ jest.mock('./prismaClient', () => ({
     },
     machine: {
       findMany: jest.fn()
+    },
+    machineManufacturer: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn()
+    },
+    machineType: {
+      findMany: jest.fn(),
+      findUnique: jest.fn()
     },
     $disconnect: jest.fn()
   }
@@ -256,6 +266,193 @@ describe('Machine DAL Tests', () => {
       (prisma.machine.findMany as jest.Mock).mockRejectedValue(error);
 
       await expect(getMachines()).rejects.toThrow('Database error');
+      expect(prisma.$disconnect).toHaveBeenCalled();
+    });
+  });
+
+  describe('getMachineManufacturers', () => {
+    it('should return all manufacturers with their machine relationships', async () => {
+      const mockManufacturers = [
+        {
+          id: '1',
+          name: 'Crane',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          machines: [{
+            id: '1',
+            name: 'Machine 1',
+            machineType: { id: '1', name: 'Type 1' },
+            machineItems: [{
+              item: { id: '1', name: 'Soda' }
+            }]
+          }]
+        }
+      ];
+
+      (prisma.machineManufacturer.findMany as jest.Mock).mockResolvedValue(mockManufacturers);
+
+      const result = await getMachineManufacturers();
+
+      expect(result).toEqual(mockManufacturers);
+      expect(prisma.machineManufacturer.findMany).toHaveBeenCalledWith({
+        include: {
+          machines: {
+            include: {
+              machineType: true,
+              machineItems: {
+                include: {
+                  item: true
+                }
+              },
+              machineLocations: {
+                include: {
+                  location: true
+                }
+              }
+            }
+          }
+        }
+      });
+      expect(prisma.$disconnect).toHaveBeenCalled();
+    });
+
+    it('should handle errors properly', async () => {
+      const error = new Error('Database error');
+      (prisma.machineManufacturer.findMany as jest.Mock).mockRejectedValue(error);
+
+      await expect(getMachineManufacturers()).rejects.toThrow('Database error');
+      expect(prisma.$disconnect).toHaveBeenCalled();
+    });
+  });
+
+  describe('getMachineManufacturer', () => {
+    it('should return a single manufacturer by id', async () => {
+      const mockManufacturer = {
+        id: '1',
+        name: 'Crane',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        machines: []
+      };
+
+      (prisma.machineManufacturer.findUnique as jest.Mock).mockResolvedValue(mockManufacturer);
+
+      const result = await getMachineManufacturer('1');
+
+      expect(result).toEqual(mockManufacturer);
+      expect(prisma.machineManufacturer.findUnique).toHaveBeenCalledWith({
+        where: { id: '1' },
+        include: {
+          machines: {
+            include: {
+              machineType: true,
+              machineItems: {
+                include: {
+                  item: true
+                }
+              },
+              machineLocations: {
+                include: {
+                  location: true
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+
+  describe('createMachineManufacturer', () => {
+    it('should create a new manufacturer', async () => {
+      const input = {
+        name: 'New Manufacturer'
+      };
+
+      const mockCreated = {
+        id: '1',
+        name: input.name,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        machines: []
+      };
+
+      (prisma.machineManufacturer.create as jest.Mock).mockResolvedValue(mockCreated);
+
+      const result = await createMachineManufacturer(input);
+
+      expect(result).toEqual(mockCreated);
+      expect(prisma.machineManufacturer.create).toHaveBeenCalledWith({
+        data: {
+          name: input.name,
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date)
+        },
+        include: {
+          machines: true
+        }
+      });
+    });
+  });
+
+  describe('getMachineTypes', () => {
+    it('should return all machine types with their relationships', async () => {
+      const mockTypes = [
+        {
+          id: '1',
+          name: 'AP 132',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          machines: [{
+            id: '1',
+            name: 'Machine 1'
+          }]
+        }
+      ];
+
+      (prisma.machineType.findMany as jest.Mock).mockResolvedValue(mockTypes);
+
+      const result = await getMachineTypes();
+
+      expect(result).toEqual(mockTypes);
+      expect(prisma.machineType.findMany).toHaveBeenCalledWith({
+        include: {
+          machines: true
+        }
+      });
+      expect(prisma.$disconnect).toHaveBeenCalled();
+    });
+  });
+
+  describe('getMachineType', () => {
+    it('should return a single machine type by id', async () => {
+      const mockType = {
+        id: '1',
+        name: 'AP 132',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        machines: []
+      };
+
+      (prisma.machineType.findUnique as jest.Mock).mockResolvedValue(mockType);
+
+      const result = await getMachineType('1');
+
+      expect(result).toEqual(mockType);
+      expect(prisma.machineType.findUnique).toHaveBeenCalledWith({
+        where: { id: '1' },
+        include: {
+          machines: true
+        }
+      });
+    });
+
+    it('should return null for non-existent machine type', async () => {
+      (prisma.machineType.findUnique as jest.Mock).mockResolvedValue(null);
+
+      const result = await getMachineType('999');
+
+      expect(result).toBeNull();
       expect(prisma.$disconnect).toHaveBeenCalled();
     });
   });
