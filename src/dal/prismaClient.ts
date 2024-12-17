@@ -30,4 +30,8 @@ prisma.$on('query', (e) => {
   console.log('Duration: ' + e.duration + 'ms');
 });
 
+process.on('beforeExit', async () => {
+  await prisma.$disconnect();
+});
+
 export { prisma };

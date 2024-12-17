@@ -15,19 +15,22 @@ export const getItems = async () => {
       include: {
         machineItems: {
           include: {
-            machine: true
+            machine: {
+              include: {
+                manufacturer: true,
+                machineType: true,
+                machineLocations: true
+              }
+            }
           }
         }
       }
     });
-    await prisma.$disconnect();
     debug(`getItems retrieved ${items.length} items`);
     return items;
   } catch (e: any) {
     console.error(`Error fetching Items - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -38,7 +41,13 @@ export const getItemsByMachine = async (machineId: string) => {
       where: { machineId },
       include: {
         item: true,
-        machine: true
+        machine: {
+          include: {
+            machineType: true,
+            machineLocations: true,
+            manufacturer: true
+          }
+        }
       }
     });
     debug(`getItemsByMachine retrieved ${machineItems.length} items`);
@@ -46,8 +55,6 @@ export const getItemsByMachine = async (machineId: string) => {
   } catch (e: any) {
     console.error(`Error fetching Items by Machine - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -57,15 +64,7 @@ export const getLocations = async () => {
       include: {
         machineLocations: {
           include: {
-            machine: {
-              include: {
-                machineItems: {
-                  include: {
-                    item: true
-                  }
-                }
-              }
-            }
+            machine: true
           }
         }
       }
@@ -75,8 +74,6 @@ export const getLocations = async () => {
   } catch (e: any) {
     console.error(`Error fetching Locations - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -106,8 +103,6 @@ export const getLocationsByMachineName = async (machineName: string) => {
   } catch (e: any) {
     console.error(`Error fetching Locations by Machine Name ${machineName} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -125,14 +120,13 @@ export const getMachines = async () => {
           include: {
             location: true
           }
-        }
+        },
+        manufacturer: true
       }
     });
   } catch (e: any) {
     console.error(`Error fetching Machines - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -144,11 +138,18 @@ export const getMachinesByItem = async (itemId: string) => {
       include: {
         machine: {
           include: {
+            machineType: true,
+            machineItems: {
+              include: {
+                item: true
+              }
+            },
             machineLocations: {
               include: {
                 location: true
               }
-            }
+            },
+            manufacturer: true
           }
         },
         item: true
@@ -157,8 +158,6 @@ export const getMachinesByItem = async (itemId: string) => {
   } catch (e: any) {
     console.error(`Error fetching Machines by Item (${itemId}) - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -173,8 +172,6 @@ export const getMachineItems = async () => {
   } catch (e: any) {
     console.error(`Error fetching MachineItems - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -189,8 +186,6 @@ export const getMachineLocations = async () => {
   } catch (e: any) {
     console.error(`Error fetching MachineLocations - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -208,8 +203,6 @@ export const createItem = async (input: CreateItemInput) => {
   } catch (e: any) {
     console.error(`Error creating Item ${input.name} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -229,7 +222,8 @@ export const getMachineManufacturers = async () => {
               include: {
                 location: true
               }
-            }
+            },
+            manufacturer: true
           }
         }
       }
@@ -237,8 +231,6 @@ export const getMachineManufacturers = async () => {
   } catch (e: any) {
     console.error(`Error fetching MachineManufacturers - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -267,8 +259,6 @@ export const getMachineManufacturer = async (id: string) => {
   } catch (e: any) {
     console.error(`Error fetching MachineManufacturer ${id} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -287,8 +277,6 @@ export const createMachineManufacturer = async (input: CreateMachineManufacturer
   } catch (e: any) {
     console.error(`Error creating MachineManufacturer ${input.name} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -307,8 +295,6 @@ export const updateMachineManufacturer = async (input: UpdateMachineManufacturer
   } catch (e: any) {
     console.error(`Error updating MachineManufacturer ${input.id} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -330,8 +316,6 @@ export const deleteMachineManufacturer = async (id: string) => {
   } catch (e: any) {
     console.error(`Error deleting MachineManufacturer ${id} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -349,8 +333,6 @@ export const updateItem = async (input: UpdateItemInput) => {
   } catch (e: any) {
     console.error(`Error updating Item ${input.id} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -360,7 +342,7 @@ export const createMachine = async (input: CreateMachineInput) => {
       data: {
         name: input.name!,
         machineTypeId: input.machineTypeId,
-        manufacturerId: input.machineTypeId,
+        manufacturerId: input.manufacturerId,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -375,14 +357,13 @@ export const createMachine = async (input: CreateMachineInput) => {
             location: true
           }
         },
+        manufacturer: true,
         machineType: true
       }
     });
   } catch (e: any) {
     console.error(`Error creating Machine ${input.name} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -405,14 +386,13 @@ export const updateMachine = async (input: UpdateMachineInput) => {
             location: true
           }
         },
+        manufacturer: true,
         machineType: true
       }
     });
   } catch (e: any) {
     console.error(`Error updating Machine ${input.id} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -432,8 +412,6 @@ export const deleteMachine = async (id: string) => {
   } catch (e: any) {
     console.error(`Error deleting Machine ${id} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -453,8 +431,6 @@ export const deleteItem = async (id: string) => {
   } catch (e: any) {
     console.error(`Error deleting Item ${id} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -474,8 +450,6 @@ export const createLocation = async (input: CreateLocationInput) => {
   } catch (e: any) {
     console.error(`Error creating Location ${input.address1} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -495,8 +469,6 @@ export const updateLocation = async (input: UpdateLocationInput) => {
   } catch (e: any) {
     console.error(`Error updating Location ${input.id} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -514,8 +486,6 @@ export const deleteLocation = async (id: string) => {
   } catch (e: any) {
     console.error(`Error deleting Location ${id} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -540,8 +510,6 @@ export const createMachineLocation = async (input: CreateMachineLocationInput) =
   } catch (e: any) {
     console.error(`Error creating MachineLocation for Machine ${input.machineId} @ Location ${input.locationId} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -566,8 +534,6 @@ export const updateMachineLocation = async (input: UpdateMachineLocationInput) =
   } catch (e: any) {
     console.error(`Error updating MachineLocation ${input.id} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -580,8 +546,6 @@ export const deleteMachineLocation = async (id: string) => {
   } catch (e: any) {
     console.error(`Error deleting MachineLocation ${id} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -607,14 +571,14 @@ export const getMachinesByLocation = async (locationId: string) => {
           include: {
             location: true
           }
-        }
+        },
+        manufacturer: true,
+        machineType: true
       }
     });
   } catch (e: any) {
     console.error(`Error getting Machines by Location ${locationId} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -654,8 +618,6 @@ export const getLocationsByItem = async (itemId: string) => {
   } catch (e: any) {
     console.error(`Error getting Locations by Item ${itemId} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -676,8 +638,6 @@ export const createMachineItem = async (input: CreateMachineItemInput) => {
   } catch (e: any) {
     console.error(`Error creating MachineItem for Machine ${input.machineId} & Item ${input.itemId} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -738,33 +698,43 @@ export const updateMachineItems = async (machineId: string, itemIds: string[]) =
 
 export const deleteMachineItem = async (id: string) => {
   try {
-
+    await prisma.machineItem.deleteMany({
+      where: {
+        id
+      }
+    });
+    return true;
   } catch (e: any) {
-
-  } finally {
-    await prisma.$disconnect();
+    console.error(`Error deleting MachineItem ${id} - ${e.name}: ${e.message}`);
+    throw e;
   }
-
-  await prisma.machineItem.deleteMany({
-    where: {
-      id
-    }
-  });
-  return true;
 };
 
 export const getMachineTypes = async () => {
   try {
     return prisma.machineType.findMany({
       include: {
-        machines: true
+        machines: {
+          include: {
+            machineItems: {
+              include: {
+                item: true
+              }
+            },
+            machineLocations: {
+              include: {
+                location: true
+              }
+            },
+            manufacturer: true,
+            machineType: true
+          }
+        }
       }
     });
   } catch (e: any) {
     console.error(`Error fetching MachineTypes - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -779,8 +749,6 @@ export const getMachineType = async (id: string) => {
   } catch (e: any) {
     console.error(`Error fetching MachineType ${id} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -799,8 +767,6 @@ export const createMachineType = async (input: CreateMachineTypeInput) => {
   } catch (e: any) {
     console.error(`Error creating MachineType ${input.name} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -819,8 +785,6 @@ export const updateMachineType = async (input: UpdateMachineTypeInput) => {
   } catch (e: any) {
     console.error(`Error updating MachineType ${input.id} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -843,7 +807,5 @@ export const deleteMachineType = async (id: string) => {
   } catch (e: any) {
     console.error(`Error deleting MachineType ${id} - ${e.name}: ${e.message}`);
     throw e;
-  } finally {
-    await prisma.$disconnect();
   }
 };

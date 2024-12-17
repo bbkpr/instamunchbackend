@@ -50,7 +50,20 @@ describe('Machine DAL Tests', () => {
           basePrice: 1.99,
           expirationPeriod: 90,
           machineItems: [{
-            machine: { id: '1', name: 'Machine 1' }
+            itemId: '1',
+            machineId: '1',
+            machine: {
+              id: '1',
+              name: 'Machine 1',
+              machineType: { id: '1', name: 'Type 1' },
+              machineLocations: [{
+                location: { id: '1', address1: '123 Main St' }
+              }],
+              manufacturer: {
+                id: '1',
+                name: 'Automatic Products'
+              }
+            }
           }]
         }
       ];
@@ -64,7 +77,13 @@ describe('Machine DAL Tests', () => {
         include: {
           machineItems: {
             include: {
-              machine: true
+              machine: {
+                include: {
+                  manufacturer: true,
+                  machineType: true,
+                  machineLocations: true
+                }
+              }
             }
           }
         }
@@ -88,7 +107,18 @@ describe('Machine DAL Tests', () => {
         {
           id: '1',
           item: { id: '1', name: 'Soda' },
-          machine: { id: '1', name: 'Machine 1' }
+          machine: {
+            id: '1',
+            name: 'Machine 1',
+            machineLocations: [{
+              location: { id: '1', address1: '123 Main St' }
+            }],
+            machineType: { id: '1', name: 'Type 1' },
+            manufacturer: {
+              id: '1',
+              name: 'Automatic Products'
+            }
+          }
         }
       ];
 
@@ -101,7 +131,13 @@ describe('Machine DAL Tests', () => {
         where: { machineId },
         include: {
           item: true,
-          machine: true
+          machine: {
+            include: {
+              manufacturer: true,
+              machineType: true,
+              machineLocations: true
+            }
+          }
         }
       });
       expect(prisma.$disconnect).toHaveBeenCalled();
@@ -131,7 +167,12 @@ describe('Machine DAL Tests', () => {
               name: 'Machine 1',
               machineItems: [{
                 item: { id: '1', name: 'Soda' }
-              }]
+              }],
+              machineType: { id: '1', name: 'Type 1' },
+              manufacturer: {
+                id: '1',
+                name: 'Automatic Products'
+              }
             }
           }]
         }
@@ -146,15 +187,7 @@ describe('Machine DAL Tests', () => {
         include: {
           machineLocations: {
             include: {
-              machine: {
-                include: {
-                  machineItems: {
-                    include: {
-                      item: true
-                    }
-                  }
-                }
-              }
+              machine: true
             }
           }
         }
@@ -179,7 +212,15 @@ describe('Machine DAL Tests', () => {
           id: '1',
           address1: '123 Main St',
           machineLocations: [{
-            machine: { id: '1', name: 'Test Machine' }
+            machine: {
+              id: '1',
+              name: 'Test Machine',
+              machineType: { id: '1', name: 'Type 1' },
+              manufacturer: {
+                id: '1',
+                name: 'Automatic Products'
+              }
+            }
           }]
         }
       ];
@@ -205,7 +246,17 @@ describe('Machine DAL Tests', () => {
         include: {
           machineLocations: {
             include: {
-              machine: true
+              machine: {
+                include: {
+                  machineItems: {
+                    include: {
+                      item: true
+                    }
+                  },
+                  machineType: true,
+                  manufacturer: true
+                }
+              }
             }
           }
         }
@@ -234,7 +285,11 @@ describe('Machine DAL Tests', () => {
           }],
           machineLocations: [{
             location: { id: '1', address1: '123 Main St' }
-          }]
+          }],
+          manufacturer: {
+            id: '1',
+            name: 'Automatic Products'
+          }
         }
       ];
 
@@ -255,7 +310,8 @@ describe('Machine DAL Tests', () => {
             include: {
               location: true
             }
-          }
+          },
+          manufacturer: true
         }
       });
       expect(prisma.$disconnect).toHaveBeenCalled();

@@ -31,6 +31,9 @@ model MachineItem {
   machineId String
   item      Item    @relation(fields: [itemId], references: [id])
   itemId    String
+
+  @@index([machineId])
+  @@index([itemId])
 }
 
 model Location {
@@ -54,6 +57,9 @@ model MachineLocation {
   locationId String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@index([machineId])
+  @@index([locationId])
 }
 
 model MachineType {

@@ -8,8 +8,11 @@
 * `npm run codegen`: Generate GraphQL code from `schema.graphql`
 * `npm start`: Start the servers. Go to the displayed GraphQL URL in your browser to use the explorer.
 
-# Database Migrations
+# Database Management
+* `npm run prisma:generate`: Generate the Prisma Client (`@prisma/client`) from `prisma/schema.prisma`
 * `npm run prisma:migrate`: Migrate the DB and Prisma Client using an updated `prisma/schema.prisma`
+* `npm run prisma:seed`: Add seed data (see `prisma/seed.ts`)
+* `npm run prisma:validate`: Validate the Prisma schema `prisma/schema.prisma`
 
 # GraphQL
 * `npm run codegen` will run the GraphQL code generator, configured with `codegen.ts`, which outputs to `generated/graphql.ts`

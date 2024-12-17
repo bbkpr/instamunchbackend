@@ -3,7 +3,9 @@ import {
   MachineItem as PrismaMachineItem,
   Item as PrismaItem,
   Location as PrismaLocation,
-  MachineLocation as PrismaMachineLocation, MachineType as PrismaMachineType,
+  MachineLocation as PrismaMachineLocation,
+  MachineType as PrismaMachineType,
+  MachineManufacturer as PrismaMachineManufacturer
 } from '@prisma/client';
 import {
   Machine,
@@ -28,7 +30,8 @@ type PrismaMachineWithRelations = WithTimeStamps<PrismaMachine> & {
   machineLocations?: (PrismaMachineLocation & {
     location?: WithTimeStamps<PrismaLocation>
   })[];
-  machineType?: WithTimeStamps<PrismaMachineType>
+  machineType?: WithTimeStamps<PrismaMachineType>,
+  manufacturer?: WithTimeStamps<PrismaMachineManufacturer>
 };
 
 type PrismaItemWithRelations = WithTimeStamps<PrismaItem> & {
@@ -76,9 +79,9 @@ export const adaptLocation = (prismaLocation: PrismaLocationWithRelations): Loca
       id: ml.machineId,
       name: ml.machine!.name,
       createdAt: timestampToISOString(ml.machine!.createdAt),
-      updatedAt: timestampToISOString(ml.machine!.updatedAt),
+      updatedAt: timestampToISOString(ml.machine!.updatedAt)
     }
-  }))
+  })),
 });
 
 export const adaptMachineLocation = (
@@ -147,9 +150,15 @@ export const adaptMachine = (prismaMachine: PrismaMachineWithRelations): Machine
       stateOrProvince: machineLocation.location!.stateOrProvince,
       country: machineLocation.location!.country,
       createdAt: timestampToISOString(machineLocation.location!.createdAt),
-      updatedAt: timestampToISOString(machineLocation.location!.updatedAt),
+      updatedAt: timestampToISOString(machineLocation.location!.updatedAt)
     }
   })),
+  manufacturer: {
+    id: prismaMachine.manufacturerId,
+    name: prismaMachine.manufacturer!.name,
+    createdAt: timestampToISOString(prismaMachine.manufacturer!.createdAt),
+    updatedAt: timestampToISOString(prismaMachine.manufacturer!.updatedAt),
+  },
   createdAt: timestampToISOString(prismaMachine.createdAt),
   updatedAt: timestampToISOString(prismaMachine.updatedAt)
 });
