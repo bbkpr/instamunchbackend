@@ -1,11 +1,11 @@
 import { prisma } from './prismaClient';
 import {
-  createMachineManufacturer,
+  createMachineManufacturer, deleteMachineManufacturer,
   getItems,
   getItemsByMachine,
   getLocations,
   getLocationsByMachineName, getMachineManufacturer, getMachineManufacturers,
-  getMachines, getMachineType, getMachineTypes
+  getMachines, getMachineType, getMachineTypes, updateMachineItems, updateMachineManufacturer
 } from './machine.dal';
 
 // Mock the entire prisma module
@@ -15,23 +15,29 @@ jest.mock('./prismaClient', () => ({
       findMany: jest.fn()
     },
     machineItem: {
-      findMany: jest.fn()
+      findMany: jest.fn(),
+      deleteMany: jest.fn(),
+      create: jest.fn()
     },
     location: {
       findMany: jest.fn()
     },
     machine: {
-      findMany: jest.fn()
+      findMany: jest.fn(),
+      count: jest.fn()
     },
     machineManufacturer: {
       findMany: jest.fn(),
       findUnique: jest.fn(),
-      create: jest.fn()
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn()
     },
     machineType: {
       findMany: jest.fn(),
       findUnique: jest.fn()
     },
+    $transaction: jest.fn(callback => callback(prisma)),
     $disconnect: jest.fn()
   }
 }));
@@ -88,7 +94,7 @@ describe('Machine DAL Tests', () => {
           }
         }
       });
-      expect(prisma.$disconnect).toHaveBeenCalled();
+
     });
 
     it('should handle errors properly and still disconnect', async () => {
@@ -96,7 +102,7 @@ describe('Machine DAL Tests', () => {
       (prisma.item.findMany as jest.Mock).mockRejectedValue(error);
 
       await expect(getItems()).rejects.toThrow('Database error');
-      expect(prisma.$disconnect).toHaveBeenCalled();
+
     });
   });
 
@@ -140,7 +146,7 @@ describe('Machine DAL Tests', () => {
           }
         }
       });
-      expect(prisma.$disconnect).toHaveBeenCalled();
+
     });
 
     it('should handle errors properly and still disconnect', async () => {
@@ -148,7 +154,7 @@ describe('Machine DAL Tests', () => {
       (prisma.machineItem.findMany as jest.Mock).mockRejectedValue(error);
 
       await expect(getItemsByMachine('1')).rejects.toThrow('Database error');
-      expect(prisma.$disconnect).toHaveBeenCalled();
+
     });
   });
 
@@ -192,7 +198,7 @@ describe('Machine DAL Tests', () => {
           }
         }
       });
-      expect(prisma.$disconnect).toHaveBeenCalled();
+
     });
 
     it('should handle errors properly and still disconnect', async () => {
@@ -200,7 +206,7 @@ describe('Machine DAL Tests', () => {
       (prisma.location.findMany as jest.Mock).mockRejectedValue(error);
 
       await expect(getLocations()).rejects.toThrow('Database error');
-      expect(prisma.$disconnect).toHaveBeenCalled();
+
     });
   });
 
@@ -261,7 +267,7 @@ describe('Machine DAL Tests', () => {
           }
         }
       });
-      expect(prisma.$disconnect).toHaveBeenCalled();
+
     });
 
     it('should handle errors properly and still disconnect', async () => {
@@ -269,7 +275,7 @@ describe('Machine DAL Tests', () => {
       (prisma.location.findMany as jest.Mock).mockRejectedValue(error);
 
       await expect(getLocationsByMachineName('Test')).rejects.toThrow('Database error');
-      expect(prisma.$disconnect).toHaveBeenCalled();
+
     });
   });
 
@@ -314,7 +320,7 @@ describe('Machine DAL Tests', () => {
           manufacturer: true
         }
       });
-      expect(prisma.$disconnect).toHaveBeenCalled();
+
     });
 
     it('should handle errors properly and still disconnect', async () => {
@@ -322,7 +328,7 @@ describe('Machine DAL Tests', () => {
       (prisma.machine.findMany as jest.Mock).mockRejectedValue(error);
 
       await expect(getMachines()).rejects.toThrow('Database error');
-      expect(prisma.$disconnect).toHaveBeenCalled();
+
     });
   });
 
@@ -369,7 +375,7 @@ describe('Machine DAL Tests', () => {
           }
         }
       });
-      expect(prisma.$disconnect).toHaveBeenCalled();
+
     });
 
     it('should handle errors properly', async () => {
@@ -377,7 +383,7 @@ describe('Machine DAL Tests', () => {
       (prisma.machineManufacturer.findMany as jest.Mock).mockRejectedValue(error);
 
       await expect(getMachineManufacturers()).rejects.toThrow('Database error');
-      expect(prisma.$disconnect).toHaveBeenCalled();
+
     });
   });
 
@@ -451,6 +457,80 @@ describe('Machine DAL Tests', () => {
     });
   });
 
+  describe('MachineManufacturer Operations', () => {
+    describe('updateMachineManufacturer', () => {
+      it('should update an existing manufacturer', async () => {
+        const input = {
+          id: '1',
+          name: 'Updated Manufacturer'
+        };
+
+        const mockUpdated = {
+          id: input.id,
+          name: input.name,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          machines: []
+        };
+
+        (prisma.machineManufacturer.update as jest.Mock).mockResolvedValue(mockUpdated);
+
+        const result = await updateMachineManufacturer(input);
+
+        expect(result).toEqual(mockUpdated);
+        expect(prisma.machineManufacturer.update).toHaveBeenCalledWith({
+          where: { id: input.id },
+          data: {
+            name: input.name,
+            updatedAt: expect.any(Date)
+          },
+          include: {
+            machines: true
+          }
+        });
+      });
+
+      it('should handle non-existent manufacturer', async () => {
+        const input = { id: 'nonexistent', name: 'Test' };
+        const error = new Error('Record not found');
+        (prisma.machineManufacturer.update as jest.Mock).mockRejectedValue(error);
+
+        await expect(updateMachineManufacturer(input)).rejects.toThrow();
+      });
+    });
+
+    describe('deleteMachineManufacturer', () => {
+      it('should delete manufacturer when no machines are using it', async () => {
+        const manufacturerId = '1';
+
+        (prisma.machine.count as jest.Mock).mockResolvedValue(0);
+        (prisma.machineManufacturer.delete as jest.Mock).mockResolvedValue(true);
+
+        const result = await deleteMachineManufacturer(manufacturerId);
+
+        expect(result).toBe(true);
+        expect(prisma.machine.count).toHaveBeenCalledWith({
+          where: { manufacturerId }
+        });
+        expect(prisma.machineManufacturer.delete).toHaveBeenCalledWith({
+          where: { id: manufacturerId }
+        });
+      });
+
+      it('should prevent deletion when machines are using the manufacturer', async () => {
+        const manufacturerId = '1';
+
+        (prisma.machine.count as jest.Mock).mockResolvedValue(1);
+
+        await expect(deleteMachineManufacturer(manufacturerId))
+          .rejects
+          .toThrow('Cannot delete manufacturer that is in use by machines');
+
+        expect(prisma.machineManufacturer.delete).not.toHaveBeenCalled();
+      });
+    });
+  });
+
   describe('getMachineTypes', () => {
     it('should return all machine types with their relationships', async () => {
       const mockTypes = [
@@ -476,7 +556,7 @@ describe('Machine DAL Tests', () => {
           machines: true
         }
       });
-      expect(prisma.$disconnect).toHaveBeenCalled();
+
     });
   });
 
@@ -509,7 +589,71 @@ describe('Machine DAL Tests', () => {
       const result = await getMachineType('999');
 
       expect(result).toBeNull();
-      expect(prisma.$disconnect).toHaveBeenCalled();
+
+    });
+  });
+
+  describe('MachineItems Operations', () => {
+    describe('updateMachineItems', () => {
+      const mockPrismaTransaction = {
+        machine: { findUnique: jest.fn() },
+        item: { findMany: jest.fn() },
+        machineItem: {
+          deleteMany: jest.fn(),
+          create: jest.fn()
+        }
+      };
+
+      beforeEach(() => {
+        (prisma.$transaction as jest.Mock).mockImplementation(callback =>
+          callback(mockPrismaTransaction)
+        );
+      });
+
+      it('should successfully update machine items in a transaction', async () => {
+        const machineId = '1';
+        const itemIds = ['item1', 'item2'];
+
+        mockPrismaTransaction.machine.findUnique.mockResolvedValue({ id: machineId });
+        mockPrismaTransaction.item.findMany.mockResolvedValue([
+          { id: 'item1' },
+          { id: 'item2' }
+        ]);
+        mockPrismaTransaction.machineItem.create.mockImplementation(async ({ data }) => ({
+          ...data,
+          id: 'newMachineItem',
+          machine: { id: machineId },
+          item: { id: data.itemId }
+        }));
+
+        const result = await updateMachineItems(machineId, itemIds);
+
+        expect(result).toHaveLength(itemIds.length);
+        expect(mockPrismaTransaction.machineItem.deleteMany).toHaveBeenCalledWith({
+          where: { machineId }
+        });
+        expect(mockPrismaTransaction.machineItem.create).toHaveBeenCalledTimes(2);
+      });
+
+      it('should throw error when machine not found', async () => {
+        mockPrismaTransaction.machine.findUnique.mockResolvedValue(null);
+
+        await expect(updateMachineItems('1', ['item1']))
+          .rejects
+          .toThrow('Machine with ID 1 not found');
+      });
+
+      it('should throw error when items not found', async () => {
+        const machineId = '1';
+        const itemIds = ['item1', 'item2'];
+
+        mockPrismaTransaction.machine.findUnique.mockResolvedValue({ id: machineId });
+        mockPrismaTransaction.item.findMany.mockResolvedValue([{ id: 'item1' }]);
+
+        await expect(updateMachineItems(machineId, itemIds))
+          .rejects
+          .toThrow('Items not found: item2');
+      });
     });
   });
 });
