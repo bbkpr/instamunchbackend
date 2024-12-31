@@ -28,7 +28,7 @@ export const machineManufacturerResolvers: Partial<Resolvers<InstaMunchContext>>
           machines: manufacturer.machines?.map(adaptMachine) || []
         }));
       } catch (error: any) {
-        debug('Error in machineManufacturers query:', error);
+        debug('Error in getMachineManufacturers query:', error);
         throw error;
       }
     },
@@ -45,7 +45,7 @@ export const machineManufacturerResolvers: Partial<Resolvers<InstaMunchContext>>
           machines: manufacturer.machines?.map(adaptMachine) || []
         };
       } catch (error: any) {
-        debug('Error in machineManufacturer query:', error);
+        debug('Error in getMachineManufacturer query:', error);
         throw error;
       }
     }

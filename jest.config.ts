@@ -21,6 +21,7 @@ const config: Config.InitialOptions = {
     '/dist/',
     '/db-data/'
   ],
+  setupFilesAfterEnv: ["<rootDir>/test/setup.ts"],
   verbose: true
 };
 

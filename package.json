@@ -10,7 +10,8 @@
     "prisma:seed": "prisma db seed",
     "prisma:validate": "prisma validate",
     "start": "npm run codegen && nodemon --verbose --ext ts,hbs,json --exec ts-node --ignore '*.test.ts' --ignore db-data --ignore pgadmin-data --ignore node_modules --ignore schema.prisma --ignore prisma src/bin/www.ts",
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "jest --coverage --collectCoverageFrom=\"./src/**\""
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
