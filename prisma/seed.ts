@@ -90,7 +90,7 @@ async function main() {
       create: {
         id: 'd2d2d2d2-d2d2-d2d2-d2d2-d2d2d2d2d2d2',
         name: 'Quaker Rice Crisps - Cheddar',
-        basePrice: 2.49,
+        basePrice: 2.50,
         expirationPeriod: 120,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -102,7 +102,7 @@ async function main() {
       create: {
         id: 'd3d3d3d3-d3d3-d3d3-d3d3-d3d3d3d3d3d3',
         name: 'Kind Bar - Dark Chocolate Nuts & Sea Salt',
-        basePrice: 2.99,
+        basePrice: 2.50,
         expirationPeriod: 240,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -114,7 +114,7 @@ async function main() {
       create: {
         id: 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4',
         name: 'Smartwater - 20oz',
-        basePrice: 2.29,
+        basePrice: 2.00,
         expirationPeriod: 365,
         createdAt: new Date(),
         updatedAt: new Date()

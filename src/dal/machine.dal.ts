@@ -64,7 +64,7 @@ export const getLocations = async () => {
 };
 
 export const getLocationsByMachineName = async (machineName: string) => {
-  return prisma.location.findMany({
+  const locations = await prisma.location.findMany({
     where: {
       machineLocations: {
         some: {
@@ -85,10 +85,13 @@ export const getLocationsByMachineName = async (machineName: string) => {
       }
     }
   });
+
+  debug(`getLocationsByMachineName (${machineName}) retrieved ${locations.length} locations`);
+  return locations;
 };
 
 export const getMachines = async () => {
-  return prisma.machine.findMany({
+  const machines = await prisma.machine.findMany({
     include: {
       machineType: true,
       machineItems: {
@@ -104,11 +107,13 @@ export const getMachines = async () => {
       manufacturer: true
     }
   });
+  debug(`getMachines retrieved ${machines.length} machines`);
+  return machines;
 };
 
 // Get all Machines stocking an Item
 export const getMachinesByItem = async (itemId: string) => {
-  return prisma.machineItem.findMany({
+  const machinesByItem = await prisma.machineItem.findMany({
     where: { itemId },
     include: {
       machine: {
@@ -130,31 +135,40 @@ export const getMachinesByItem = async (itemId: string) => {
       item: true
     }
   });
+
+  debug(`getMachinesByItem (${itemId}) retrieved ${machinesByItem.length} machines`);
+  return machinesByItem;
 };
 
 export const getMachineItems = async () => {
-  return prisma.machineItem.findMany({
+  const machineItems = await prisma.machineItem.findMany({
     include: {
       machine: true,
       item: true
     }
   });
+
+  debug(`getMachineItems retrieved ${machineItems.length} machineItems`);
+  return machineItems;
 };
 
 export const getMachineLocations = async () => {
-  return prisma.machineLocation.findMany({
+  const machineLocations = await prisma.machineLocation.findMany({
     include: {
       machine: true,
       location: true
     }
   });
+
+  debug(`getMachineLocations retrieved ${machineLocations.length} machineLocations`);
+  return machineLocations;
 };
 
 export const createItem = async (input: CreateItemInput) => {
   if (!isNumber(input.basePrice) || !isNumber(input.expirationPeriod)) {
     throw Error('Base Price and Expiration Period must be numbers');
   }
-  return prisma.item.create({
+  const createdItem = await prisma.item.create({
     data: {
       name: input.name,
       basePrice: input.basePrice!,
@@ -163,10 +177,13 @@ export const createItem = async (input: CreateItemInput) => {
       updatedAt: new Date()
     }
   });
+
+  debug(`createItem created item ${input.name} (${createdItem.id})`);
+  return createdItem;
 };
 
 export const getMachineManufacturers = async () => {
-  return prisma.machineManufacturer.findMany({
+  const machineManufacturers = await prisma.machineManufacturer.findMany({
     include: {
       machines: {
         include: {
@@ -186,10 +203,13 @@ export const getMachineManufacturers = async () => {
       }
     }
   });
+
+  debug(`getMachineManufacturers retrieved ${machineManufacturers.length} machineManufacturers`);
+  return machineManufacturers;
 };
 
 export const getMachineManufacturer = async (id: string) => {
-  return prisma.machineManufacturer.findUnique({
+  const machineManufacturer = await prisma.machineManufacturer.findUnique({
     where: { id },
     include: {
       machines: {
@@ -209,10 +229,18 @@ export const getMachineManufacturer = async (id: string) => {
       }
     }
   });
+
+  if (machineManufacturer != null) {
+    debug(`getMachineManufacturer (${id}) retrieved machineManufacturer ${machineManufacturer.name}`);
+  } else {
+    /* istanbul ignore */
+    debug(`getMachineManufacturer (${id}) did not retrieve a machineManufacturer`);
+  }
+  return machineManufacturer;
 };
 
 export const createMachineManufacturer = async (input: CreateMachineManufacturerInput) => {
-  return prisma.machineManufacturer.create({
+  const createdMachineManufacturer = await prisma.machineManufacturer.create({
     data: {
       name: input.name,
       createdAt: new Date(),
@@ -222,6 +250,8 @@ export const createMachineManufacturer = async (input: CreateMachineManufacturer
       machines: true
     }
   });
+  debug(`createMachineManufacturer created machineManufacturer ${createdMachineManufacturer.name} (${createdMachineManufacturer.id})`);
+  return createdMachineManufacturer;
 };
 
 export const updateMachineManufacturer = async (input: UpdateMachineManufacturerInput) => {
@@ -238,7 +268,6 @@ export const updateMachineManufacturer = async (input: UpdateMachineManufacturer
 };
 
 export const deleteMachineManufacturer = async (id: string) => {
-  // Check if there are any machines using this manufacturer
   const machinesUsingManufacturer = await prisma.machine.count({
     where: { manufacturerId: id }
   });
@@ -373,10 +402,13 @@ export const updateLocation = async (input: UpdateLocationInput) => {
 
 export const deleteLocation = async (id: string) => {
   // First delete any associated MachineLocations
-  await prisma.machineLocation.deleteMany({
+  const deleteManyMlRes = await prisma.machineLocation.deleteMany({
     where: { locationId: id }
   });
-
+  if (deleteManyMlRes) {
+    /* istanbul ignore */
+    debug(`Deleted ${deleteManyMlRes.count} machineLocations`);
+  }
   await prisma.location.delete({
     where: { id }
   });
@@ -398,7 +430,7 @@ export const createMachineLocation = async (input: CreateMachineLocationInput) =
       location: true
     }
   });
-  debug(`Created MachineLocation ${result.id}`);
+  debug(`createMachineLocation created MachineLocation ${result.id}`);
   return result;
 };
 
