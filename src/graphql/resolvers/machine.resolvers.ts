@@ -1,36 +1,27 @@
 import { createMachine, deleteMachine, getMachines, getMachinesByLocation, updateMachine } from '../../dal/machine.dal';
-import { debug } from 'node:util';
 import { adaptMachine } from '../../adapters/model.adapters';
 import { Resolvers } from '../../../generated/graphql';
 import { InstaMunchContext } from '../context';
 
+const debug = require('debug')('instamunchbackend:resolvers');
+
 export const machineResolvers: Partial<Resolvers<InstaMunchContext>> = {
   Query: {
     async getMachines(_, {}, context) {
-      try {
-        const machines = await getMachines();
-        debug(`${machines.length} Machines found`);
-        return machines.map(adaptMachine);
-      } catch (error: any) {
-        debug('Error in machines query:', error);
-        throw error;
-      }
+      const machines = await getMachines();
+      debug(`getMachines found ${machines.length} Machines`);
+      return machines.map(adaptMachine);
     },
     async getMachinesByLocation(_, { locationId }, context) {
-      try {
-        const machines = await getMachinesByLocation(locationId);
-        debug(`${machines.length} Machines found for location ${locationId}`);
-        return machines.map(adaptMachine);
-      } catch (error: any) {
-        debug('Error in getMachinesByLocation query:', error);
-        throw error;
-      }
+      const machines = await getMachinesByLocation(locationId);
+      debug(`getMachinesByLocation found ${machines.length} Machines at Location ${locationId}`);
+      return machines.map(adaptMachine);
     }
   },
   Mutation: {
     async createMachine(_, { input }, context) {
       const machine = await createMachine(input);
-      debug(`Machine created with ID ${machine.id}`);
+      debug(`createMachine created Machine ${machine.id}`);
       return {
         code: '200',
         success: true,
@@ -40,7 +31,7 @@ export const machineResolvers: Partial<Resolvers<InstaMunchContext>> = {
     },
     async updateMachine(_, { input }, context) {
       const machine = await updateMachine(input);
-      debug(`Machine updated with ID ${machine!.id}`);
+      debug(`updateMachine updated Machine ${machine!.id}`);
       return {
         code: '200',
         success: true,
@@ -50,7 +41,7 @@ export const machineResolvers: Partial<Resolvers<InstaMunchContext>> = {
     },
     async deleteMachine(_, { id }, context) {
       await deleteMachine(id);
-      debug(`Machine deleted with ID ${id}`);
+      debug(`deleteMachine deleted Machine ${id}`);
       return { code: '200', success: true, message: `Machine deleted: ${id}` };
     }
   }

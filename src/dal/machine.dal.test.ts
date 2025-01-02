@@ -178,7 +178,7 @@ describe('Machine DAL Tests', () => {
           {
             id: '1',
             name: 'Soda',
-            basePrice: 1.99,
+            basePrice: 2,
             expirationPeriod: 90,
             machineItems: [{
               itemId: '1',
@@ -235,7 +235,7 @@ describe('Machine DAL Tests', () => {
       const mockItem = {
         id: '1',
         name: 'Test Item',
-        basePrice: 1.99,
+        basePrice: 3,
         expirationPeriod: 30
       };
 
@@ -243,7 +243,7 @@ describe('Machine DAL Tests', () => {
         const input = {
           id: '1',
           name: 'Updated Item',
-          basePrice: 2.99
+          basePrice: 3
         };
 
         (prisma.item.update as jest.Mock).mockResolvedValue({

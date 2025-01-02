@@ -12,42 +12,37 @@ import {
   updateMachineManufacturer
 } from '../../dal/machine.dal';
 import { adaptMachine } from '../../adapters/model.adapters';
-import { debug } from 'node:util';
+
+const debug = require('debug')('instamunchbackend:resolvers');
 
 export const machineManufacturerResolvers: Partial<Resolvers<InstaMunchContext>> = {
   Query: {
     async getMachineManufacturers(_, {}, context) {
-      try {
-        const manufacturers = await getMachineManufacturers();
-        debug(`${manufacturers.length} MachineManufacturers found`);
-        return manufacturers.map(manufacturer => ({
-          id: manufacturer.id,
-          name: manufacturer.name,
-          createdAt: manufacturer.createdAt.toISOString(),
-          updatedAt: manufacturer.updatedAt.toISOString(),
-          machines: manufacturer.machines?.map(adaptMachine) || []
-        }));
-      } catch (error: any) {
-        debug('Error in getMachineManufacturers query:', error);
-        throw error;
-      }
+      const manufacturers = await getMachineManufacturers();
+      debug(`getMachineManufacturers found ${manufacturers.length} MachineManufacturers`);
+      return manufacturers.map(manufacturer => ({
+        id: manufacturer.id,
+        name: manufacturer.name,
+        createdAt: manufacturer.createdAt.toISOString(),
+        updatedAt: manufacturer.updatedAt.toISOString(),
+        machines: manufacturer.machines?.map(adaptMachine) || []
+      }));
     },
 
     async getMachineManufacturer(_, { id }, context) {
-      try {
-        const manufacturer = await getMachineManufacturer(id);
-        if (!manufacturer) return null;
-        return {
-          id: manufacturer.id,
-          name: manufacturer.name,
-          createdAt: manufacturer.createdAt.toISOString(),
-          updatedAt: manufacturer.updatedAt.toISOString(),
-          machines: manufacturer.machines?.map(adaptMachine) || []
-        };
-      } catch (error: any) {
-        debug('Error in getMachineManufacturer query:', error);
-        throw error;
+      const manufacturer = await getMachineManufacturer(id);
+      if (!manufacturer) {
+        debug(`getMachineManufacturer failed to find MachineManufacturer ${id}`);
+        return null;
       }
+      debug(`getMachineManufacturer found MachineManufacturer ${id} (${manufacturer.name})`);
+      return {
+        id: manufacturer.id,
+        name: manufacturer.name,
+        createdAt: manufacturer.createdAt.toISOString(),
+        updatedAt: manufacturer.updatedAt.toISOString(),
+        machines: manufacturer.machines?.map(adaptMachine) || []
+      };
     }
   },
   Mutation: {
@@ -58,7 +53,7 @@ export const machineManufacturerResolvers: Partial<Resolvers<InstaMunchContext>>
     ) {
       try {
         const manufacturer = await createMachineManufacturer(input);
-        debug(`Created manufacturer '${manufacturer.name}' with ID ${manufacturer.id}`);
+        debug(`createMachineManufacturer created MachineManufacturer ${manufacturer.id} (${manufacturer.name})`);
 
         return {
           code: '200',
@@ -73,11 +68,11 @@ export const machineManufacturerResolvers: Partial<Resolvers<InstaMunchContext>>
           }
         };
       } catch (error: any) {
-        debug('Failed to create manufacturer:', error);
+        debug('createMachineManufacturer failed to create MachineManufacturer:', error);
         return {
           code: '500',
           success: false,
-          message: error instanceof Error ? error.message : 'Failed to create manufacturer'
+          message: error instanceof Error ? error.message : 'Failed to create MachineManufacturer'
         };
       }
     },
@@ -89,7 +84,7 @@ export const machineManufacturerResolvers: Partial<Resolvers<InstaMunchContext>>
     ) {
       try {
         const manufacturer = await updateMachineManufacturer(input);
-        debug(`Updated manufacturer ${manufacturer.id}`);
+        debug(`updateMachineManufacturer updated MachineManufacturer ${input.id} (${input.name})`);
 
         return {
           code: '200',
@@ -104,11 +99,11 @@ export const machineManufacturerResolvers: Partial<Resolvers<InstaMunchContext>>
           }
         };
       } catch (error: any) {
-        debug('Failed to update manufacturer:', error);
+        debug(`updateMachineManufacturer failed to update MachineManufacturer ${input.id} (${input.name}):`, error);
         return {
           code: '500',
           success: false,
-          message: error instanceof Error ? error.message : 'Failed to update manufacturer'
+          message: error instanceof Error ? error.message : 'Failed to update MachineManufacturer'
         };
       }
     },
@@ -120,7 +115,7 @@ export const machineManufacturerResolvers: Partial<Resolvers<InstaMunchContext>>
     ) {
       try {
         await deleteMachineManufacturer(id);
-        debug(`Deleted manufacturer ${id}`);
+        debug(`deleteMachineManufacturer deleted MachineManufacturer ${id}`);
 
         return {
           code: '200',
@@ -128,11 +123,11 @@ export const machineManufacturerResolvers: Partial<Resolvers<InstaMunchContext>>
           message: 'Manufacturer deleted successfully'
         };
       } catch (error: any) {
-        debug('Failed to delete manufacturer:', error);
+        debug(`deleteMachineManufacturer failed to delete MachineManufacturer ${id}:`, error);
         return {
           code: '500',
           success: false,
-          message: error instanceof Error ? error.message : 'Failed to delete manufacturer'
+          message: error instanceof Error ? error.message : 'Failed to delete MachineManufacturer'
         };
       }
     }

@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
+const debug = require('debug')('instamunchbackend:prismaclient');
+
 /**
  * Prisma client with Event-based logging (see https://www.prisma.io/docs/orm/prisma-client/observability-and-logging/logging#event-based-logging)
  */
@@ -25,9 +27,8 @@ const prisma = new PrismaClient({
 });
 
 prisma.$on('query', (e) => {
-  console.log('Query: ' + e.query);
-  console.log('Params: ' + e.params);
-  console.log('Duration: ' + e.duration + 'ms');
+  debug('Query: ' + e.query + ' (' + e.duration + 'ms)');
+  debug('Params: ' + e.params);
 });
 
 process.on('beforeExit', async () => {

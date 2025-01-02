@@ -8,14 +8,15 @@ import {
   updateMachineType
 } from '../../dal/machine.dal';
 import { adaptMachine } from '../../adapters/model.adapters';
-import { debug } from 'node:util';
+
+const debug = require('debug')('instamunchbackend:resolvers');
 
 export const machineTypeResolvers: Partial<Resolvers<InstaMunchContext>> = {
   Query: {
     async getMachineTypes(_, {}, context) {
       try {
         const types = await getMachineTypes();
-        debug(`${types.length} MachineTypes found`);
+        debug(`getMachineTypes found ${types.length} MachineTypes`);
         return types.map(type => ({
           id: type.id,
           name: type.name,
@@ -30,26 +31,26 @@ export const machineTypeResolvers: Partial<Resolvers<InstaMunchContext>> = {
     },
 
     async getMachineType(_, { id }, context) {
-      try {
-        const type = await getMachineType(id);
-        if (!type) return null;
-        return {
-          id: type.id,
-          name: type.name,
-          createdAt: type.createdAt.toISOString(),
-          updatedAt: type.updatedAt.toISOString(),
-          machines: type.machines?.map(adaptMachine) || []
-        };
-      } catch (error: any) {
-        debug('Error in machineType query:', error);
-        throw error;
+      const type = await getMachineType(id);
+      if (!type) {
+        debug(`getMachineType failed to find MachineType ${id}`);
+        return null;
       }
+      debug(`getMachineType found MachineType ${id} (${type.name})`);
+      return {
+        id: type.id,
+        name: type.name,
+        createdAt: type.createdAt.toISOString(),
+        updatedAt: type.updatedAt.toISOString(),
+        machines: type.machines?.map(adaptMachine) || []
+      };
     }
   },
   Mutation: {
     async createMachineType(_, { input }, context) {
       try {
         const machineType = await createMachineType(input);
+        debug(`createMachineType created MachineType ${machineType.id} (${machineType.name})`);
         return {
           code: '200',
           success: true,
@@ -63,6 +64,7 @@ export const machineTypeResolvers: Partial<Resolvers<InstaMunchContext>> = {
           }
         };
       } catch (error) {
+        debug('createMachineType failed to create MachineType:', error);
         return {
           code: '500',
           success: false,
@@ -74,6 +76,7 @@ export const machineTypeResolvers: Partial<Resolvers<InstaMunchContext>> = {
     async updateMachineType(_, { input }, context) {
       try {
         const machineType = await updateMachineType(input);
+        debug(`updateMachineType updated MachineType ${input.id} (${input.name})`);
         return {
           code: '200',
           success: true,
@@ -87,6 +90,7 @@ export const machineTypeResolvers: Partial<Resolvers<InstaMunchContext>> = {
           }
         };
       } catch (error) {
+        debug(`updateMachineType failed to update MachineType ${input.id} (${input.name}):`, error);
         return {
           code: '500',
           success: false,
@@ -98,12 +102,14 @@ export const machineTypeResolvers: Partial<Resolvers<InstaMunchContext>> = {
     async deleteMachineType(_, { id }, context) {
       try {
         await deleteMachineType(id);
+        debug(`deleteMachineManufacturer deleted MachineManufacturer ${id}`);
         return {
           code: '200',
           success: true,
           message: 'Machine type deleted successfully'
         };
       } catch (error) {
+        debug(`deleteMachineManufacturer failed to delete MachineManufacturer ${id}:`, error);
         return {
           code: '500',
           success: false,

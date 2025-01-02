@@ -8,40 +8,24 @@ import {
   getMachinesByItem, updateMachineItems
 } from '../../dal/machine.dal';
 import { adaptMachineItem } from '../../adapters/model.adapters';
-import { debug } from 'node:util';
+const debug = require('debug')('instamunchbackend:resolvers');
 
 export const machineItemResolvers: Partial<Resolvers<InstaMunchContext>> = {
   Query: {
     async getItemsByMachine(_, { machineId }, context) {
-      try {
-        const items = await getItemsByMachine(machineId);
-        debug(`${items.length} Items found for machine ${machineId}`);
-        return items.map(adaptMachineItem);
-      } catch (error: any) {
-        debug('Error in getItemsByMachine query:', error);
-        throw error;
-      }
+      const items = await getItemsByMachine(machineId);
+      debug(`getItemsByMachine found ${items.length} Items in Machine ${machineId}`);
+      return items.map(adaptMachineItem);
     },
     async getMachineItems(): Promise<MachineItem[]> {
-      try {
-        const items = await getMachineItems();
-        debug(`${items.length} MachineItems found`);
-        return items.map(adaptMachineItem);
-      } catch (error: any) {
-        debug('Error in machineItems query:', error);
-        throw error;
-      }
+      const items = await getMachineItems();
+      debug(`${items.length} MachineItems found`);
+      return items.map(adaptMachineItem);
     },
-
     async getMachinesByItem(_, { itemId }, context) {
-      try {
-        const machines = await getMachinesByItem(itemId);
-        debug(`${machines.length} Machines found for item ${itemId}`);
-        return machines.map(adaptMachineItem);
-      } catch (error: any) {
-        debug('Error in getMachinesByItem query:', error);
-        throw error;
-      }
+      const machines = await getMachinesByItem(itemId);
+      debug(`${machines.length} Machines found for item ${itemId}`);
+      return machines.map(adaptMachineItem);
     }
   },
   Mutation: {
