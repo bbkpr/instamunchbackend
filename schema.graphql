@@ -118,8 +118,8 @@ type Query {
 
 input CreateItemInput {
     name: String!
-    basePrice: Float
-    expirationPeriod: Int
+    basePrice: Float!
+    expirationPeriod: Int!
 }
 
 input UpdateItemInput {
@@ -185,7 +185,7 @@ input CreateMachineManufacturerInput {
 
 input UpdateMachineManufacturerInput {
     id: ID!
-    name: String
+    name: String!
 }
 
 input CreateMachineTypeInput {

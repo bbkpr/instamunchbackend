@@ -2,23 +2,39 @@ import { prisma } from './prismaClient';
 import {
   createItem,
   createLocation,
-  createMachine, createMachineItem, createMachineLocation,
-  createMachineManufacturer, createMachineType, deleteItem, deleteLocation, deleteMachine, deleteMachineLocation,
-  deleteMachineManufacturer, deleteMachineType,
+  createMachine,
+  createMachineItem,
+  createMachineLocation,
+  createMachineManufacturer,
+  createMachineType,
+  deleteItem,
+  deleteLocation,
+  deleteMachine,
+  deleteMachineItem,
+  deleteMachineLocation,
+  deleteMachineManufacturer,
+  deleteMachineType,
   getItems,
   getItemsByMachine,
-  getLocations, getLocationsByItem,
+  getLocations,
+  getLocationsByItem,
   getLocationsByMachineName,
-  getMachineItems, getMachineLocations,
+  getMachineItems,
+  getMachineLocations,
   getMachineManufacturer,
   getMachineManufacturers,
   getMachines,
-  getMachinesByItem, getMachinesByLocation,
+  getMachinesByItem,
+  getMachinesByLocation,
   getMachineType,
   getMachineTypes,
-  updateItem, updateLocation, updateMachine,
-  updateMachineItems, updateMachineLocation,
-  updateMachineManufacturer, updateMachineType
+  updateItem,
+  updateLocation,
+  updateMachine,
+  updateMachineItems,
+  updateMachineLocation,
+  updateMachineManufacturer,
+  updateMachineType
 } from './machine.dal';
 import { CreateItemInput } from '../../generated/graphql';
 
@@ -114,7 +130,7 @@ describe('Machine DAL Tests', () => {
         expect(result).toEqual(mockResponse);
       });
 
-      xit('validates required fields are provided', async () => {
+      it('validates required fields are provided', async () => {
         const invalidInput = {
           name: 'Test Item'
         } as CreateItemInput;
@@ -250,6 +266,33 @@ describe('Machine DAL Tests', () => {
         expect(result.name).toBe(input.name);
       });
 
+      it('updates item with provided fields', async () => {
+        const input = {
+          id: '1',
+          name: 'Updated Item',
+          expirationPeriod: 90
+        };
+
+        (prisma.item.update as jest.Mock).mockResolvedValue({
+          ...mockItem,
+          ...input,
+          updatedAt: expect.any(Date)
+        });
+
+        const result = await updateItem(input);
+
+        expect(prisma.item.update).toHaveBeenCalledWith({
+          where: { id: input.id },
+          data: {
+            name: input.name,
+            basePrice: undefined,
+            expirationPeriod: input.expirationPeriod,
+            updatedAt: expect.any(Date)
+          }
+        });
+        expect(result.name).toBe(input.name);
+      });
+
       it('handles non-existent item error', async () => {
         const input = { id: 'invalid' };
         const error = new Error('Record not found');
@@ -269,7 +312,7 @@ describe('Machine DAL Tests', () => {
         country: 'TestCountry'
       };
 
-      it('creates location successfully', async () => {
+      it('creates location successfully without address2', async () => {
         const mockResponse = {
           id: '1',
           ...mockInput,
@@ -292,17 +335,69 @@ describe('Machine DAL Tests', () => {
         expect(result).toEqual(mockResponse);
       });
 
+      it('creates location successfully with address2', async () => {
+        const mockResponse = {
+          id: '1',
+          ...mockInput,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+
+        (prisma.location.create as jest.Mock).mockResolvedValue(mockResponse);
+
+        const result = await createLocation({
+          ...mockInput,
+          address2: 'Unit 123'
+        });
+
+        expect(prisma.location.create).toHaveBeenCalledWith({
+          data: {
+            ...mockInput,
+            address2: 'Unit 123',
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date)
+          }
+        });
+        expect(result).toEqual(mockResponse);
+      });
+
       it('handles creation error', async () => {
         (prisma.location.create as jest.Mock).mockRejectedValue(new Error('Creation failed'));
         await expect(createLocation(mockInput)).rejects.toThrow('Creation failed');
       });
     });
 
-    xdescribe('updateLocation', () => {
+    describe('updateLocation', () => {
       it('updates location with partial data', async () => {
         const input = {
+          id: '1'
+        };
+
+        await updateLocation(input);
+
+        (prisma.location.create as jest.Mock).mockResolvedValue(null);
+
+        expect(prisma.location.update).toHaveBeenCalledWith({
+          where: { id: '1' },
+          data: {
+            city: undefined,
+            address1: undefined,
+            address2: undefined,
+            stateOrProvince: undefined,
+            country: undefined,
+            updatedAt: expect.any(Date)
+          }
+        });
+      });
+
+      it('updates location with full data', async () => {
+        const input = {
           id: '1',
-          city: 'NewCity'
+          city: 'NewCity',
+          address1: '123 Main St',
+          address2: 'Unit 456',
+          stateOrProvince: 'CA',
+          country: 'USA'
         };
 
         await updateLocation(input);
@@ -313,17 +408,17 @@ describe('Machine DAL Tests', () => {
           where: { id: '1' },
           data: {
             city: 'NewCity',
-            address1: undefined,
-            address2: undefined,
-            stateOrProvince: undefined,
-            country: undefined,
+            address1: '123 Main St',
+            address2: 'Unit 456',
+            stateOrProvince: 'CA',
+            country: 'USA',
             updatedAt: expect.any(Date)
           }
         });
       });
     });
 
-    xdescribe('deleteLocation', () => {
+    describe('deleteLocation', () => {
       it('deletes location and its relationships', async () => {
         await deleteLocation('1');
 
@@ -495,22 +590,18 @@ describe('Machine DAL Tests', () => {
     });
 
     describe('getLocationsByMachineName', () => {
-      it('should return all locations with a specific machine name', async () => {
-        const machineName = 'Test Machine';
-        const mockLocations = [
-          {
-            id: '1',
-            address1: '123 Main St',
-            machineLocations: [{
-              machine: { id: '1', name: 'Test Machine' }
-            }]
-          }
-        ];
+      const machineName = 'Test Machine';
+      const mockLocations = [{
+        id: '1',
+        address1: '123 Main St',
+        machineLocations: [{
+          machine: { id: '1', name: 'Test Machine' }
+        }]
+      }];
 
+      it('returns locations with matching machine name', async () => {
         (prisma.location.findMany as jest.Mock).mockResolvedValue(mockLocations);
-
         const result = await getLocationsByMachineName(machineName);
-
         expect(result).toEqual(mockLocations);
         expect(prisma.location.findMany).toHaveBeenCalledWith({
           where: {
@@ -533,6 +624,24 @@ describe('Machine DAL Tests', () => {
             }
           }
         });
+      });
+
+      it('returns empty array when no matches found', async () => {
+        (prisma.location.findMany as jest.Mock).mockResolvedValue([]);
+        const result = await getLocationsByMachineName('NonexistentMachine');
+        expect(result).toEqual([]);
+      });
+
+      it('handles database errors', async () => {
+        const error = new Error('Database connection failed');
+        (prisma.location.findMany as jest.Mock).mockRejectedValue(error);
+        await expect(getLocationsByMachineName(machineName)).rejects.toThrow('Database connection failed');
+      });
+
+      it('handles invalid input', async () => {
+        const error = new Error('Invalid input');
+        (prisma.location.findMany as jest.Mock).mockRejectedValue(error);
+        await expect(getLocationsByMachineName('')).rejects.toThrow('Invalid input');
       });
     });
   });
@@ -1256,6 +1365,33 @@ describe('Machine DAL Tests', () => {
           .rejects.toThrow('Unique constraint failed');
       });
     });
+
+    describe('deleteMachineItem', () => {
+      it('deletes machine item successfully', async () => {
+        (prisma.machineItem.deleteMany as jest.Mock).mockResolvedValue({ count: 1 });
+
+        const result = await deleteMachineItem('mi1');
+
+        expect(prisma.machineItem.deleteMany).toHaveBeenCalledWith({
+          where: { id: 'mi1' }
+        });
+        expect(result).toBe(true);
+      });
+
+      it('returns true even if no items deleted', async () => {
+        (prisma.machineItem.deleteMany as jest.Mock).mockResolvedValue({ count: 0 });
+
+        const result = await deleteMachineItem('nonexistent');
+        expect(result).toBe(true);
+      });
+
+      it('handles deletion error', async () => {
+        (prisma.machineItem.deleteMany as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+        await expect(deleteMachineItem('mi1')).rejects.toThrow('Database error');
+      });
+    });
+
     describe('getItemsByMachine', () => {
       it('should return all items for a specific machine', async () => {
         const machineId = '1';
@@ -1304,7 +1440,6 @@ describe('Machine DAL Tests', () => {
         (prisma.machineItem.findMany as jest.Mock).mockRejectedValue(error);
 
         await expect(getItemsByMachine('1')).rejects.toThrow('Database error');
-
       });
     });
 

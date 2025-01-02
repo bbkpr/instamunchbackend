@@ -17,8 +17,8 @@ export type Scalars = {
 };
 
 export type CreateItemInput = {
-  basePrice?: InputMaybe<Scalars['Float']['input']>;
-  expirationPeriod?: InputMaybe<Scalars['Int']['input']>;
+  basePrice: Scalars['Float']['input'];
+  expirationPeriod: Scalars['Int']['input'];
   name: Scalars['String']['input'];
 };
 
@@ -523,7 +523,7 @@ export type UpdateMachineLocationMutationResponse = MutationResponse & {
 
 export type UpdateMachineManufacturerInput = {
   id: Scalars['ID']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
 };
 
 export type UpdateMachineManufacturerMutationResponse = MutationResponse & {
