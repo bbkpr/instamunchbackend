@@ -1759,7 +1759,8 @@ describe('Machine DAL Tests', () => {
             updatedAt: expect.any(Date)
           },
           include: {
-            machines: true
+            machines: true,
+            manufacturer: true
           }
         });
         expect(result).toEqual(mockResponse);

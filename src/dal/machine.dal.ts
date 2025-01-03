@@ -653,7 +653,8 @@ export const updateMachineType = async (input: UpdateMachineTypeInput) => {
       updatedAt: new Date()
     },
     include: {
-      machines: true
+      machines: true,
+      manufacturer: true
     }
   });
   debug(`updateMachineType updated MachineType ${input.id}`);
