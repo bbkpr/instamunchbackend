@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+
 const prisma = new PrismaClient();
 
 async function main() {
@@ -36,13 +37,13 @@ async function main() {
     }
   });
 
-  // Create machine types
   const ap132 = await prisma.machineType.upsert({
     where: { id: 'a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1' },
     update: {},
     create: {
       id: 'a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1',
       name: 'AP 132',
+      manufacturerId: automaticProducts.id,
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -54,6 +55,7 @@ async function main() {
     create: {
       id: 'b2b2b2b2-b2b2-b2b2-b2b2-b2b2b2b2b2b2',
       name: 'Crane 156',
+      manufacturerId: crane.id,
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -65,6 +67,7 @@ async function main() {
     create: {
       id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3',
       name: 'Wittern Combo',
+      manufacturerId: wittern.id,
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -77,7 +80,7 @@ async function main() {
       update: {},
       create: {
         id: 'd1d1d1d1-d1d1-d1d1-d1d1-d1d1d1d1d1d1',
-        name: "Lenny & Larry's Complete Cookie - Chocolate Chip",
+        name: 'Lenny & Larry\'s Complete Cookie - Chocolate Chip',
         basePrice: 3.99,
         expirationPeriod: 180,
         createdAt: new Date(),

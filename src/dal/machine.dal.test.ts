@@ -1270,7 +1270,7 @@ describe('Machine DAL Tests', () => {
 
         await expect(deleteMachineManufacturer(manufacturerId))
           .rejects
-          .toThrow('Cannot delete manufacturer that is in use by machines');
+          .toThrow('Cannot delete Manufacturer that is in use by Machines');
 
         expect(prisma.machineManufacturer.delete).not.toHaveBeenCalled();
       });
@@ -1568,7 +1568,7 @@ describe('Machine DAL Tests', () => {
 
         await expect(updateMachineItems('1', ['item1']))
           .rejects
-          .toThrow('Machine with ID 1 not found');
+          .toThrow('updateMachineItems: Machine 1 not found');
       });
 
       it('should throw error when items not found', async () => {
@@ -1588,7 +1588,8 @@ describe('Machine DAL Tests', () => {
   describe('MachineType Operations', () => {
     describe('createMachineType', () => {
       const mockInput = {
-        name: 'AP 123'
+        name: 'AP 123',
+        manufacturerId: '1'
       };
 
       it('creates machine type successfully', async () => {
@@ -1607,11 +1608,13 @@ describe('Machine DAL Tests', () => {
         expect(prisma.machineType.create).toHaveBeenCalledWith({
           data: {
             name: mockInput.name,
+            manufacturerId: '1',
             createdAt: expect.any(Date),
             updatedAt: expect.any(Date)
           },
           include: {
-            machines: true
+            machines: true,
+            manufacturer: true
           }
         });
         expect(result).toEqual(mockResponse);
@@ -1674,21 +1677,7 @@ describe('Machine DAL Tests', () => {
             updatedAt: new Date(),
             machines: [{
               id: '1',
-              name: 'Machine 1',
-              machineItems: [
-                {
-                  id: 'mi1',
-                  item: { id: 'item1', name: 'Item 1' }
-                }
-              ],
-              machineLocations: [
-                {
-                  id: 'ml1',
-                  location: { id: 'loc1', name: 'Location 1' }
-                }
-              ],
-              machineType: { id: 'mt1', name: 'Type 1' },
-              manufacturer: { id: 'mfr1', name: 'Manufacturer 1' }
+              name: 'Machine 1'
             }]
           }
         ];
@@ -1700,22 +1689,8 @@ describe('Machine DAL Tests', () => {
         expect(result).toEqual(mockTypes);
         expect(prisma.machineType.findMany).toHaveBeenCalledWith({
           include: {
-            machines: {
-              include: {
-                machineItems: {
-                  include: {
-                    item: true
-                  }
-                },
-                machineLocations: {
-                  include: {
-                    location: true
-                  }
-                },
-                machineType: true,
-                manufacturer: true
-              }
-            }
+            machines: true,
+            manufacturer: true
           }
         });
       });
@@ -1739,7 +1714,8 @@ describe('Machine DAL Tests', () => {
         expect(prisma.machineType.findUnique).toHaveBeenCalledWith({
           where: { id: '1' },
           include: {
-            machines: true
+            machines: true,
+            manufacturer: true
           }
         });
       });

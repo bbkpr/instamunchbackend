@@ -552,7 +552,7 @@ export const updateMachineItems = async (machineId: string, itemIds: string[]) =
     });
 
     if (!machine) {
-      throw new Error(`Machine with ID ${machineId} not found`);
+      throw new Error(`updateMachineItems: Machine ${machineId} not found`);
     }
 
     // Verify all items exist
@@ -586,76 +586,78 @@ export const updateMachineItems = async (machineId: string, itemIds: string[]) =
         })
       )
     );
-
+    debug(`updateMachineItems updated ${machineItems.length} MachineItems`);
     return machineItems;
   });
 };
 
 export const deleteMachineItem = async (id: string) => {
-  await prisma.machineItem.deleteMany({
+  const result = await prisma.machineItem.deleteMany({
     where: {
       id
     }
   });
+  debug(`deleteMachineItem deleted ${result.count} MachineItems`);
   return true;
 };
 
 export const getMachineTypes = async () => {
-  return prisma.machineType.findMany({
+  const result = await prisma.machineType.findMany({
     include: {
-      machines: {
-        include: {
-          machineItems: {
-            include: {
-              item: true
-            }
-          },
-          machineLocations: {
-            include: {
-              location: true
-            }
-          },
-          manufacturer: true,
-          machineType: true
-        }
-      }
+      machines: true,
+      manufacturer: true
     }
   });
+  if (result != null) {
+    debug(`getMachineTypes found ${result.length} MachineTypes`);
+  } else {
+    /* istanbul ignore */
+    debug(`getMachineTypes did not find any MachineTypes`);
+  }
+  return result;
 };
 
 export const getMachineType = async (id: string) => {
   return prisma.machineType.findUnique({
     where: { id },
     include: {
-      machines: true
+      machines: true,
+      manufacturer: true
     }
   });
 };
 
 export const createMachineType = async (input: CreateMachineTypeInput) => {
-  return prisma.machineType.create({
+  const machineType = await prisma.machineType.create({
     data: {
       name: input.name,
+      manufacturerId: input.manufacturerId,
       createdAt: new Date(),
       updatedAt: new Date()
     },
     include: {
-      machines: true
+      machines: true,
+      manufacturer: true
     }
   });
+  debug(`createMachineType created MachineType ${machineType.id}`);
+  return machineType;
 };
 
 export const updateMachineType = async (input: UpdateMachineTypeInput) => {
-  return prisma.machineType.update({
+  const result = await prisma.machineType.update({
     where: { id: input.id },
     data: {
       name: input.name ?? undefined,
+      manufacturerId: input.manufacturerId ?? undefined,
       updatedAt: new Date()
     },
     include: {
       machines: true
     }
   });
+  debug(`updateMachineType updated MachineType ${input.id}`);
+  return result;
 };
 
 export const deleteMachineType = async (id: string) => {
@@ -668,9 +670,9 @@ export const deleteMachineType = async (id: string) => {
     throw new Error('Cannot delete machine type that is in use by machines');
   }
 
-  await prisma.machineType.delete({
+  const result = await prisma.machineType.delete({
     where: { id }
   });
-
+  debug(`deleteMachineType deleted MachineType ${id}`);
   return true;
 };

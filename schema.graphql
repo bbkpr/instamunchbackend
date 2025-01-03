@@ -38,6 +38,7 @@ type MachineManufacturer {
     createdAt: String!
     updatedAt: String!
     machines: [Machine]
+    machineTypes: [MachineType]
 }
 
 type MachineType {
@@ -46,6 +47,8 @@ type MachineType {
     createdAt: String!
     updatedAt: String!
     machines: [Machine]
+    manufacturerId: ID!
+    manufacturer: MachineManufacturer!
 }
 
 type Machine {
@@ -190,11 +193,13 @@ input UpdateMachineManufacturerInput {
 
 input CreateMachineTypeInput {
     name: String!
+    manufacturerId: ID!
 }
 
 input UpdateMachineTypeInput {
     id: ID!
     name: String
+    manufacturerId: ID
 }
 
 type CreateItemMutationResponse implements MutationResponse {

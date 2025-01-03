@@ -102,6 +102,7 @@ export type CreateMachineMutationResponse = MutationResponse & {
 };
 
 export type CreateMachineTypeInput = {
+  manufacturerId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
 };
 
@@ -230,6 +231,7 @@ export type MachineManufacturer = {
   __typename?: 'MachineManufacturer';
   createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  machineTypes?: Maybe<Array<Maybe<MachineType>>>;
   machines?: Maybe<Array<Maybe<Machine>>>;
   name: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
@@ -240,6 +242,8 @@ export type MachineType = {
   createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   machines?: Maybe<Array<Maybe<Machine>>>;
+  manufacturer: MachineManufacturer;
+  manufacturerId: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
 };
@@ -544,6 +548,7 @@ export type UpdateMachineMutationResponse = MutationResponse & {
 
 export type UpdateMachineTypeInput = {
   id: Scalars['ID']['input'];
+  manufacturerId?: InputMaybe<Scalars['ID']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -903,6 +908,7 @@ export type MachineLocationResolvers<ContextType = any, ParentType extends Resol
 export type MachineManufacturerResolvers<ContextType = any, ParentType extends ResolversParentTypes['MachineManufacturer'] = ResolversParentTypes['MachineManufacturer']> = {
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  machineTypes?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineType']>>>, ParentType, ContextType>;
   machines?: Resolver<Maybe<Array<Maybe<ResolversTypes['Machine']>>>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -913,6 +919,8 @@ export type MachineTypeResolvers<ContextType = any, ParentType extends Resolvers
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   machines?: Resolver<Maybe<Array<Maybe<ResolversTypes['Machine']>>>, ParentType, ContextType>;
+  manufacturer?: Resolver<ResolversTypes['MachineManufacturer'], ParentType, ContextType>;
+  manufacturerId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
