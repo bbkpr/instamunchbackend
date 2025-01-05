@@ -34,7 +34,7 @@ type PrismaMachineWithRelations = WithTimeStamps<PrismaMachine> & {
   machineLocations?: (PrismaMachineLocation & {
     location?: WithTimeStamps<PrismaLocation>
   })[];
-  machineType?: WithTimeStamps<PrismaMachineTypeWithRelations>,
+  machineType?: WithTimeStamps<PrismaMachineType>,
   manufacturer?: WithTimeStamps<PrismaMachineManufacturer>
 };
 
