@@ -3,9 +3,10 @@ import { itemResolvers } from './item.resolvers';
 import { createItem, deleteItem, getItems, updateItem } from '../../dal/machine.dal';
 import { adaptItemWithStringTimestamps } from '../../adapters/model.adapters';
 import { Prisma } from '@prisma/client';
+import { timestampToISOString } from '../../util/typeguards';
 
 jest.mock('../../dal/machine.dal');
-jest.mock('../../adapters/model.adapters');
+//jest.mock('../../adapters/model.adapters');
 
 type GetItemsReturnType = Prisma.PromiseReturnType<typeof getItems>[number]
 describe('Item Resolvers', () => {
@@ -17,8 +18,8 @@ describe('Item Resolvers', () => {
     name: 'Test Item',
     basePrice: 1.99,
     expirationPeriod: 30,
-    createdAt: mockDate,
-    updatedAt: mockDate
+    createdAt: timestampToISOString(mockDate),
+    updatedAt: timestampToISOString(mockDate)
   };
 
   beforeEach(() => {
@@ -38,8 +39,8 @@ describe('Item Resolvers', () => {
         name: mockItem.name,
         basePrice: mockItem.basePrice,
         expirationPeriod: mockItem.expirationPeriod,
-        createdAt: mockDate.toISOString(),
-        updatedAt: mockDate.toISOString()
+        createdAt: timestampToISOString(mockDate),
+        updatedAt: timestampToISOString(mockDate)
       }]);
     });
 
@@ -71,7 +72,6 @@ describe('Item Resolvers', () => {
       const createdItem = { ...mockItem, ...input };
       // @ts-ignore
       (createItem as jest.Mock).mockResolvedValue(createdItem);
-      (adaptItemWithStringTimestamps as jest.Mock).mockReturnValue(createdItem);
       // @ts-ignore
       const result = await itemResolvers.Mutation!.createItem({}, { input }, mockContext);
 
@@ -102,7 +102,6 @@ describe('Item Resolvers', () => {
       const updatedItem = { ...mockItem, name: input.name };
       // @ts-ignore
       (updateItem as jest.Mock).mockResolvedValue(updatedItem);
-      (adaptItemWithStringTimestamps as jest.Mock).mockReturnValue(updatedItem);
 
       // @ts-ignore
       const result = await itemResolvers.Mutation!.updateItem({}, { input }, mockContext);
