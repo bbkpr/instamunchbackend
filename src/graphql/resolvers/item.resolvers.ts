@@ -9,14 +9,7 @@ export const itemResolvers: Partial<Resolvers<InstaMunchContext>> = {
     async getItems(_, {}, context) {
       const items = await getItems();
       debug(`getItems: ${items.length} Items found`);
-      return items.map(item => ({
-        id: item.id,
-        name: item.name,
-        createdAt: item.createdAt.toISOString(),
-        updatedAt: item.updatedAt.toISOString(),
-        basePrice: item.basePrice,
-        expirationPeriod: item.expirationPeriod
-      }));
+      return items.map(adaptItemWithStringTimestamps);
     }
   },
   Mutation: {

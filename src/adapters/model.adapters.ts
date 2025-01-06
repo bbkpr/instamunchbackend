@@ -22,12 +22,12 @@ import {
   WithTimeStamps
 } from '../util/typeguards';
 
-type PrismaMachineTypeWithRelations = WithTimeStamps<PrismaMachineType> & {
+export type PrismaMachineTypeWithRelations = WithTimeStamps<PrismaMachineType> & {
   machines: WithTimeStamps<PrismaMachine>[],
   manufacturer: WithTimeStamps<PrismaMachineManufacturer>
 }
 
-type PrismaMachineWithRelations = WithTimeStamps<PrismaMachine> & {
+export type PrismaMachineWithRelations = WithTimeStamps<PrismaMachine> & {
   machineItems?: (PrismaMachineItem & {
     item?: WithTimeStamps<PrismaItem>
   })[];
@@ -38,31 +38,28 @@ type PrismaMachineWithRelations = WithTimeStamps<PrismaMachine> & {
   manufacturer?: WithTimeStamps<PrismaMachineManufacturer>
 };
 
-type PrismaItemWithRelations = WithTimeStamps<PrismaItem> & {
+export type PrismaItemWithRelations = WithTimeStamps<PrismaItem> & {
   machineItems?: (PrismaMachineItem & {
     machine?: WithTimeStamps<PrismaMachineWithRelations>
   })[];
 };
 
-type PrismaLocationWithRelations = WithTimeStamps<PrismaLocation> & {
+export type PrismaLocationWithRelations = WithTimeStamps<PrismaLocation> & {
   machineLocations?: (PrismaMachineLocation & {
     machine?: WithTimeStamps<PrismaMachineWithRelations>
   })[];
 };
 
-type PrismaMachineItemWithRelations = PrismaMachineItem & {
+export type PrismaMachineItemWithRelations = PrismaMachineItem & {
   machine: WithTimeStamps<PrismaMachine>;
   item: WithTimeStamps<PrismaItem>;
 };
 
-type PrismaMachineLocationWithRelations = PrismaMachineLocation & {
+export type PrismaMachineLocationWithRelations = PrismaMachineLocation & {
   machine: WithTimeStamps<PrismaMachine>;
   location: WithTimeStamps<PrismaLocation>;
 };
 
-export type ItemWithDates = Omit<Item, 'createdAt' | 'updatedAt'> & { createdAt: Date, updatedAt: Date };
-
-// Adapters
 export const adaptLocation = (prismaLocation: PrismaLocationWithRelations): Location => ({
   id: prismaLocation.id,
   address1: prismaLocation.address1,
@@ -208,11 +205,11 @@ export const adaptItemWithStringTimestamps = (prismaItem: WithTimeStamps<PrismaI
     itemId: machineItem.itemId,
     machine: {
       id: machineItem.machineId,
-      name: machineItem.name ?? `Item ${prismaItem.name} in Machine ${machineItem.machine!.name}`,
+      name: machineItem.machine!.name ?? `Item ${prismaItem.name} in Machine ${machineItem.machine!.name}`,
       createdAt: timestampToISOString(machineItem.machine!.createdAt),
-      updatedAt: timestampToISOString(machineItem.machine!.updatedAt)
+      updatedAt: timestampToISOString(machineItem.machine!.updatedAt),
     },
-    machineId: machineItem.id
+    machineId: machineItem.machineId
   }))
 });
 

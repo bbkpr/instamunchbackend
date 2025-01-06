@@ -37,6 +37,8 @@ import {
   updateMachineType
 } from './machine.dal';
 import { CreateItemInput } from '../../generated/graphql';
+import { PrismaItemWithRelations } from '../adapters/model.adapters';
+import { timestampToISOString } from '../util/typeguards';
 
 // Mock the entire prisma module
 jest.mock('./prismaClient', () => ({
@@ -174,26 +176,27 @@ describe('Machine DAL Tests', () => {
 
     describe('getItems', () => {
       it('should return all items with their machine relationships', async () => {
-        const mockItems = [
+        const mockItems: PrismaItemWithRelations[] = [
           {
             id: '1',
             name: 'Soda',
             basePrice: 2,
             expirationPeriod: 90,
+            createdAt: timestampToISOString(new Date()),
+            updatedAt: timestampToISOString(new Date()),
             machineItems: [{
               itemId: '1',
               machineId: '1',
+              name: 'An Item',
+              id: 'mi1',
+              quantity: 1,
               machine: {
                 id: '1',
                 name: 'Machine 1',
-                machineType: { id: '1', name: 'Type 1' },
-                machineLocations: [{
-                  location: { id: '1', address1: '123 Main St' }
-                }],
-                manufacturer: {
-                  id: '1',
-                  name: 'Automatic Products'
-                }
+                manufacturerId: 'mfr1',
+                machineTypeId: 'mt1',
+                createdAt: timestampToISOString(new Date()),
+                updatedAt: timestampToISOString(new Date())
               }
             }]
           }
@@ -208,13 +211,7 @@ describe('Machine DAL Tests', () => {
           include: {
             machineItems: {
               include: {
-                machine: {
-                  include: {
-                    manufacturer: true,
-                    machineType: true,
-                    machineLocations: true
-                  }
-                }
+                machine: true
               }
             }
           }

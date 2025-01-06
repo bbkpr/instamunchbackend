@@ -15,13 +15,7 @@ export const getItems = async () => {
     include: {
       machineItems: {
         include: {
-          machine: {
-            include: {
-              manufacturer: true,
-              machineType: true,
-              machineLocations: true
-            }
-          }
+          machine: true
         }
       }
     }
