@@ -99,6 +99,8 @@ type Query {
     getLocationsByMachineName(machineName: String!): [Location!]!
     "Get all Machines, from everywhere"
     getMachines: [Machine]
+    "Get all MachineLocations"
+    getMachineLocations: [MachineLocation!]
     "Get a MachineManufacturer by ID"
     getMachineManufacturer(id: ID!): MachineManufacturer
     "Get all MachineManufacturers"

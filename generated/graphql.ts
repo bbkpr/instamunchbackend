@@ -407,6 +407,8 @@ export type Query = {
   getLocationsByMachineName: Array<Location>;
   /** Get all MachineItems, from everywhere */
   getMachineItems?: Maybe<Array<Maybe<MachineItem>>>;
+  /** Get all MachineLocations */
+  getMachineLocations?: Maybe<Array<MachineLocation>>;
   /** Get a MachineManufacturer by ID */
   getMachineManufacturer?: Maybe<MachineManufacturer>;
   /** Get all MachineManufacturers */
@@ -964,6 +966,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getLocationsByItem?: Resolver<Maybe<Array<ResolversTypes['Location']>>, ParentType, ContextType, RequireFields<QueryGetLocationsByItemArgs, 'itemId'>>;
   getLocationsByMachineName?: Resolver<Array<ResolversTypes['Location']>, ParentType, ContextType, RequireFields<QueryGetLocationsByMachineNameArgs, 'machineName'>>;
   getMachineItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineItem']>>>, ParentType, ContextType>;
+  getMachineLocations?: Resolver<Maybe<Array<ResolversTypes['MachineLocation']>>, ParentType, ContextType>;
   getMachineManufacturer?: Resolver<Maybe<ResolversTypes['MachineManufacturer']>, ParentType, ContextType, RequireFields<QueryGetMachineManufacturerArgs, 'id'>>;
   getMachineManufacturers?: Resolver<Array<ResolversTypes['MachineManufacturer']>, ParentType, ContextType>;
   getMachineType?: Resolver<Maybe<ResolversTypes['MachineType']>, ParentType, ContextType, RequireFields<QueryGetMachineTypeArgs, 'id'>>;

@@ -3369,6 +3369,26 @@
             "deprecationReason": null
           },
           {
+            "name": "getMachineLocations",
+            "description": "Get all MachineLocations",
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "MachineLocation",
+                  "ofType": null
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "getMachineManufacturer",
             "description": "Get a MachineManufacturer by ID",
             "args": [

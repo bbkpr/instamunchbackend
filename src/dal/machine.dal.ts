@@ -284,6 +284,13 @@ export const updateItem = async (input: UpdateItemInput) => {
       basePrice: input.basePrice ?? undefined,
       expirationPeriod: input.expirationPeriod ?? undefined,
       updatedAt: new Date()
+    },
+    include: {
+      machineItems: {
+        include: {
+          machine: true
+        }
+      }
     }
   });
   debug(`updateItem updated Item ${input.id} (${updatedItem.name})`);
@@ -300,18 +307,8 @@ export const createMachine = async (input: CreateMachineInput) => {
       updatedAt: new Date()
     },
     include: {
-      machineItems: {
-        include: {
-          item: true
-        }
-      },
-      machineLocations: {
-        include: {
-          location: true
-        }
-      },
-      manufacturer: true,
-      machineType: true
+      machineType: true,
+      manufacturer: true
     }
   });
   debug(`createMachine created Machine ${createdMachine.id} (${createdMachine.manufacturer.name} ${createdMachine.name})`);

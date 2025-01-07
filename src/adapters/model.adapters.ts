@@ -1,11 +1,11 @@
 import {
-  Machine as PrismaMachine,
-  MachineItem as PrismaMachineItem,
   Item as PrismaItem,
   Location as PrismaLocation,
+  Machine as PrismaMachine,
+  MachineItem as PrismaMachineItem,
   MachineLocation as PrismaMachineLocation,
+  MachineManufacturer as PrismaMachineManufacturer,
   MachineType as PrismaMachineType,
-  MachineManufacturer as PrismaMachineManufacturer
 } from '@prisma/client';
 import {
   Machine,
@@ -21,11 +21,6 @@ import {
   WithStringTimeStamps,
   WithTimeStamps
 } from '../util/typeguards';
-
-export type PrismaMachineTypeWithRelations = WithTimeStamps<PrismaMachineType> & {
-  machines: WithTimeStamps<PrismaMachine>[],
-  manufacturer: WithTimeStamps<PrismaMachineManufacturer>
-}
 
 export type PrismaMachineWithRelations = WithTimeStamps<PrismaMachine> & {
   machineItems?: (PrismaMachineItem & {
@@ -59,6 +54,11 @@ export type PrismaMachineLocationWithRelations = PrismaMachineLocation & {
   machine: WithTimeStamps<PrismaMachine>;
   location: WithTimeStamps<PrismaLocation>;
 };
+
+export type PrismaMachineTypeWithRelations = WithTimeStamps<PrismaMachineType> & {
+  machines: WithTimeStamps<PrismaMachine>[],
+  manufacturer: WithTimeStamps<PrismaMachineManufacturer>
+}
 
 export const adaptLocation = (prismaLocation: PrismaLocationWithRelations): Location => ({
   id: prismaLocation.id,
@@ -95,7 +95,7 @@ export const adaptMachineLocation = (
     id: prismaMachineLocation.machine.id,
     name: prismaMachineLocation.machine.name,
     createdAt: timestampToISOString(prismaMachineLocation.machine.createdAt),
-    updatedAt: timestampToISOString(prismaMachineLocation.machine.updatedAt)
+    updatedAt: timestampToISOString(prismaMachineLocation.machine.updatedAt),
   },
   locationId: prismaMachineLocation.locationId,
   location: {

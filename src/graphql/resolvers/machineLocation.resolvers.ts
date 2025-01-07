@@ -3,7 +3,7 @@ import { Resolvers } from '../../../generated/graphql';
 import {
   createMachineLocation,
   deleteMachineLocation,
-  getLocationsByMachineName,
+  getLocationsByMachineName, getMachineLocations,
   updateMachineLocation
 } from '../../dal/machine.dal';
 import { adaptLocation, adaptMachineLocation } from '../../adapters/model.adapters';
@@ -19,6 +19,16 @@ export const machineLocationResolvers: Partial<Resolvers<InstaMunchContext>> = {
         return locations.map(adaptLocation);
       } catch (error: any) {
         debug('Error in getLocationsByMachineName query:', error);
+        throw error;
+      }
+    },
+    async getMachineLocations(_, {}, context) {
+      try {
+        const machineLocations = await getMachineLocations();
+        debug(`getMachineLocations found ${machineLocations.length} MachineLocations`);
+        return machineLocations.map(adaptMachineLocation);
+      } catch (error: any) {
+        debug('Error in getMachineLocations query:', error);
         throw error;
       }
     }

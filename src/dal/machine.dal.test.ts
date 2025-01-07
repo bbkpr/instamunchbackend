@@ -258,6 +258,13 @@ describe('Machine DAL Tests', () => {
             basePrice: input.basePrice,
             expirationPeriod: undefined,
             updatedAt: expect.any(Date)
+          },
+          include: {
+            machineItems: {
+              include: {
+                machine: true
+              }
+            }
           }
         });
         expect(result.name).toBe(input.name);
@@ -285,6 +292,13 @@ describe('Machine DAL Tests', () => {
             basePrice: undefined,
             expirationPeriod: input.expirationPeriod,
             updatedAt: expect.any(Date)
+          },
+          include: {
+            machineItems: {
+              include: {
+                machine: true
+              }
+            }
           }
         });
         expect(result.name).toBe(input.name);
@@ -676,16 +690,6 @@ describe('Machine DAL Tests', () => {
             updatedAt: expect.any(Date)
           },
           include: {
-            machineItems: {
-              include: {
-                item: true
-              }
-            },
-            machineLocations: {
-              include: {
-                location: true
-              }
-            },
             manufacturer: true,
             machineType: true
           }
