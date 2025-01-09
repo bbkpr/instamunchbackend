@@ -1,4 +1,11 @@
-import { createMachine, deleteMachine, getMachines, getMachinesByLocation, updateMachine } from '../../dal/machine.dal';
+import {
+  createMachine,
+  deleteMachine,
+  getMachine,
+  getMachines,
+  getMachinesByLocation,
+  updateMachine
+} from '../../dal/machine.dal';
 import { adaptMachine } from '../../adapters/model.adapters';
 import { Resolvers } from '../../../generated/graphql';
 import { InstaMunchContext } from '../context';
@@ -7,6 +14,10 @@ const debug = require('debug')('instamunchbackend:resolvers');
 
 export const machineResolvers: Partial<Resolvers<InstaMunchContext>> = {
   Query: {
+    async getMachine(_, { machineId }, context) {
+      const machine = await getMachine(machineId);
+      return adaptMachine(machine!);
+    },
     async getMachines(_, {}, context) {
       const machines = await getMachines();
       debug(`getMachines found ${machines.length} Machines`);

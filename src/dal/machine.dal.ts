@@ -84,10 +84,10 @@ export const getLocationsByMachineName = async (machineName: string) => {
   return locations;
 };
 
-export const getMachines = async () => {
-  const machines = await prisma.machine.findMany({
+export const getMachine = async (id: string) => {
+  return prisma.machine.findUnique({
+    where: { id },
     include: {
-      machineType: true,
       machineItems: {
         include: {
           item: true
@@ -98,6 +98,26 @@ export const getMachines = async () => {
           location: true
         }
       },
+      machineType: true,
+      manufacturer: true
+    }
+  });
+};
+
+export const getMachines = async () => {
+  const machines = await prisma.machine.findMany({
+    include: {
+      machineItems: {
+        include: {
+          item: true
+        }
+      },
+      machineLocations: {
+        include: {
+          location: true
+        }
+      },
+      machineType: true,
       manufacturer: true
     }
   });

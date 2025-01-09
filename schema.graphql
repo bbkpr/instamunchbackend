@@ -97,6 +97,8 @@ type Query {
     getLocationsByItem(itemId: ID!): [Location!]
     "Get Locations with a Machine matching a name (case insensitive)"
     getLocationsByMachineName(machineName: String!): [Location!]!
+
+    getMachine(machineId: ID!): Machine
     "Get all Machines, from everywhere"
     getMachines: [Machine]
     "Get all MachineLocations"
