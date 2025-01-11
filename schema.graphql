@@ -6,6 +6,36 @@ interface MutationResponse {
     success: Boolean!
     "Human-readable status message"
     message: String!
+    "If ACL permission was denied for this operation"
+    permissionDenied: Boolean
+}
+
+enum Role {
+    TECHNICIAN
+    OPERATOR
+    ADMINISTRATOR
+}
+
+enum Permission {
+    # Technician permissions
+    READ_ITEMS
+    READ_MACHINES
+    UPDATE_MACHINE_ITEMS
+    READ_LOCATIONS
+
+    # Operator permissions
+    CREATE_ITEMS
+    UPDATE_ITEMS
+    UPDATE_MACHINE_PRICES
+    CREATE_MACHINES
+    UPDATE_MACHINES
+
+    # Administrator permissions
+    DELETE_ITEMS
+    DELETE_MACHINES
+    MANAGE_LOCATIONS
+    MANAGE_MACHINE_TYPES
+    MANAGE_MANUFACTURERS
 }
 
 type Item {
@@ -68,6 +98,7 @@ type Location {
     address2: String
     city: String!
     stateOrProvince: String!
+    postalCode: String!
     country: String!
     createdAt: String!
     updatedAt: String!
@@ -82,6 +113,14 @@ type MachineLocation {
     machine: Machine
     locationId: ID!
     location: Location
+    createdAt: String!
+    updatedAt: String!
+}
+
+type User {
+    id: ID!
+    email: String!
+    role: Role!
     createdAt: String!
     updatedAt: String!
 }
@@ -154,6 +193,7 @@ input CreateLocationInput {
     address2: String
     city: String!
     stateOrProvince: String!
+    postalCode: String!
     country: String!
 }
 
@@ -163,6 +203,7 @@ input UpdateLocationInput {
     address2: String
     city: String
     stateOrProvince: String
+    postalCode: String!
     country: String
 }
 
@@ -184,6 +225,7 @@ input CreateMachineItemInput {
     itemId: ID!
     name: String
     quantity: Int!
+    setPrice: Float
 }
 
 input CreateMachineManufacturerInput {
@@ -210,6 +252,7 @@ type CreateItemMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
     item: Item
 }
 
@@ -217,6 +260,7 @@ type UpdateItemMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
     item: Item
 }
 
@@ -224,6 +268,7 @@ type DeleteItemMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
 }
 
 type CreateMachineMutationResponse implements MutationResponse {
@@ -231,6 +276,7 @@ type CreateMachineMutationResponse implements MutationResponse {
     success: Boolean!
     message: String!
     machine: Machine
+    permissionDenied: Boolean
 }
 
 type UpdateMachineMutationResponse implements MutationResponse {
@@ -238,18 +284,21 @@ type UpdateMachineMutationResponse implements MutationResponse {
     success: Boolean!
     message: String!
     machine: Machine
+    permissionDenied: Boolean
 }
 
 type DeleteMachineMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
 }
 
 type CreateLocationMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
     location: Location
 }
 
@@ -257,6 +306,7 @@ type UpdateLocationMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
     location: Location
 }
 
@@ -264,12 +314,14 @@ type DeleteLocationMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
 }
 
 type CreateMachineItemMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
     machineItem: MachineItem
 }
 
@@ -277,12 +329,14 @@ type DeleteMachineItemMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
 }
 
 type UpdateMachineItemsMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
     machineItems: [MachineItem]
 }
 
@@ -290,6 +344,7 @@ type CreateMachineLocationMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
     machineLocation: MachineLocation
 }
 
@@ -297,6 +352,7 @@ type UpdateMachineLocationMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
     machineLocation: MachineLocation
 }
 
@@ -304,12 +360,14 @@ type DeleteMachineLocationMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
 }
 
 type CreateMachineManufacturerMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
     manufacturer: MachineManufacturer
 }
 
@@ -317,6 +375,7 @@ type UpdateMachineManufacturerMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
     manufacturer: MachineManufacturer
 }
 
@@ -324,12 +383,14 @@ type DeleteMachineManufacturerMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
 }
 
 type CreateMachineTypeMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
     machineType: MachineType
 }
 
@@ -337,6 +398,7 @@ type UpdateMachineTypeMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
     machineType: MachineType
 }
 
@@ -344,6 +406,7 @@ type DeleteMachineTypeMutationResponse implements MutationResponse {
     code: String!
     success: Boolean!
     message: String!
+    permissionDenied: Boolean
 }
 
 # Update and overwrite ALL Items in the Machine

@@ -27,6 +27,7 @@ export type CreateItemMutationResponse = MutationResponse & {
   code: Scalars['String']['output'];
   item?: Maybe<Item>;
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -35,6 +36,7 @@ export type CreateLocationInput = {
   address2?: InputMaybe<Scalars['String']['input']>;
   city: Scalars['String']['input'];
   country: Scalars['String']['input'];
+  postalCode: Scalars['String']['input'];
   stateOrProvince: Scalars['String']['input'];
 };
 
@@ -43,6 +45,7 @@ export type CreateLocationMutationResponse = MutationResponse & {
   code: Scalars['String']['output'];
   location?: Maybe<Location>;
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -57,6 +60,7 @@ export type CreateMachineItemInput = {
   machineId: Scalars['ID']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
   quantity: Scalars['Int']['input'];
+  setPrice?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type CreateMachineItemMutationResponse = MutationResponse & {
@@ -64,6 +68,7 @@ export type CreateMachineItemMutationResponse = MutationResponse & {
   code: Scalars['String']['output'];
   machineItem?: Maybe<MachineItem>;
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -78,6 +83,7 @@ export type CreateMachineLocationMutationResponse = MutationResponse & {
   code: Scalars['String']['output'];
   machineLocation?: Maybe<MachineLocation>;
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -90,6 +96,7 @@ export type CreateMachineManufacturerMutationResponse = MutationResponse & {
   code: Scalars['String']['output'];
   manufacturer?: Maybe<MachineManufacturer>;
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -98,6 +105,7 @@ export type CreateMachineMutationResponse = MutationResponse & {
   code: Scalars['String']['output'];
   machine?: Maybe<Machine>;
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -111,6 +119,7 @@ export type CreateMachineTypeMutationResponse = MutationResponse & {
   code: Scalars['String']['output'];
   machineType?: Maybe<MachineType>;
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -118,6 +127,7 @@ export type DeleteItemMutationResponse = MutationResponse & {
   __typename?: 'DeleteItemMutationResponse';
   code: Scalars['String']['output'];
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -125,6 +135,7 @@ export type DeleteLocationMutationResponse = MutationResponse & {
   __typename?: 'DeleteLocationMutationResponse';
   code: Scalars['String']['output'];
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -132,6 +143,7 @@ export type DeleteMachineItemMutationResponse = MutationResponse & {
   __typename?: 'DeleteMachineItemMutationResponse';
   code: Scalars['String']['output'];
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -139,6 +151,7 @@ export type DeleteMachineLocationMutationResponse = MutationResponse & {
   __typename?: 'DeleteMachineLocationMutationResponse';
   code: Scalars['String']['output'];
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -146,6 +159,7 @@ export type DeleteMachineManufacturerMutationResponse = MutationResponse & {
   __typename?: 'DeleteMachineManufacturerMutationResponse';
   code: Scalars['String']['output'];
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -153,6 +167,7 @@ export type DeleteMachineMutationResponse = MutationResponse & {
   __typename?: 'DeleteMachineMutationResponse';
   code: Scalars['String']['output'];
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -160,6 +175,7 @@ export type DeleteMachineTypeMutationResponse = MutationResponse & {
   __typename?: 'DeleteMachineTypeMutationResponse';
   code: Scalars['String']['output'];
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -186,6 +202,7 @@ export type Location = {
   createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   machineLocations?: Maybe<Array<Maybe<MachineLocation>>>;
+  postalCode: Scalars['String']['output'];
   stateOrProvince: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
 };
@@ -389,9 +406,28 @@ export type MutationResponse = {
   code: Scalars['String']['output'];
   /** Human-readable status message */
   message: Scalars['String']['output'];
+  /** If ACL permission was denied for this operation */
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   /** Operation success indicator */
   success: Scalars['Boolean']['output'];
 };
+
+export enum Permission {
+  CreateItems = 'CREATE_ITEMS',
+  CreateMachines = 'CREATE_MACHINES',
+  DeleteItems = 'DELETE_ITEMS',
+  DeleteMachines = 'DELETE_MACHINES',
+  ManageLocations = 'MANAGE_LOCATIONS',
+  ManageMachineTypes = 'MANAGE_MACHINE_TYPES',
+  ManageManufacturers = 'MANAGE_MANUFACTURERS',
+  ReadItems = 'READ_ITEMS',
+  ReadLocations = 'READ_LOCATIONS',
+  ReadMachines = 'READ_MACHINES',
+  UpdateItems = 'UPDATE_ITEMS',
+  UpdateMachines = 'UPDATE_MACHINES',
+  UpdateMachineItems = 'UPDATE_MACHINE_ITEMS',
+  UpdateMachinePrices = 'UPDATE_MACHINE_PRICES'
+}
 
 export type Query = {
   __typename?: 'Query';
@@ -466,6 +502,12 @@ export type QueryGetMachinesByLocationArgs = {
   locationId: Scalars['ID']['input'];
 };
 
+export enum Role {
+  Administrator = 'ADMINISTRATOR',
+  Operator = 'OPERATOR',
+  Technician = 'TECHNICIAN'
+}
+
 export type UpdateItemInput = {
   basePrice?: InputMaybe<Scalars['Float']['input']>;
   expirationPeriod?: InputMaybe<Scalars['Int']['input']>;
@@ -478,6 +520,7 @@ export type UpdateItemMutationResponse = MutationResponse & {
   code: Scalars['String']['output'];
   item?: Maybe<Item>;
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -487,6 +530,7 @@ export type UpdateLocationInput = {
   city?: InputMaybe<Scalars['String']['input']>;
   country?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
+  postalCode: Scalars['String']['input'];
   stateOrProvince?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -495,6 +539,7 @@ export type UpdateLocationMutationResponse = MutationResponse & {
   code: Scalars['String']['output'];
   location?: Maybe<Location>;
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -515,6 +560,7 @@ export type UpdateMachineItemsMutationResponse = MutationResponse & {
   code: Scalars['String']['output'];
   machineItems?: Maybe<Array<Maybe<MachineItem>>>;
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -530,6 +576,7 @@ export type UpdateMachineLocationMutationResponse = MutationResponse & {
   code: Scalars['String']['output'];
   machineLocation?: Maybe<MachineLocation>;
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -543,6 +590,7 @@ export type UpdateMachineManufacturerMutationResponse = MutationResponse & {
   code: Scalars['String']['output'];
   manufacturer?: Maybe<MachineManufacturer>;
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -551,6 +599,7 @@ export type UpdateMachineMutationResponse = MutationResponse & {
   code: Scalars['String']['output'];
   machine?: Maybe<Machine>;
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -565,7 +614,17 @@ export type UpdateMachineTypeMutationResponse = MutationResponse & {
   code: Scalars['String']['output'];
   machineType?: Maybe<MachineType>;
   message: Scalars['String']['output'];
+  permissionDenied?: Maybe<Scalars['Boolean']['output']>;
   success: Scalars['Boolean']['output'];
+};
+
+export type User = {
+  __typename?: 'User';
+  createdAt: Scalars['String']['output'];
+  email: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  role: Role;
+  updatedAt: Scalars['String']['output'];
 };
 
 
@@ -677,7 +736,9 @@ export type ResolversTypes = {
   MachineType: ResolverTypeWrapper<MachineType>;
   Mutation: ResolverTypeWrapper<{}>;
   MutationResponse: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['MutationResponse']>;
+  Permission: Permission;
   Query: ResolverTypeWrapper<{}>;
+  Role: Role;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   UpdateItemInput: UpdateItemInput;
   UpdateItemMutationResponse: ResolverTypeWrapper<UpdateItemMutationResponse>;
@@ -693,6 +754,7 @@ export type ResolversTypes = {
   UpdateMachineMutationResponse: ResolverTypeWrapper<UpdateMachineMutationResponse>;
   UpdateMachineTypeInput: UpdateMachineTypeInput;
   UpdateMachineTypeMutationResponse: ResolverTypeWrapper<UpdateMachineTypeMutationResponse>;
+  User: ResolverTypeWrapper<User>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -747,12 +809,14 @@ export type ResolversParentTypes = {
   UpdateMachineMutationResponse: UpdateMachineMutationResponse;
   UpdateMachineTypeInput: UpdateMachineTypeInput;
   UpdateMachineTypeMutationResponse: UpdateMachineTypeMutationResponse;
+  User: User;
 };
 
 export type CreateItemMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateItemMutationResponse'] = ResolversParentTypes['CreateItemMutationResponse']> = {
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   item?: Resolver<Maybe<ResolversTypes['Item']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -761,6 +825,7 @@ export type CreateLocationMutationResponseResolvers<ContextType = any, ParentTyp
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -769,6 +834,7 @@ export type CreateMachineItemMutationResponseResolvers<ContextType = any, Parent
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   machineItem?: Resolver<Maybe<ResolversTypes['MachineItem']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -777,6 +843,7 @@ export type CreateMachineLocationMutationResponseResolvers<ContextType = any, Pa
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   machineLocation?: Resolver<Maybe<ResolversTypes['MachineLocation']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -785,6 +852,7 @@ export type CreateMachineManufacturerMutationResponseResolvers<ContextType = any
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   manufacturer?: Resolver<Maybe<ResolversTypes['MachineManufacturer']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -793,6 +861,7 @@ export type CreateMachineMutationResponseResolvers<ContextType = any, ParentType
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   machine?: Resolver<Maybe<ResolversTypes['Machine']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -801,6 +870,7 @@ export type CreateMachineTypeMutationResponseResolvers<ContextType = any, Parent
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   machineType?: Resolver<Maybe<ResolversTypes['MachineType']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -808,6 +878,7 @@ export type CreateMachineTypeMutationResponseResolvers<ContextType = any, Parent
 export type DeleteItemMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteItemMutationResponse'] = ResolversParentTypes['DeleteItemMutationResponse']> = {
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -815,6 +886,7 @@ export type DeleteItemMutationResponseResolvers<ContextType = any, ParentType ex
 export type DeleteLocationMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteLocationMutationResponse'] = ResolversParentTypes['DeleteLocationMutationResponse']> = {
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -822,6 +894,7 @@ export type DeleteLocationMutationResponseResolvers<ContextType = any, ParentTyp
 export type DeleteMachineItemMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteMachineItemMutationResponse'] = ResolversParentTypes['DeleteMachineItemMutationResponse']> = {
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -829,6 +902,7 @@ export type DeleteMachineItemMutationResponseResolvers<ContextType = any, Parent
 export type DeleteMachineLocationMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteMachineLocationMutationResponse'] = ResolversParentTypes['DeleteMachineLocationMutationResponse']> = {
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -836,6 +910,7 @@ export type DeleteMachineLocationMutationResponseResolvers<ContextType = any, Pa
 export type DeleteMachineManufacturerMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteMachineManufacturerMutationResponse'] = ResolversParentTypes['DeleteMachineManufacturerMutationResponse']> = {
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -843,6 +918,7 @@ export type DeleteMachineManufacturerMutationResponseResolvers<ContextType = any
 export type DeleteMachineMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteMachineMutationResponse'] = ResolversParentTypes['DeleteMachineMutationResponse']> = {
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -850,6 +926,7 @@ export type DeleteMachineMutationResponseResolvers<ContextType = any, ParentType
 export type DeleteMachineTypeMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteMachineTypeMutationResponse'] = ResolversParentTypes['DeleteMachineTypeMutationResponse']> = {
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -873,6 +950,7 @@ export type LocationResolvers<ContextType = any, ParentType extends ResolversPar
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   machineLocations?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineLocation']>>>, ParentType, ContextType>;
+  postalCode?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   stateOrProvince?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -962,6 +1040,7 @@ export type MutationResponseResolvers<ContextType = any, ParentType extends Reso
   __resolveType: TypeResolveFn<'CreateItemMutationResponse' | 'CreateLocationMutationResponse' | 'CreateMachineItemMutationResponse' | 'CreateMachineLocationMutationResponse' | 'CreateMachineManufacturerMutationResponse' | 'CreateMachineMutationResponse' | 'CreateMachineTypeMutationResponse' | 'DeleteItemMutationResponse' | 'DeleteLocationMutationResponse' | 'DeleteMachineItemMutationResponse' | 'DeleteMachineLocationMutationResponse' | 'DeleteMachineManufacturerMutationResponse' | 'DeleteMachineMutationResponse' | 'DeleteMachineTypeMutationResponse' | 'UpdateItemMutationResponse' | 'UpdateLocationMutationResponse' | 'UpdateMachineItemsMutationResponse' | 'UpdateMachineLocationMutationResponse' | 'UpdateMachineManufacturerMutationResponse' | 'UpdateMachineMutationResponse' | 'UpdateMachineTypeMutationResponse', ParentType, ContextType>;
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
 
@@ -987,6 +1066,7 @@ export type UpdateItemMutationResponseResolvers<ContextType = any, ParentType ex
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   item?: Resolver<Maybe<ResolversTypes['Item']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -995,6 +1075,7 @@ export type UpdateLocationMutationResponseResolvers<ContextType = any, ParentTyp
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1003,6 +1084,7 @@ export type UpdateMachineItemsMutationResponseResolvers<ContextType = any, Paren
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   machineItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['MachineItem']>>>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1011,6 +1093,7 @@ export type UpdateMachineLocationMutationResponseResolvers<ContextType = any, Pa
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   machineLocation?: Resolver<Maybe<ResolversTypes['MachineLocation']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1019,6 +1102,7 @@ export type UpdateMachineManufacturerMutationResponseResolvers<ContextType = any
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   manufacturer?: Resolver<Maybe<ResolversTypes['MachineManufacturer']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1027,6 +1111,7 @@ export type UpdateMachineMutationResponseResolvers<ContextType = any, ParentType
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   machine?: Resolver<Maybe<ResolversTypes['Machine']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1035,7 +1120,17 @@ export type UpdateMachineTypeMutationResponseResolvers<ContextType = any, Parent
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   machineType?: Resolver<Maybe<ResolversTypes['MachineType']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissionDenied?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  role?: Resolver<ResolversTypes['Role'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1071,5 +1166,6 @@ export type Resolvers<ContextType = any> = {
   UpdateMachineManufacturerMutationResponse?: UpdateMachineManufacturerMutationResponseResolvers<ContextType>;
   UpdateMachineMutationResponse?: UpdateMachineMutationResponseResolvers<ContextType>;
   UpdateMachineTypeMutationResponse?: UpdateMachineTypeMutationResponseResolvers<ContextType>;
+  User?: UserResolvers<ContextType>;
 };
 

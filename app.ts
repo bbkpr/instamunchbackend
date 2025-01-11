@@ -3,13 +3,14 @@ import { ErrorRequestHandler } from 'express-serve-static-core';
 import { readFileSync } from 'fs';
 import { resolvers } from './src/graphql/resolvers';
 
-const typeDefs = readFileSync('./schema.graphql', { encoding: 'utf-8' });
+
 var createError = require('http-errors');
 
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import express from 'express';
 import { InstaMunchContext } from './src/graphql/context';
+import { machineResolvers } from './src/graphql/resolvers/machine.resolvers';
 
 const hbs = require('hbs');
 let cors = require('cors');
@@ -23,9 +24,11 @@ var usersRouter = require('./src/routes/users');
 
 var app = express();
 
-// Set up Apollo GraphQL
+const baseTypeDefs = readFileSync('./schema.graphql', { encoding: 'utf-8' });
+
+
 const apolloServer = new ApolloServer<InstaMunchContext>({
-  typeDefs,
+  typeDefs: baseTypeDefs,
   resolvers,
 });
 startStandaloneServer(apolloServer, {

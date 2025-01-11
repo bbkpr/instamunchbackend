@@ -66,6 +66,7 @@ export const adaptLocation = (prismaLocation: PrismaLocationWithRelations): Loca
   address2: prismaLocation.address2 ?? null,
   city: prismaLocation.city,
   stateOrProvince: prismaLocation.stateOrProvince,
+  postalCode: prismaLocation.postalCode,
   country: prismaLocation.country,
   createdAt: timestampToISOString(prismaLocation.createdAt),
   updatedAt: timestampToISOString(prismaLocation.updatedAt),
@@ -182,6 +183,7 @@ export const adaptMachine = (prismaMachine: PrismaMachineWithRelations): Machine
       address2: machineLocation.location!.address2,
       city: machineLocation.location!.city,
       stateOrProvince: machineLocation.location!.stateOrProvince,
+      postalCode: machineLocation.location!.postalCode,
       country: machineLocation.location!.country,
       createdAt: timestampToISOString(machineLocation.location!.createdAt),
       updatedAt: timestampToISOString(machineLocation.location!.updatedAt)

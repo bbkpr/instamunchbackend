@@ -27,6 +27,7 @@ model MachineItem {
   id        String  @id @default(uuid())
   name      String?
   quantity  Int     @default(0)
+  setPrice  Float?
   machine   Machine @relation(fields: [machineId], references: [id])
   machineId String
   item      Item    @relation(fields: [itemId], references: [id])
@@ -42,6 +43,7 @@ model Location {
   address2         String?
   city             String
   stateOrProvince  String
+  postalCode       String            @default("90210")
   country          String
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
@@ -93,4 +95,19 @@ model Machine {
   updatedAt        DateTime            @updatedAt
   machineItems     MachineItem[]
   machineLocations MachineLocation[]
+}
+
+enum Role {
+  TECHNICIAN
+  OPERATOR
+  ADMINISTRATOR
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(TECHNICIAN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

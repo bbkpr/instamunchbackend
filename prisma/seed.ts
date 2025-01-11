@@ -49,24 +49,24 @@ async function main() {
     }
   });
 
-  const crane156 = await prisma.machineType.upsert({
+  const crane167 = await prisma.machineType.upsert({
     where: { id: 'b2b2b2b2-b2b2-b2b2-b2b2-b2b2b2b2b2b2' },
     update: {},
     create: {
       id: 'b2b2b2b2-b2b2-b2b2-b2b2-b2b2b2b2b2b2',
-      name: 'Crane 156',
+      name: '167',
       manufacturerId: crane.id,
       createdAt: new Date(),
       updatedAt: new Date()
     }
   });
 
-  const witternCombo = await prisma.machineType.upsert({
+  const witternFsi = await prisma.machineType.upsert({
     where: { id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3' },
     update: {},
     create: {
       id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3',
-      name: 'Wittern Combo',
+      name: 'FSI USI 3589',
       manufacturerId: wittern.id,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -81,7 +81,7 @@ async function main() {
       create: {
         id: 'd1d1d1d1-d1d1-d1d1-d1d1-d1d1d1d1d1d1',
         name: 'Lenny & Larry\'s Complete Cookie - Chocolate Chip',
-        basePrice: 3.99,
+        basePrice: 3.00,
         expirationPeriod: 180,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -135,6 +135,7 @@ async function main() {
         address1: '800 W Olympic Blvd',
         city: 'Los Angeles',
         stateOrProvince: 'CA',
+        postalCode: '90015',
         country: 'USA',
         createdAt: new Date(),
         updatedAt: new Date()
@@ -148,6 +149,7 @@ async function main() {
         address1: '6000 Santa Monica Blvd',
         city: 'Los Angeles',
         stateOrProvince: 'CA',
+        postalCode: '90038',
         country: 'USA',
         createdAt: new Date(),
         updatedAt: new Date()
@@ -161,6 +163,7 @@ async function main() {
         address1: '1000 Universal Studios Blvd',
         city: 'Universal City',
         stateOrProvince: 'CA',
+        postalCode: '91608',
         country: 'USA',
         createdAt: new Date(),
         updatedAt: new Date()
@@ -188,7 +191,7 @@ async function main() {
       create: {
         id: 'f2f2f2f2-f2f2-f2f2-f2f2-f2f2f2f2f2f2',
         name: 'Hollywood Forever Drinks',
-        machineTypeId: crane156.id,
+        machineTypeId: crane167.id,
         manufacturerId: crane.id,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -200,7 +203,7 @@ async function main() {
       create: {
         id: 'f3f3f3f3-f3f3-f3f3-f3f3-f3f3f3f3f3f3',
         name: 'Universal Studios Combo 1',
-        machineTypeId: witternCombo.id,
+        machineTypeId: witternFsi.id,
         manufacturerId: wittern.id,
         createdAt: new Date(),
         updatedAt: new Date()
