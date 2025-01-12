@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-
+import { PrismaClient, Role } from '@prisma/client';
+import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -281,6 +281,34 @@ async function main() {
         machineId: machines[2].id,
         itemId: items[2].id,
         quantity: 18
+      }
+    })
+  ]);
+
+  // Create default users for each role
+  const users = await Promise.all([
+    prisma.user.create({
+      data: {
+        email: 'admin@example.com',
+        password: await bcrypt.hash('admin123', 10),
+        role: Role.ADMINISTRATOR,
+        name: 'Admin User'
+      }
+    }),
+    prisma.user.create({
+      data: {
+        email: 'operator@example.com',
+        password: await bcrypt.hash('operator123', 10),
+        role: Role.OPERATOR,
+        name: 'Operator User'
+      }
+    }),
+    prisma.user.create({
+      data: {
+        email: 'tech@example.com',
+        password: await bcrypt.hash('tech123', 10),
+        role: Role.TECHNICIAN,
+        name: 'Technician User'
       }
     })
   ]);

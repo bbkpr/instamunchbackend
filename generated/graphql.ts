@@ -623,6 +623,7 @@ export type User = {
   createdAt: Scalars['String']['output'];
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
   role: Role;
   updatedAt: Scalars['String']['output'];
 };
@@ -811,6 +812,12 @@ export type ResolversParentTypes = {
   UpdateMachineTypeMutationResponse: UpdateMachineTypeMutationResponse;
   User: User;
 };
+
+export type RequirePermissionDirectiveArgs = {
+  permission: Permission;
+};
+
+export type RequirePermissionDirectiveResolver<Result, Parent, ContextType = any, Args = RequirePermissionDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type CreateItemMutationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateItemMutationResponse'] = ResolversParentTypes['CreateItemMutationResponse']> = {
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1129,6 +1136,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['Role'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1169,3 +1177,6 @@ export type Resolvers<ContextType = any> = {
   User?: UserResolvers<ContextType>;
 };
 
+export type DirectiveResolvers<ContextType = any> = {
+  requirePermission?: RequirePermissionDirectiveResolver<any, any, ContextType>;
+};

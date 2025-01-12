@@ -10,6 +10,8 @@ interface MutationResponse {
     permissionDenied: Boolean
 }
 
+directive @requirePermission(permission: Permission!) on FIELD_DEFINITION
+
 enum Role {
     TECHNICIAN
     OPERATOR
@@ -120,6 +122,7 @@ type MachineLocation {
 type User {
     id: ID!
     email: String!
+    name: String!
     role: Role!
     createdAt: String!
     updatedAt: String!
@@ -127,13 +130,13 @@ type User {
 
 type Query {
     "Get all Items, from everywhere"
-    getItems: [Item]
+    getItems: [Item] @requirePermission(permission: READ_ITEMS)
     "Get Items in a specific Machine"
-    getItemsByMachine(machineId: ID!): [MachineItem!]
+    getItemsByMachine(machineId: ID!): [MachineItem!] @requirePermission(permission: READ_ITEMS)
     "Get all Locations, from everywhere"
-    getLocations: [Location]
+    getLocations: [Location] @requirePermission(permission: READ_LOCATIONS)
     "Get Locations stocking a specific Item"
-    getLocationsByItem(itemId: ID!): [Location!]
+    getLocationsByItem(itemId: ID!): [Location!] @requirePermission(permission: READ_LOCATIONS)
     "Get Locations with a Machine matching a name (case insensitive)"
     getLocationsByMachineName(machineName: String!): [Location!]!
 

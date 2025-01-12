@@ -11,6 +11,9 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 import express from 'express';
 import { InstaMunchContext } from './src/graphql/context';
 import { machineResolvers } from './src/graphql/resolvers/machine.resolvers';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { requirePermissionDirective } from './src/directives/requirePermission';
+import { getUserFromToken } from './src/auth/tokenService';
 
 const hbs = require('hbs');
 let cors = require('cors');
@@ -26,14 +29,46 @@ var app = express();
 
 const baseTypeDefs = readFileSync('./schema.graphql', { encoding: 'utf-8' });
 
+let schema = makeExecutableSchema({
+  typeDefs: baseTypeDefs,
+  resolvers
+});
+
+schema = requirePermissionDirective(schema);
 
 const apolloServer = new ApolloServer<InstaMunchContext>({
-  typeDefs: baseTypeDefs,
-  resolvers,
+  schema,
+  formatError: (error) => {
+    // Customize error responses
+    if (error.message.includes('Permission denied')) {
+      return {
+        message: 'Permission denied',
+        extensions: {
+          code: 'FORBIDDEN',
+          http: { status: 403 }
+        }
+      };
+    }
+    return error;
+  }
 });
+
 startStandaloneServer(apolloServer, {
-  context: async ({ req }) => ({ token: req.headers.token }),
-  listen: { port: 4000 },
+  context: async ({ req }) => {
+    // Extract token from Authorization header
+    const authHeader = req.headers.authorization || '';
+    const token = authHeader.replace('Bearer ', '');
+
+    try {
+      // Validate token and get user info
+      const user = token ? await getUserFromToken(token) : null;
+      return { user };
+    } catch (error) {
+      // Token validation failed
+      return { user: null };
+    }
+  },
+  listen: { port: 4000 }
 }).then((res) => {
   console.log('Apollo GraphQL Server ready at http://localhost:4000');
 });
