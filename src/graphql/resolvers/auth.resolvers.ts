@@ -10,30 +10,38 @@ export const authResolvers: Partial<Resolvers<InstaMunchContext>> = {
       return user || null;
     }
   },
-
   Mutation: {
     async login(_, { input: { email, password } }) {
       const user = await AuthService.validateUser(email, password);
-      const adaptedUser = adaptUser(user!);
-      if (!adaptedUser) {
+      try {
+        const adaptedUser = adaptUser(user!);
+        if (!adaptedUser) {
+          return {
+            code: '401',
+            success: false,
+            message: 'Invalid credentials',
+            permissionDenied: true
+          };
+        }
+
+        const token = AuthService.generateToken(user!);
+
         return {
-          code: '401',
+          code: '200',
+          success: true,
+          message: 'Login successful',
+          permissionDenied: false,
+          token,
+          user: adaptedUser
+        };
+      } catch (e) {
+        return {
+          code: '500',
           success: false,
-          message: 'Invalid credentials',
-          permissionDenied: true
+          message: 'Internal server error',
+          permissionDenied: false
         };
       }
-
-      const token = AuthService.generateToken(user!);
-
-      return {
-        code: '200',
-        success: true,
-        message: 'Login successful',
-        permissionDenied: false,
-        token,
-        user: adaptedUser
-      };
     }
   }
 };

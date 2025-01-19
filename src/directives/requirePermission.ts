@@ -1,7 +1,8 @@
-// directives/requirePermission.ts
 import { mapSchema, getDirective, MapperKind } from '@graphql-tools/utils';
-import { GraphQLSchema } from 'graphql';
+import { GraphQLError, GraphQLSchema } from 'graphql';
 import { hasPermission } from '../util/permissions';
+import { User } from '../../generated/graphql';
+import { InstaMunchContext } from '../graphql/context';
 
 export function requirePermissionDirective(schema: GraphQLSchema) {
   return mapSchema(schema, {
@@ -11,26 +12,34 @@ export function requirePermissionDirective(schema: GraphQLSchema) {
       if (requirePermission) {
         const { resolve: originalResolve } = fieldConfig;
 
-        fieldConfig.resolve = async function(source, args, context, info) {
-          const { user } = context;
+        fieldConfig.resolve = async function (source, args, context: InstaMunchContext, info) {
+          const user = context.user;
 
           if (!user) {
-            throw new Error('Authentication required');
+            throw new GraphQLError('Authentication required', {
+              extensions: {
+                code: 'UNAUTHENTICATED',
+                http: { status: 401 }
+              }
+            });
           }
 
           if (!hasPermission(user.role, requirePermission.permission)) {
-            return {
-              code: '403',
-              success: false,
-              message: 'Permission denied',
-              permissionDenied: true
-            };
+            throw new GraphQLError('Permission denied', {
+              extensions: {
+                code: 'FORBIDDEN',
+                http: { status: 403 },
+                permission: requirePermission.permission,
+                requiredRole: requirePermission.permission,
+                userRole: user.role
+              }
+            });
           }
 
           return originalResolve!.call(this, source, args, context, info);
         };
       }
       return fieldConfig;
-    }
+    },
   });
 }
