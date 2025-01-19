@@ -1,3 +1,5 @@
+import { User } from '../../generated/graphql';
+
 export interface InstaMunchContext {
-  token?: String;
+  user?: User;
 }

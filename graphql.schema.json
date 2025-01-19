@@ -22,7 +22,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "CreateItemInput",
-        "description": null,
+        "description": "Create Item",
         "isOneOf": false,
         "fields": null,
         "inputFields": [
@@ -172,7 +172,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "CreateLocationInput",
-        "description": null,
+        "description": "Create Location",
         "isOneOf": false,
         "fields": null,
         "inputFields": [
@@ -366,7 +366,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "CreateMachineInput",
-        "description": null,
+        "description": "Create Machine",
         "isOneOf": false,
         "fields": null,
         "inputFields": [
@@ -426,7 +426,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "CreateMachineItemInput",
-        "description": null,
+        "description": "Assign an Item to a Machine",
         "isOneOf": false,
         "fields": null,
         "inputFields": [
@@ -600,7 +600,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "CreateMachineLocationInput",
-        "description": null,
+        "description": "Assign a Machine to a Location",
         "isOneOf": false,
         "fields": null,
         "inputFields": [
@@ -750,7 +750,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "CreateMachineManufacturerInput",
-        "description": null,
+        "description": "Create a Manufacturer",
         "isOneOf": false,
         "fields": null,
         "inputFields": [
@@ -958,7 +958,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "CreateMachineTypeInput",
-        "description": null,
+        "description": "Create a MachineType",
         "isOneOf": false,
         "fields": null,
         "inputFields": [
@@ -1945,6 +1945,152 @@
         "possibleTypes": null
       },
       {
+        "kind": "INPUT_OBJECT",
+        "name": "LoginInput",
+        "description": "Log in",
+        "isOneOf": false,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "email",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "password",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "LoginResponse",
+        "description": "Login Mutation Response",
+        "isOneOf": null,
+        "fields": [
+          {
+            "name": "code",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "message",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "permissionDenied",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "success",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "token",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "user",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "User",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "MutationResponse",
+            "ofType": null
+          }
+        ],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "OBJECT",
         "name": "Machine",
         "description": null,
@@ -2548,7 +2694,7 @@
         "fields": [
           {
             "name": "createItem",
-            "description": null,
+            "description": "Create a new Item",
             "args": [
               {
                 "name": "input",
@@ -2581,7 +2727,7 @@
           },
           {
             "name": "createLocation",
-            "description": null,
+            "description": "Create a new Location",
             "args": [
               {
                 "name": "input",
@@ -2614,7 +2760,7 @@
           },
           {
             "name": "createMachine",
-            "description": null,
+            "description": "Create a new Machine",
             "args": [
               {
                 "name": "input",
@@ -2647,7 +2793,7 @@
           },
           {
             "name": "createMachineItem",
-            "description": null,
+            "description": "Add an Item to a Machine",
             "args": [
               {
                 "name": "input",
@@ -2713,7 +2859,7 @@
           },
           {
             "name": "createMachineManufacturer",
-            "description": null,
+            "description": "Assign a Machine to a Manufacturer",
             "args": [
               {
                 "name": "input",
@@ -2779,7 +2925,7 @@
           },
           {
             "name": "deleteItem",
-            "description": null,
+            "description": "Delete an existing Item",
             "args": [
               {
                 "name": "id",
@@ -2812,7 +2958,7 @@
           },
           {
             "name": "deleteLocation",
-            "description": null,
+            "description": "Delete a Location",
             "args": [
               {
                 "name": "id",
@@ -2845,7 +2991,7 @@
           },
           {
             "name": "deleteMachine",
-            "description": null,
+            "description": "Delete a Machine",
             "args": [
               {
                 "name": "id",
@@ -2878,7 +3024,7 @@
           },
           {
             "name": "deleteMachineItem",
-            "description": null,
+            "description": "Delete an Item from a Machine",
             "args": [
               {
                 "name": "id",
@@ -2944,7 +3090,7 @@
           },
           {
             "name": "deleteMachineManufacturer",
-            "description": null,
+            "description": "Delete a MachineManufacturer relation",
             "args": [
               {
                 "name": "id",
@@ -3009,8 +3155,41 @@
             "deprecationReason": null
           },
           {
+            "name": "login",
+            "description": "Log in and retrieve an auth token",
+            "args": [
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "LoginInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "LoginResponse",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "updateItem",
-            "description": null,
+            "description": "Update an existing Item",
             "args": [
               {
                 "name": "input",
@@ -3043,7 +3222,7 @@
           },
           {
             "name": "updateLocation",
-            "description": null,
+            "description": "Update a Location",
             "args": [
               {
                 "name": "input",
@@ -3076,7 +3255,7 @@
           },
           {
             "name": "updateMachine",
-            "description": null,
+            "description": "Update an existing Machine",
             "args": [
               {
                 "name": "input",
@@ -3109,7 +3288,7 @@
           },
           {
             "name": "updateMachineItems",
-            "description": null,
+            "description": "Update all MachineItems (be VERY careful with this)",
             "args": [
               {
                 "name": "input",
@@ -3175,7 +3354,7 @@
           },
           {
             "name": "updateMachineManufacturer",
-            "description": null,
+            "description": "Update a MachineManufacturer relation",
             "args": [
               {
                 "name": "input",
@@ -3388,6 +3567,11 @@
           },
           {
             "kind": "OBJECT",
+            "name": "LoginResponse",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
             "name": "UpdateItemMutationResponse",
             "ofType": null
           },
@@ -3426,7 +3610,7 @@
       {
         "kind": "ENUM",
         "name": "Permission",
-        "description": null,
+        "description": "Auth Permissions",
         "isOneOf": null,
         "fields": null,
         "inputFields": null,
@@ -3932,6 +4116,18 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "me",
+            "description": "Get the currently logged in User",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "User",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -3942,7 +4138,7 @@
       {
         "kind": "ENUM",
         "name": "Role",
-        "description": null,
+        "description": "Auth Roles",
         "isOneOf": null,
         "fields": null,
         "inputFields": null,
@@ -3983,7 +4179,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "UpdateItemInput",
-        "description": null,
+        "description": "Update Item",
         "isOneOf": false,
         "fields": null,
         "inputFields": [
@@ -4137,7 +4333,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "UpdateLocationInput",
-        "description": null,
+        "description": "Update Location",
         "isOneOf": false,
         "fields": null,
         "inputFields": [
@@ -4331,7 +4527,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "UpdateMachineInput",
-        "description": null,
+        "description": "Update Machine",
         "isOneOf": false,
         "fields": null,
         "inputFields": [
@@ -4541,7 +4737,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "UpdateMachineLocationInput",
-        "description": null,
+        "description": "Update a MachineLocation relation",
         "isOneOf": false,
         "fields": null,
         "inputFields": [
@@ -4695,7 +4891,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "UpdateMachineManufacturerInput",
-        "description": null,
+        "description": "Update a Manufacturer",
         "isOneOf": false,
         "fields": null,
         "inputFields": [
@@ -4919,7 +5115,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "UpdateMachineTypeInput",
-        "description": null,
+        "description": "Update a MachineType",
         "isOneOf": false,
         "fields": null,
         "inputFields": [

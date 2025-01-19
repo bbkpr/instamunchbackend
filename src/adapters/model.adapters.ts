@@ -6,13 +6,15 @@ import {
   MachineLocation as PrismaMachineLocation,
   MachineManufacturer as PrismaMachineManufacturer,
   MachineType as PrismaMachineType,
+  Role as PrismaRole,
+  User as PrismaUser
 } from '@prisma/client';
 import {
   Machine,
   MachineItem,
   Item,
   Location,
-  MachineLocation, Maybe, MachineType
+  MachineLocation, MachineType, Role, User
 } from '../../generated/graphql';
 import {
   DateTimeStamps,
@@ -60,6 +62,28 @@ export type PrismaMachineTypeWithRelations = WithTimeStamps<PrismaMachineType> &
   manufacturer: WithTimeStamps<PrismaMachineManufacturer>
 }
 
+export function adaptRole(prismaRole: PrismaRole): Role {
+  switch (prismaRole) {
+    case PrismaRole.TECHNICIAN:
+      return Role.Technician;
+    case PrismaRole.OPERATOR:
+      return Role.Operator;
+    case PrismaRole.ADMINISTRATOR:
+      return Role.Administrator;
+    default:
+      throw new Error(`Unknown role: ${prismaRole}`);
+  }
+}
+
+export const adaptUser = (prismaUser: PrismaUser): User => ({
+  id: prismaUser.id,
+  name: prismaUser.name,
+  email: prismaUser.email,
+  role: adaptRole(prismaUser.role),
+  createdAt: timestampToISOString(prismaUser.createdAt),
+  updatedAt: timestampToISOString(prismaUser.updatedAt)
+});
+
 export const adaptLocation = (prismaLocation: PrismaLocationWithRelations): Location => ({
   id: prismaLocation.id,
   address1: prismaLocation.address1,
@@ -96,7 +120,7 @@ export const adaptMachineLocation = (
     id: prismaMachineLocation.machine.id,
     name: prismaMachineLocation.machine.name,
     createdAt: timestampToISOString(prismaMachineLocation.machine.createdAt),
-    updatedAt: timestampToISOString(prismaMachineLocation.machine.updatedAt),
+    updatedAt: timestampToISOString(prismaMachineLocation.machine.updatedAt)
   },
   locationId: prismaMachineLocation.locationId,
   location: {
@@ -147,7 +171,7 @@ export const adaptMachine = (prismaMachine: PrismaMachineWithRelations): Machine
       updatedAt: timestampToISOString(prismaMachine.manufacturer!.updatedAt)
     },
     createdAt: timestampToISOString(prismaMachine.machineType.createdAt),
-    updatedAt: timestampToISOString(prismaMachine.machineType.updatedAt),
+    updatedAt: timestampToISOString(prismaMachine.machineType.updatedAt)
   } : null,
   machineItems: prismaMachine.machineItems?.map(machineItem => ({
     id: machineItem.id,

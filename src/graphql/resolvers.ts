@@ -7,9 +7,11 @@ import { machineItemResolvers } from './resolvers/machineItem.resolvers';
 import { machineLocationResolvers } from './resolvers/machineLocation.resolvers';
 import { machineManufacturerResolvers } from './resolvers/machineManufacturer.resolvers';
 import { machineTypeResolvers } from './resolvers/machineType.resolvers';
+import { authResolvers } from './resolvers/auth.resolvers';
 
 export const resolvers: Resolvers<InstaMunchContext> = {
   Query: {
+    ...authResolvers.Query,
     ...itemResolvers.Query,
     ...locationResolvers.Query,
     ...machineResolvers.Query,
@@ -19,6 +21,7 @@ export const resolvers: Resolvers<InstaMunchContext> = {
     ...machineTypeResolvers.Query,
   },
   Mutation: {
+    ...authResolvers.Mutation,
     ...itemResolvers.Mutation,
     ...locationResolvers.Mutation,
     ...machineResolvers.Mutation,

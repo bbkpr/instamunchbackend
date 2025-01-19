@@ -12,12 +12,14 @@ interface MutationResponse {
 
 directive @requirePermission(permission: Permission!) on FIELD_DEFINITION
 
+"Auth Roles"
 enum Role {
     TECHNICIAN
     OPERATOR
     ADMINISTRATOR
 }
 
+"Auth Permissions"
 enum Permission {
     # Technician permissions
     READ_ITEMS
@@ -129,6 +131,9 @@ type User {
 }
 
 type Query {
+    "Get the currently logged in User"
+    me: User @requirePermission(permission: READ_ITEMS)
+
     "Get all Items, from everywhere"
     getItems: [Item] @requirePermission(permission: READ_ITEMS)
     "Get Items in a specific Machine"
@@ -142,9 +147,9 @@ type Query {
 
     getMachine(machineId: ID!): Machine
     "Get all Machines, from everywhere"
-    getMachines: [Machine]
+    getMachines: [Machine] @requirePermission(permission: MANAGE_LOCATIONS)
     "Get all MachineLocations"
-    getMachineLocations: [MachineLocation!]
+    getMachineLocations: [MachineLocation!] @requirePermission(permission: READ_ITEMS)
     "Get a MachineManufacturer by ID"
     getMachineManufacturer(id: ID!): MachineManufacturer
     "Get all MachineManufacturers"
@@ -161,16 +166,20 @@ type Query {
     getMachineItems: [MachineItem]
 }
 
-#
-# Mutation
-#
+"Log in"
+input LoginInput {
+  email: String!
+  password: String!
+}
 
+"Create Item"
 input CreateItemInput {
     name: String!
     basePrice: Float!
     expirationPeriod: Int!
 }
 
+"Update Item"
 input UpdateItemInput {
     id: ID!
     name: String
@@ -178,12 +187,14 @@ input UpdateItemInput {
     expirationPeriod: Int
 }
 
+"Create Machine"
 input CreateMachineInput {
     name: String!
     machineTypeId: ID!
     manufacturerId: ID!
 }
 
+"Update Machine"
 input UpdateMachineInput {
     id: ID!
     name: String
@@ -191,6 +202,7 @@ input UpdateMachineInput {
     manufacturerId: ID
 }
 
+"Create Location"
 input CreateLocationInput {
     address1: String!
     address2: String
@@ -200,6 +212,7 @@ input CreateLocationInput {
     country: String!
 }
 
+"Update Location"
 input UpdateLocationInput {
     id: ID!
     address1: String
@@ -210,12 +223,14 @@ input UpdateLocationInput {
     country: String
 }
 
+"Assign a Machine to a Location"
 input CreateMachineLocationInput {
     name: String!
     machineId: ID!
     locationId: ID!
 }
 
+"Update a MachineLocation relation"
 input UpdateMachineLocationInput {
     id: ID!
     name: String
@@ -223,6 +238,7 @@ input UpdateMachineLocationInput {
     locationId: ID
 }
 
+"Assign an Item to a Machine"
 input CreateMachineItemInput {
     machineId: ID!
     itemId: ID!
@@ -231,24 +247,38 @@ input CreateMachineItemInput {
     setPrice: Float
 }
 
+"Create a Manufacturer"
 input CreateMachineManufacturerInput {
     name: String!
 }
 
+"Update a Manufacturer"
 input UpdateMachineManufacturerInput {
     id: ID!
     name: String!
 }
 
+"Create a MachineType"
 input CreateMachineTypeInput {
     name: String!
     manufacturerId: ID!
 }
 
+"Update a MachineType"
 input UpdateMachineTypeInput {
     id: ID!
     name: String
     manufacturerId: ID
+}
+
+"Login Mutation Response"
+type LoginResponse implements MutationResponse {
+  code: String!
+  success: Boolean!
+  message: String!
+  permissionDenied: Boolean
+  token: String
+  user: User
 }
 
 type CreateItemMutationResponse implements MutationResponse {
@@ -419,16 +449,28 @@ input UpdateMachineItemsInput {
 }
 
 type Mutation {
+    "Log in and retrieve an auth token"
+    login(input: LoginInput!): LoginResponse!
+
+    "Create a new Item"
     createItem(input: CreateItemInput!): CreateItemMutationResponse!
+    "Update an existing Item"
     updateItem(input: UpdateItemInput!): UpdateItemMutationResponse!
+    "Delete an existing Item"
     deleteItem(id: ID!): DeleteItemMutationResponse!
 
+    "Create a new Machine"
     createMachine(input: CreateMachineInput!): CreateMachineMutationResponse!
+    "Update an existing Machine"
     updateMachine(input: UpdateMachineInput!): CreateMachineMutationResponse!
+    "Delete a Machine"
     deleteMachine(id: ID!): DeleteMachineMutationResponse!
 
+    "Add an Item to a Machine"
     createMachineItem(input: CreateMachineItemInput!): CreateMachineItemMutationResponse!
+    "Update all MachineItems (be VERY careful with this)"
     updateMachineItems(input: UpdateMachineItemsInput!): UpdateMachineItemsMutationResponse!
+    "Delete an Item from a Machine"
     deleteMachineItem(id: ID!): DeleteMachineItemMutationResponse!
 
     "Assign a Machine to a Location"
@@ -438,12 +480,18 @@ type Mutation {
     "Delete a MachineLocation relation"
     deleteMachineLocation(id: ID!): DeleteMachineLocationMutationResponse!
 
+    "Assign a Machine to a Manufacturer"
     createMachineManufacturer(input: CreateMachineManufacturerInput!): CreateMachineManufacturerMutationResponse!
+    "Update a MachineManufacturer relation"
     updateMachineManufacturer(input: UpdateMachineManufacturerInput!): UpdateMachineManufacturerMutationResponse!
+    "Delete a MachineManufacturer relation"
     deleteMachineManufacturer(id: ID!): DeleteMachineManufacturerMutationResponse!
 
+    "Create a new Location"
     createLocation(input: CreateLocationInput!): CreateLocationMutationResponse!
+    "Update a Location"
     updateLocation(input: UpdateLocationInput!): UpdateLocationMutationResponse!
+    "Delete a Location"
     deleteLocation(id: ID!): DeleteLocationMutationResponse!
 
     "Assign a Machine to a Type"
