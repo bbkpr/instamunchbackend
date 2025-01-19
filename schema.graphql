@@ -145,25 +145,25 @@ type Query {
     "Get Locations with a Machine matching a name (case insensitive)"
     getLocationsByMachineName(machineName: String!): [Location!]!
 
-    getMachine(machineId: ID!): Machine
+    getMachine(machineId: ID!): Machine @requirePermission(permission: READ_MACHINES)
     "Get all Machines, from everywhere"
-    getMachines: [Machine] @requirePermission(permission: MANAGE_LOCATIONS)
+    getMachines: [Machine] @requirePermission(permission: READ_MACHINES)
     "Get all MachineLocations"
-    getMachineLocations: [MachineLocation!] @requirePermission(permission: READ_ITEMS)
+    getMachineLocations: [MachineLocation!] @requirePermission(permission: READ_MACHINES)
     "Get a MachineManufacturer by ID"
-    getMachineManufacturer(id: ID!): MachineManufacturer
+    getMachineManufacturer(id: ID!): MachineManufacturer @requirePermission(permission: READ_MACHINES)
     "Get all MachineManufacturers"
-    getMachineManufacturers: [MachineManufacturer!]!
+    getMachineManufacturers: [MachineManufacturer!]! @requirePermission(permission: READ_MACHINES)
     "Get a MachineType by ID"
-    getMachineType(id: ID!): MachineType
+    getMachineType(id: ID!): MachineType @requirePermission(permission: READ_MACHINES)
     "Get all MachineTypes"
-    getMachineTypes: [MachineType!]!
+    getMachineTypes: [MachineType!]! @requirePermission(permission: READ_MACHINES)
     "Get all Machines stocking a specific Item"
-    getMachinesByItem(itemId: ID!): [MachineItem!]
+    getMachinesByItem(itemId: ID!): [MachineItem!] @requirePermission(permission: READ_MACHINES)
     "Get Machines at a specific Location"
-    getMachinesByLocation(locationId: ID!): [Machine!]
+    getMachinesByLocation(locationId: ID!): [Machine!] @requirePermission(permission: READ_MACHINES)
     "Get all MachineItems, from everywhere"
-    getMachineItems: [MachineItem]
+    getMachineItems: [MachineItem] @requirePermission(permission: READ_MACHINES)
 }
 
 "Log in"
@@ -453,51 +453,51 @@ type Mutation {
     login(input: LoginInput!): LoginResponse!
 
     "Create a new Item"
-    createItem(input: CreateItemInput!): CreateItemMutationResponse!
+    createItem(input: CreateItemInput!): CreateItemMutationResponse! @requirePermission(permission: CREATE_ITEMS)
     "Update an existing Item"
-    updateItem(input: UpdateItemInput!): UpdateItemMutationResponse!
+    updateItem(input: UpdateItemInput!): UpdateItemMutationResponse! @requirePermission(permission: UPDATE_ITEMS)
     "Delete an existing Item"
-    deleteItem(id: ID!): DeleteItemMutationResponse!
+    deleteItem(id: ID!): DeleteItemMutationResponse! @requirePermission(permission: DELETE_ITEMS)
 
     "Create a new Machine"
-    createMachine(input: CreateMachineInput!): CreateMachineMutationResponse!
+    createMachine(input: CreateMachineInput!): CreateMachineMutationResponse! @requirePermission(permission: CREATE_MACHINES)
     "Update an existing Machine"
-    updateMachine(input: UpdateMachineInput!): CreateMachineMutationResponse!
+    updateMachine(input: UpdateMachineInput!): CreateMachineMutationResponse! @requirePermission(permission: UPDATE_MACHINES)
     "Delete a Machine"
-    deleteMachine(id: ID!): DeleteMachineMutationResponse!
+    deleteMachine(id: ID!): DeleteMachineMutationResponse! @requirePermission(permission: DELETE_MACHINES)
 
     "Add an Item to a Machine"
-    createMachineItem(input: CreateMachineItemInput!): CreateMachineItemMutationResponse!
+    createMachineItem(input: CreateMachineItemInput!): CreateMachineItemMutationResponse! @requirePermission(permission: UPDATE_MACHINE_ITEMS)
     "Update all MachineItems (be VERY careful with this)"
-    updateMachineItems(input: UpdateMachineItemsInput!): UpdateMachineItemsMutationResponse!
+    updateMachineItems(input: UpdateMachineItemsInput!): UpdateMachineItemsMutationResponse! @requirePermission(permission: UPDATE_MACHINE_ITEMS)
     "Delete an Item from a Machine"
-    deleteMachineItem(id: ID!): DeleteMachineItemMutationResponse!
+    deleteMachineItem(id: ID!): DeleteMachineItemMutationResponse! @requirePermission(permission: UPDATE_MACHINE_ITEMS)
 
     "Assign a Machine to a Location"
-    createMachineLocation(input: CreateMachineLocationInput!): CreateMachineLocationMutationResponse!
+    createMachineLocation(input: CreateMachineLocationInput!): CreateMachineLocationMutationResponse! @requirePermission(permission: UPDATE_MACHINES)
     "Update a MachineLocation relation"
-    updateMachineLocation(input: UpdateMachineLocationInput!): UpdateMachineLocationMutationResponse!
+    updateMachineLocation(input: UpdateMachineLocationInput!): UpdateMachineLocationMutationResponse! @requirePermission(permission: UPDATE_MACHINES)
     "Delete a MachineLocation relation"
-    deleteMachineLocation(id: ID!): DeleteMachineLocationMutationResponse!
+    deleteMachineLocation(id: ID!): DeleteMachineLocationMutationResponse! @requirePermission(permission: UPDATE_MACHINES)
 
     "Assign a Machine to a Manufacturer"
-    createMachineManufacturer(input: CreateMachineManufacturerInput!): CreateMachineManufacturerMutationResponse!
+    createMachineManufacturer(input: CreateMachineManufacturerInput!): CreateMachineManufacturerMutationResponse! @requirePermission(permission: MANAGE_MANUFACTURERS)
     "Update a MachineManufacturer relation"
-    updateMachineManufacturer(input: UpdateMachineManufacturerInput!): UpdateMachineManufacturerMutationResponse!
+    updateMachineManufacturer(input: UpdateMachineManufacturerInput!): UpdateMachineManufacturerMutationResponse! @requirePermission(permission: MANAGE_MANUFACTURERS)
     "Delete a MachineManufacturer relation"
-    deleteMachineManufacturer(id: ID!): DeleteMachineManufacturerMutationResponse!
+    deleteMachineManufacturer(id: ID!): DeleteMachineManufacturerMutationResponse! @requirePermission(permission: MANAGE_MANUFACTURERS)
 
     "Create a new Location"
-    createLocation(input: CreateLocationInput!): CreateLocationMutationResponse!
+    createLocation(input: CreateLocationInput!): CreateLocationMutationResponse! @requirePermission(permission: MANAGE_LOCATIONS)
     "Update a Location"
-    updateLocation(input: UpdateLocationInput!): UpdateLocationMutationResponse!
+    updateLocation(input: UpdateLocationInput!): UpdateLocationMutationResponse! @requirePermission(permission: MANAGE_LOCATIONS)
     "Delete a Location"
-    deleteLocation(id: ID!): DeleteLocationMutationResponse!
+    deleteLocation(id: ID!): DeleteLocationMutationResponse! @requirePermission(permission: MANAGE_LOCATIONS)
 
     "Assign a Machine to a Type"
-    createMachineType(input: CreateMachineTypeInput!): CreateMachineTypeMutationResponse!
+    createMachineType(input: CreateMachineTypeInput!): CreateMachineTypeMutationResponse! @requirePermission(permission: MANAGE_MACHINE_TYPES)
     "Update a MachineType relation"
-    updateMachineType(input: UpdateMachineTypeInput!): UpdateMachineTypeMutationResponse!
+    updateMachineType(input: UpdateMachineTypeInput!): UpdateMachineTypeMutationResponse! @requirePermission(permission: MANAGE_MACHINE_TYPES)
     "Delete a MachineType relation"
-    deleteMachineType(id: ID!): DeleteMachineTypeMutationResponse!
+    deleteMachineType(id: ID!): DeleteMachineTypeMutationResponse! @requirePermission(permission: MANAGE_MACHINE_TYPES)
 }

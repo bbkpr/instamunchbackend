@@ -14,6 +14,7 @@ import { machineResolvers } from './src/graphql/resolvers/machine.resolvers';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { requirePermissionDirective } from './src/directives/requirePermission';
 import { getUserFromToken } from './src/auth/tokenService';
+import { omit } from 'lodash';
 
 const hbs = require('hbs');
 let cors = require('cors');
@@ -44,8 +45,7 @@ const apolloServer = new ApolloServer<InstaMunchContext>({
       return {
         message: 'Permission denied',
         extensions: {
-          code: 'FORBIDDEN',
-          http: { status: 403 }
+          ...omit(error.extensions, 'stacktrace')
         }
       };
     }

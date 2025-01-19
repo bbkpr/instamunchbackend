@@ -1,8 +1,16 @@
 import { mapSchema, getDirective, MapperKind } from '@graphql-tools/utils';
 import { GraphQLError, GraphQLSchema } from 'graphql';
 import { hasPermission } from '../util/permissions';
-import { User } from '../../generated/graphql';
+import { Role, User } from '../../generated/graphql';
 import { InstaMunchContext } from '../graphql/context';
+
+interface PermissionErrorExtensions {
+  code: string;
+  http: { status: number };
+  permission: string;
+  requiredRole: string;
+  userRole: Role;
+}
 
 export function requirePermissionDirective(schema: GraphQLSchema) {
   return mapSchema(schema, {
@@ -19,7 +27,9 @@ export function requirePermissionDirective(schema: GraphQLSchema) {
             throw new GraphQLError('Authentication required', {
               extensions: {
                 code: 'UNAUTHENTICATED',
-                http: { status: 401 }
+                http: { status: 401 },
+                permission: requirePermission.permission,
+                requiredRole: requirePermission.permission
               }
             });
           }
