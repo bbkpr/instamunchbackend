@@ -3704,6 +3704,30 @@
         "possibleTypes": null
       },
       {
+        "kind": "ENUM",
+        "name": "PermissionOperator",
+        "description": null,
+        "isOneOf": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "AND",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "OR",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
         "kind": "OBJECT",
         "name": "Query",
         "description": null,
@@ -6362,15 +6386,35 @@
         ],
         "args": [
           {
-            "name": "permission",
+            "name": "operator",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "PermissionOperator",
+              "ofType": null
+            },
+            "defaultValue": "AND",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "permissions",
             "description": null,
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "ENUM",
-                "name": "Permission",
-                "ofType": null
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "ENUM",
+                    "name": "Permission",
+                    "ofType": null
+                  }
+                }
               }
             },
             "defaultValue": null,

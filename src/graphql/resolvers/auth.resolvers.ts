@@ -7,7 +7,7 @@ import { adaptUser } from '../../adapters/model.adapters';
 export const authResolvers: Partial<Resolvers<InstaMunchContext>> = {
   Query: {
     async me(_, __, { user }) {
-      return user || null;
+      return adaptUser({ ...user!, createdAt: new Date(user!.createdAt), updatedAt: new Date(user!.updatedAt), password: '' }) || null;
     }
   },
   Mutation: {

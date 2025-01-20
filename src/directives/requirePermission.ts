@@ -1,16 +1,7 @@
-import { mapSchema, getDirective, MapperKind } from '@graphql-tools/utils';
+import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { GraphQLError, GraphQLSchema } from 'graphql';
-import { hasPermission } from '../util/permissions';
-import { Role, User } from '../../generated/graphql';
+import { hasPermission, parsePermission, ROLE_PERMISSIONS } from '../util/permissions';
 import { InstaMunchContext } from '../graphql/context';
-
-interface PermissionErrorExtensions {
-  code: string;
-  http: { status: number };
-  permission: string;
-  requiredRole: string;
-  userRole: Role;
-}
 
 export function requirePermissionDirective(schema: GraphQLSchema) {
   return mapSchema(schema, {
@@ -20,27 +11,33 @@ export function requirePermissionDirective(schema: GraphQLSchema) {
       if (requirePermission) {
         const { resolve: originalResolve } = fieldConfig;
 
-        fieldConfig.resolve = async function (source, args, context: InstaMunchContext, info) {
+        fieldConfig.resolve = async function(source, args, context: InstaMunchContext, info) {
           const user = context.user;
+          const { permissions, operator = 'AND' } = requirePermission as { permissions: string[], operator: 'AND' | 'OR'};
 
           if (!user) {
             throw new GraphQLError('Authentication required', {
               extensions: {
                 code: 'UNAUTHENTICATED',
                 http: { status: 401 },
-                permission: requirePermission.permission,
-                requiredRole: requirePermission.permission
+                operator,
+                requiredPermissions: permissions,
               }
             });
           }
 
-          if (!hasPermission(user.role, requirePermission.permission)) {
+          const hasRequiredPermissions = operator === 'AND'
+            ? permissions.every(permission => hasPermission(user.role, parsePermission(permission)))
+            : permissions.some(permission => hasPermission(user.role, parsePermission(permission)));
+
+          if (!hasRequiredPermissions) {
             throw new GraphQLError('Permission denied', {
               extensions: {
                 code: 'FORBIDDEN',
                 http: { status: 403 },
-                permission: requirePermission.permission,
-                requiredRole: requirePermission.permission,
+                operator,
+                permissions: ROLE_PERMISSIONS[user.role],
+                requiredPermissions: permissions,
                 userRole: user.role
               }
             });
@@ -50,6 +47,6 @@ export function requirePermissionDirective(schema: GraphQLSchema) {
         };
       }
       return fieldConfig;
-    },
+    }
   });
 }

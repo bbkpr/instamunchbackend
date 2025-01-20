@@ -476,6 +476,11 @@ export enum Permission {
   UpdateMachinePrices = 'UPDATE_MACHINE_PRICES'
 }
 
+export enum PermissionOperator {
+  And = 'AND',
+  Or = 'OR'
+}
+
 export type Query = {
   __typename?: 'Query';
   /** Get all Items, from everywhere */
@@ -796,6 +801,7 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   MutationResponse: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['MutationResponse']>;
   Permission: Permission;
+  PermissionOperator: PermissionOperator;
   Query: ResolverTypeWrapper<{}>;
   Role: Role;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
@@ -874,7 +880,8 @@ export type ResolversParentTypes = {
 };
 
 export type RequirePermissionDirectiveArgs = {
-  permission: Permission;
+  operator?: Maybe<PermissionOperator>;
+  permissions: Array<Permission>;
 };
 
 export type RequirePermissionDirectiveResolver<Result, Parent, ContextType = any, Args = RequirePermissionDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;

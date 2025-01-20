@@ -10,13 +10,10 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import express from 'express';
 import { InstaMunchContext } from './src/graphql/context';
-import { machineResolvers } from './src/graphql/resolvers/machine.resolvers';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { requirePermissionDirective } from './src/directives/requirePermission';
 import { getUserFromToken } from './src/auth/tokenService';
-import { omit } from 'lodash';
 
-const hbs = require('hbs');
 let cors = require('cors');
 
 var path = require('path');
@@ -40,12 +37,12 @@ schema = requirePermissionDirective(schema);
 const apolloServer = new ApolloServer<InstaMunchContext>({
   schema,
   formatError: (error) => {
-    // Customize error responses
-    if (error.message.includes('Permission denied')) {
+    if (['Permission denied', 'Authentication required'].some(m => m === error.message)) {
       return {
-        message: 'Permission denied',
+        message: error.message,
         extensions: {
-          ...omit(error.extensions, 'stacktrace')
+          ...error.extensions,
+          stacktrace: undefined
         }
       };
     }
